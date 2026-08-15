@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "gen": "node scripts/generate-template.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "y0M0ST",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "@types/node": "^25.9.5",
     "prettier": "^3.9.6",
