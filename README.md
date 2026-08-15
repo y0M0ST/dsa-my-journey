@@ -1,2 +1,2 @@
-# Hành trình cày lại DSA với TypeScript
+# My journey of self-studying Data Structures and Algorithms again
 
