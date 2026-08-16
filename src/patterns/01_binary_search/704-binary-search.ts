@@ -9,11 +9,10 @@ export function binarySearch(nums: number[], item: number): any {
     let right: number = nums.length - 1
     while (left <= right) {
         const mid: number = Math.floor((right - left) / 2)
-        const guess = nums[mid]
-        if (guess === undefined) break
-        if (guess === item) {
+        if (nums[mid] === undefined) break
+        if (nums[mid] === item) {
             return mid
-        } else if (guess < item) {
+        } else if (nums[mid] < item) {
             left = mid + 1
         } else {
             right = mid - 1
