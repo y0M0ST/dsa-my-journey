@@ -13,9 +13,9 @@ export function searchRange(nums: number[], target: number): number[] {
     while (left <= right) {
       let mid: number = Math.floor((right + left) / 2)
       //(7+0) / 2 = 3,5 => So i use method floor of Math to set 3.5 to 3
-      if (nums[mid] < target) {
+      if (nums[mid]! < target) {
         left = mid + 1 //move to right
-      } else if (nums[mid] > target) {
+      } else if (nums[mid]! > target) {
         right = mid - 1 //move to left
       } else {
         result = mid //We don't return mid here like like traditional Binary Search algorithm
@@ -33,4 +33,11 @@ export function searchRange(nums: number[], target: number): number[] {
   if (firstPos === -1) return [-1, -1]
   const lastPos = findBound(false)
   return [firstPos, lastPos]
+
+
+  // ! Tip: Another way to handle warning from TS at line 16 and 18 of this file
+  // const val = nums[mid]
+  // if (val === undefined) break // hoặc const val = nums[mid]!
+  // if (val < target) { ... }
+
 }
