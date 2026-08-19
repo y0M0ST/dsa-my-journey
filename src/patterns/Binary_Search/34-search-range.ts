@@ -1,8 +1,8 @@
 /**
  * Problem: 34-search-range
  * Pattern: 01_binary_search
- * Time Complexity: O(?)
- * Space Complexity: O(?)
+ * Time Complexity: O(log n)
+ * Space Complexity: O(log n)
  */
 
 export function searchRange(nums: number[], target: number): number[] {
