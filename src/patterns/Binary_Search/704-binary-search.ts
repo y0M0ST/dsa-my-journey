@@ -4,11 +4,11 @@
  * Time Complexity: O(log n)
  * Space Complexity: O(1)
  */
-export function binarySearch(nums: number[], item: number): any {
+export function binarySearch(nums: number[], item: number): number {
     let left: number = 0
     let right: number = nums.length - 1
     while (left <= right) {
-        const mid: number = Math.floor((right - left) / 2)
+        const mid: number = left + Math.floor((right - left) / 2)
         if (nums[mid] === undefined) break
         if (nums[mid] === item) {
             return mid

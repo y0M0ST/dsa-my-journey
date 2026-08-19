@@ -1,0 +1,52 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  DSA-TS-JOURNEY — Git Workflow Cheat-sheet
+#  Role   : DevOps / Lead Engineer Standard
+#  Target : Enterprise-grade Git Flow for a DSA practice repository
+# ═══════════════════════════════════════════════════════════════════════════
+
+[alias]
+
+  # ── Branch lifecycle ──────────────────────────────────────────────────────
+
+  # Create a new feature branch off of latest master and switch to it
+  # Usage: git new feat/01-two-pointers/167-two-sum-ii
+  new = "!f() { git checkout master && git pull origin master && git checkout -b \"$1\"; }; f"
+
+  # Push current branch to origin and set upstream tracking
+  publish = "!git push -u origin HEAD"
+
+  # ── Daily workflow shortcuts ──────────────────────────────────────────────
+
+  # Short status
+  s = status -sb
+
+  # Pretty one-line log with graph
+  lg = log --oneline --graph --decorate --all
+
+  # Add all changes and commit with a message
+  # Usage: git save "feat: add two-sum solution"
+  save = "!f() { git add -A && git commit -m \"$1\"; }; f"
+
+  # ── Sync & cleanup ────────────────────────────────────────────────────────
+
+  # Sync local master with origin after a PR is merged
+  sync = "!git checkout master && git pull origin master --prune"
+
+  # Delete a local branch safely (merged check)
+  # Usage: git done feat/01-two-pointers/167-two-sum-ii
+  done = "!f() { git branch -d \"$1\" && git remote prune origin; }; f"
+
+  # Force-delete a local branch (unmerged)
+  # Usage: git nuke feat/wip-branch
+  nuke = "!f() { git branch -D \"$1\" && git remote prune origin; }; f"
+
+  # Full cleanup: sync master then delete merged local branches
+  sweep = "!git checkout master && git pull --prune && git branch --merged | grep -v '\\* master' | xargs git branch -d"
+
+  # ── PR convenience ────────────────────────────────────────────────────────
+
+  # Open GitHub PR page (requires GitHub CLI: gh)
+  pr = "!gh pr create --fill"
+
+  # Check CI status of current PR
+  ci = "!gh pr checks"
