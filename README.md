@@ -1,4 +1,4 @@
-# My Journey of Self-Studying Data Structures & Algorithms again !! @@
+# My Journey of Self-Studying Data Structures & Algorithms again !! **NO VIBECODINGGG** 
 
 | Day | Problem | Level | Status | Runtime | Memory | Notes |
 |-----|---------|-------|--------|---------|--------|-------|
