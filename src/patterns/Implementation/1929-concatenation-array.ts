@@ -1,6 +1,6 @@
 /**
  * Problem: 1929-concatenation-array
- * Pattern: Array
+ * Pattern: Implementation
  * Time Complexity: O(n)
  * Space Complexity: O(n)
  */

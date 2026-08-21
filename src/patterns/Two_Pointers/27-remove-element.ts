@@ -1,6 +1,6 @@
 /**
  * Problem: 27-remove-element
- * Pattern: Array
+ * Pattern: Two Pointers
  * Time Complexity: O(?)
  * Space Complexity: O(?)
  */

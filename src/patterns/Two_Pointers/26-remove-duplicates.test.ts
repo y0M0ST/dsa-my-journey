@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { removeDuplicates } from './26-removeDuplicates.js';
+import { removeDuplicates } from './26-remove-duplicates.js';
 
 describe('26. Remove Duplicates from Sorted Array (Slow & Fast Pointers)', () => {
 
