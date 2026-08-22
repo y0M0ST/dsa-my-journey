@@ -9,13 +9,17 @@ export function buySellStock(prices: number[]): number {
   let maxProfit: number = 0
   if(prices.length === 0) return 0
   for (let i = 0; i < prices.length; i++) {
-    if (prices[i]! < minPrice) {
-      minPrice = prices[i]!
-    } else {
-      let currentProfit = prices[i]! - minPrice
-      if (currentProfit > maxProfit)
-        maxProfit = currentProfit
-    }
+    // if (prices[i]! < minPrice) {
+    //   minPrice = prices[i]!
+    // } else {
+    //   let currentProfit = prices[i]! - minPrice
+    //   if (currentProfit > maxProfit)
+    //     maxProfit = currentProfit
+    // }
+
+    //Another way to optimize
+    minPrice = Math.min(minPrice, prices[i]!)
+    maxProfit = Math.max(maxProfit, prices[i]! - minPrice)
   }
   return maxProfit;
 }
