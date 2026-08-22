@@ -8,3 +8,4 @@
 | 4   | [26. Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/) | Easy | Solved | 0ms (Beats 100%) | 58.50MB (Beats 64.85%) | This problem i use Two Pointers to solve |
 | 4   | [27. Remove Element](https://leetcode.com/problems/remove-element/) | Easy | Solved | 0ms (Beats 100.00%) | 54.86MB (Beats 73.54%) | Similar to LC26, using Slow & Fast Pointers for In-place modification |
 | 5   | [14. Longest Common Prefix](https://leetcode.com/problems/longest-common-prefix/) | Easy | Solved | 0ms (Beats 100%) | 52.34MB (Beats 85.12%) | Classic string problem, solved using prefix shrinking technique |
+| 5   | [121. Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Easy | Solved | 1ms (Beats 95.09%) | 65.76MB (Beats 62.09%) | Greedy approach: track minPrice and update maxProfit |
