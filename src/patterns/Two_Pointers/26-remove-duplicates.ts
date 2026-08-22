@@ -1,6 +1,6 @@
 /**
  * Problem: 26-remove-duplicates-from-sorted-array
- * Pattern: Two Pointers (Slow & Fast)
+ * Pattern: Two Pointers
  * Time Complexity: O(N)
  * Space Complexity: O(1) - In-place modification
  */
