@@ -3,7 +3,7 @@
 > **Khẩu quyết:** Không bao giờ gõ `left = 0, right = nums.length - 1` một cách vô thức. Hãy tự hỏi: "Mình đang tìm một **con số** hay tìm một **ranh giới**?"
 
 ## 1. DẤU HIỆU NHẬN DIỆN (KHI NÀO DÙNG BINARY SEARCH?)
-Nếu đề bài có 1 trong 3 yếu tố sau, 99% là phải xài Binary Search:
+Nếu search space có tính đơn điệu và có thể loại bỏ một phần search space sau mỗi lần kiểm tra → hãy nghĩ đến Binary Search hoặc nếu đề bài có 1 trong 3 yếu tố sau, 99% là phải xài Binary Search:
 1. **Mảng đã được sắp xếp (Sorted Array):** Dấu hiệu rõ ràng nhất.
 2. **Yêu cầu Time Complexity khắt khe:** Bắt buộc tối ưu thời gian chạy là $O(\log N)$.
 3. **Tính đơn điệu (Monotonicity):** Có thể chia không gian tìm kiếm thành 2 nửa rõ rệt: Nửa `[False, False...]` và nửa `[True, True...]` (Thường gặp trong dạng *Binary Search on Answer*).
