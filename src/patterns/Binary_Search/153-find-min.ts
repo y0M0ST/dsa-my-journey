@@ -17,5 +17,4 @@ export function findMin(nums: number[]): number {
     }
   }  
   return nums[left]
-
 }
