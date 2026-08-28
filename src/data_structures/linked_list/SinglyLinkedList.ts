@@ -49,12 +49,25 @@ export class SinglyLinkedList {
     insertAt(index: number, val: number): void {
         // TODO: Chặn edge cases (index < 0 hoặc > length). Tìm node đứng trước index. Chèn vào.
         const newNode = new ListNode(val)
-        if (this.head === null) {
-            this.head = newNode
-            this.tail = newNode
+        if (index < 0 && index > this.length) return
+        if (index === 0) {
+            this.insertAtHead(val)
+            return
+        } else if (index === this.length) {
+            this.insertAtTail(val)
+            return
         } else {
-            
+            const newNode = new ListNode(val)
+            let current = this.head
+            for (let i = 0; i < index - 1; i++) {
+                current = current!.next
+            }
+            //Hiện tại current đang là A, current.next là B. Muốn chèn newNode vào giữa 
+            newNode.next = current!.next //B1. Cánh tay của th newNode phải với tới th B
+            current!.next = newNode //B2. Cánh tay cũ của th A (current.next) bây giờ sẽ với tới cho th mới newNode
+            this.length++
         }
+        
     }
 
     // --- CÁC HÀM XÓA (DELETE) ---
