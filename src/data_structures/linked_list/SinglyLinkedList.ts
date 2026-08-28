@@ -31,7 +31,7 @@ export class SinglyLinkedList {
         //Nếu list trước đó rỗng => head === tail === newNode; newNode.next === null
         // =>>>Muốn chèn đầu: node mới trỏ vào head cũ, rồi head trỏ vào node mới.
     }
-    
+
 
     insertAtTail(val: number): void {
         // TODO: Tạo Node mới. Nối tail hiện tại tới Node mới. Cập nhật lại Tail.
@@ -67,7 +67,7 @@ export class SinglyLinkedList {
             current!.next = newNode //B2. Cánh tay cũ của th A (current.next) bây giờ sẽ với tới cho th mới newNode
             this.length++
         }
-        
+
     }
 
     // --- CÁC HÀM XÓA (DELETE) ---
@@ -83,6 +83,18 @@ export class SinglyLinkedList {
 
     deleteTail(): void {
         // TODO: Cái này khoai nha! Phải đi bộ từ đầu tìm ra thằng áp chót để biến nó thành Tail.
+        if (this.length === 0) return
+        if (this.length === 1) {
+            this.deleteHead()
+            return
+        }
+        let current = this.head
+        while (current!.next != this.tail) {
+            current = current!.next
+        }
+        current!.next = null
+        this.tail = current
+        this.length--
     }
 
     // --- CÁC HÀM TIỆN ÍCH (UTILITIES) ---
