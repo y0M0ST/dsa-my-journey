@@ -73,6 +73,12 @@ export class SinglyLinkedList {
     // --- CÁC HÀM XÓA (DELETE) ---
     deleteHead(): void {
         // TODO: Đưa head trỏ tới node thứ 2. Cắt đứt liên lạc với node đầu cũ.
+        if (this.head === null) return //Chỗ ni vườn ko nhà trống thì return
+        this.head = this.head.next //Dời cái head của cái head đầu sang cái thứ hai
+        this.length-- //Phải giảm đi 1
+        if (this.length === 0) {
+            this.tail = null //Nếu cái list node có 1 cái thì xoá cái đầu phải cho cái đuôi về null luôn
+        }
     }
 
     deleteTail(): void {
