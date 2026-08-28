@@ -23,14 +23,38 @@ export class SinglyLinkedList {
             this.head = newNode
         }
         this.length++
+        //newNode.next = oldHead
+        //head = newNode
+        // ====> Chỗ ni là từ duy bất biến của insertHear
+        //nhưng tail vẫn node cuối cũ nếu list trc đó ko rỗng
+        //length tăng đúng 1
+        //Nếu list trước đó rỗng => head === tail === newNode; newNode.next === null
+        // =>>>Muốn chèn đầu: node mới trỏ vào head cũ, rồi head trỏ vào node mới.
     }
+    
 
     insertAtTail(val: number): void {
         // TODO: Tạo Node mới. Nối tail hiện tại tới Node mới. Cập nhật lại Tail.
+        const newNode = new ListNode(val) //Mặc định khi tạo 1 node mới thì head và tail của nó là null
+        if (this.head === null) {
+            this.head = newNode
+            this.tail = newNode
+        } else {
+            this.tail!.next = newNode
+            this.tail = newNode
+        }
+        this.length++
     }
 
     insertAt(index: number, val: number): void {
         // TODO: Chặn edge cases (index < 0 hoặc > length). Tìm node đứng trước index. Chèn vào.
+        const newNode = new ListNode(val)
+        if (this.head === null) {
+            this.head = newNode
+            this.tail = newNode
+        } else {
+            
+        }
     }
 
     // --- CÁC HÀM XÓA (DELETE) ---
