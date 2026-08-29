@@ -130,6 +130,27 @@ export class SinglyLinkedList {
         return -1
     }
 
+    //tuyệt kĩ quay đầu xe, chỗ này hay bị hỏi phỏng vấn
+    //Câu hỏi phỏng vấn kinh điển: Không được tạo mảng mới, không tạo Node mới,
+    //Chỉ dùng đúng 3 con trỏ: prev, current, next để quay ngược đầu toàn bộ mũi tên
+    // Tư duy: đi qua từng node, giựt đứt cái móc nối phía sau và cắm ngược nó về phía trước
+    reverse(): void{
+        if (this.head === null || this.head === this.tail) return
+        let prev: ListNode | null = null;
+        let current: ListNode | null = this.head
+        let next: ListNode | null = null;
+        this.tail = this.head //Đầu cũ bây giờ thành đuôi mới
+        while (current !== null) {
+            next = current.next
+            current.next = prev
+            prev = current;
+            current = next
+        }
+        //Khi loop bị vỡ current rớt ra ngoài(null) prev đứng ở trạm cuối cùng
+        //Trạm cuối cùng đó chính thức lên thành HEAD mới
+        this.head = prev
+    }
+
     // --- CÁC HÀM TIỆN ÍCH (UTILITIES) ---
     print(): void {
         // TODO: Dùng vòng lặp while đi từ Head đến null, in ra chuỗi kiểu "1 -> 2 -> 3 -> null"
