@@ -119,6 +119,17 @@ export class SinglyLinkedList {
         }
     }
 
+    search(val: number): number{
+        let current = this.head
+        let index = 0
+        while (current !== null) {
+            if (current.val === val) return index
+            current = current.next
+            index++
+        }
+        return -1
+    }
+
     // --- CÁC HÀM TIỆN ÍCH (UTILITIES) ---
     print(): void {
         // TODO: Dùng vòng lặp while đi từ Head đến null, in ra chuỗi kiểu "1 -> 2 -> 3 -> null"
