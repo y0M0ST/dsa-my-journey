@@ -106,6 +106,19 @@ export class SinglyLinkedList {
         return current
     }
 
+    deleteAt(index: number): void{
+        if (index < 0 || index >= this.length) return;
+        if (index === 0) return this.deleteHead()
+        if (index === this.length - 1) return this.deleteTail()
+        
+        const prev = this.get(index - 1)
+        if (prev && prev.next) {
+            const nodeToDelete = prev.next
+            prev.next = nodeToDelete.next
+            this.length--
+        }
+    }
+
     // --- CÁC HÀM TIỆN ÍCH (UTILITIES) ---
     print(): void {
         // TODO: Dùng vòng lặp while đi từ Head đến null, in ra chuỗi kiểu "1 -> 2 -> 3 -> null"
