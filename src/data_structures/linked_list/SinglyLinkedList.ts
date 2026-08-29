@@ -48,25 +48,25 @@ export class SinglyLinkedList {
 
     insertAt(index: number, val: number): void {
         // TODO: Chặn edge cases (index < 0 hoặc > length). Tìm node đứng trước index. Chèn vào.
-        const newNode = new ListNode(val)
-        if (index < 0 && index > this.length) return
+        if (index < 0 || index > this.length) return;
         if (index === 0) {
             this.insertAtHead(val)
             return
-        } else if (index === this.length) {
+        }
+        if (index === this.length) {
             this.insertAtTail(val)
             return
-        } else {
-            const newNode = new ListNode(val)
-            let current = this.head
-            for (let i = 0; i < index - 1; i++) {
-                current = current!.next
-            }
-            //Hiện tại current đang là A, current.next là B. Muốn chèn newNode vào giữa 
-            newNode.next = current!.next //B1. Cánh tay của th newNode phải với tới th B
-            current!.next = newNode //B2. Cánh tay cũ của th A (current.next) bây giờ sẽ với tới cho th mới newNode
-            this.length++
         }
+        const newNode = new ListNode(val)
+        let current = this.head
+        for (let i = 0; i < index - 1; i++) {
+            current = current!.next
+        }
+        //Hiện tại current đang là A, current.next là B. Muốn chèn newNode vào giữa 
+        newNode.next = current!.next //B1. Cánh tay của th newNode phải với tới th B
+        current!.next = newNode //B2. Cánh tay cũ của th A (current.next) bây giờ sẽ với tới cho th mới newNode
+        this.length++
+
 
     }
 
@@ -89,7 +89,7 @@ export class SinglyLinkedList {
             return
         }
         let current = this.head
-        while (current!.next != this.tail) {
+        while (current!.next !== this.tail) {
             current = current!.next
         }
         current!.next = null
@@ -100,17 +100,23 @@ export class SinglyLinkedList {
     get(index: number): ListNode | null {
         if (index < 0 || index >= this.length) return null
         let current = this.head
-        for (let i = 0; i < index; i++){
+        for (let i = 0; i < index; i++) {
             current = current!.next
         }
         return current
     }
 
-    deleteAt(index: number): void{
+    deleteAt(index: number): void {
         if (index < 0 || index >= this.length) return;
-        if (index === 0) return this.deleteHead()
-        if (index === this.length - 1) return this.deleteTail()
-        
+        if (index === 0) {
+            this.deleteHead()
+            return
+        }
+        if (index === this.length - 1) {
+            this.deleteTail()
+            return 
+        } 
+
         const prev = this.get(index - 1)
         if (prev && prev.next) {
             const nodeToDelete = prev.next
@@ -119,7 +125,7 @@ export class SinglyLinkedList {
         }
     }
 
-    search(val: number): number{
+    search(val: number): number {
         let current = this.head
         let index = 0
         while (current !== null) {
@@ -134,7 +140,7 @@ export class SinglyLinkedList {
     //Câu hỏi phỏng vấn kinh điển: Không được tạo mảng mới, không tạo Node mới,
     //Chỉ dùng đúng 3 con trỏ: prev, current, next để quay ngược đầu toàn bộ mũi tên
     // Tư duy: đi qua từng node, giựt đứt cái móc nối phía sau và cắm ngược nó về phía trước
-    reverse(): void{
+    reverse(): void {
         if (this.head === null || this.head === this.tail) return
         let prev: ListNode | null = null;
         let current: ListNode | null = this.head
@@ -150,6 +156,22 @@ export class SinglyLinkedList {
         //Trạm cuối cùng đó chính thức lên thành HEAD mới
         this.head = prev
     }
+
+    toArray(): number[] {
+        const result: number[] = [];
+        let current = this.head;
+        while (current !== null) {
+            result.push(current.val);
+            current = current.next;
+        }
+        return result;
+    }
+
+    isEmpty(): boolean {
+        return this.length === 0;
+    }
+
+
 
     // --- CÁC HÀM TIỆN ÍCH (UTILITIES) ---
     print(): void {
@@ -167,7 +189,3 @@ export class SinglyLinkedList {
     }
 }
 
-const list = new SinglyLinkedList();
-list.insertAtHead(10);
-list.insertAtHead(20);
-list.print(); // Nó sẽ in ra: 20 -> 10 -> null
