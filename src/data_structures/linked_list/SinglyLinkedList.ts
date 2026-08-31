@@ -152,7 +152,8 @@ export class SinglyLinkedList {
             prev = current; //Prev trượt tới
             current = next //Cái current trượt tới cái đuôi ta đã lưu
         }
-        //Khi loop bị vỡ current rớt ra ngoài(null) prev đứng ở trạm cuối cùng
+        //Khi loop bị vỡ current rớt ra ngoài(null)
+        //Sau khi traversal kết thúc, current đã trở thành null, còn prev đang trỏ tới node cuối cùng của danh sách ban đầu, tức node đầu tiên của danh sách đã reverse.
         //Trạm cuối cùng đó chính thức lên thành HEAD mới
         this.head = prev
     }
