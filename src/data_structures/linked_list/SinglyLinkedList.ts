@@ -147,10 +147,10 @@ export class SinglyLinkedList {
         let next: ListNode | null = null;
         this.tail = this.head //Đầu cũ bây giờ thành đuôi mới
         while (current !== null) {
-            next = current.next
-            current.next = prev
-            prev = current;
-            current = next
+            next = current.next //Lưu lại cái đuôi cũ của th current, vì tí nx ta sẽ thay đổi nó, nếu ko lưu thì nó mất luôn, ko có đường quay về
+            current.next = prev //Bẻ lái, cái đuôi hiện tại chĩa về đâu? à chĩa về thằng đứng trước nó, tức là prev
+            prev = current; //Prev trượt tới
+            current = next //Cái current trượt tới cái đuôi ta đã lưu
         }
         //Khi loop bị vỡ current rớt ra ngoài(null) prev đứng ở trạm cuối cùng
         //Trạm cuối cùng đó chính thức lên thành HEAD mới
