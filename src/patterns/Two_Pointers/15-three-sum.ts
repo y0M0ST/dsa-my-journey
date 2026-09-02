@@ -8,6 +8,7 @@ export function threeSum(nums: number[]): number[][] {
   let snums: number[] = nums.sort((a, b) => a - b)
   let result: number[][] = []
   for (let i = 0; i < snums.length - 2; i++) {
+    if (snums[i] > 0) break
     if (snums[i] === snums[i - 1]) continue
     let left: number = i + 1
     let right: number = snums.length - 1
