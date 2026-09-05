@@ -1,15 +1,16 @@
 /**
  * Problem: 42-trap-rain-water
  * Pattern: Two_Pointers
- * Time Complexity: O(?)
- * Space Complexity: O(?)
+ * Time Complexity: O(n)
+ * Space Complexity: O(1)
  */
-export function trapRainWater(height: number[]): number | null {
-  if (!Array.isArray(height) || height.length === 0) return null;
-  if (height.some(h => h < 0)) return null;
+export function trapRainWater(height: number[]): number {
+  if (!height || height.length < 3) return 0;
 
-  let left = 0, right = height.length - 1;
-  let leftMax = 0, rightMax = 0;
+  let left = 0;
+  let right = height.length - 1;
+  let leftMax = 0;
+  let rightMax = 0;
   let total = 0;
 
   while (left < right) {
@@ -29,5 +30,7 @@ export function trapRainWater(height: number[]): number | null {
       right--;
     }
   }
+
   return total;
 }
+
