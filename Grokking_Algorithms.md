@@ -25,3 +25,60 @@
 * Array has length fix, if its full, we must create new array that bigger than and coppy all data from old array. Additionally, if we want to insert an element at a specific position (to maintain the array's order), we must shift multiple subsequent elements, incurring a cost of O(n).
 
 * Binary search: To use Binary Search, the array must be ordered, we must insert the element at specific position, this is also similar to above. So, although find fast O(log n), insert slowdown O(n)
+
+**2.5. In reality, Facebook uses neither an array nor a linked list to store user information. Let’s consider a hybrid data structure: an array of 26 linked lists (each element points to a linked list of usernames starting with that letter). Compare this hybrid data structure to arrays and linked lists. Is it slower or faster than each for searching and inserting?**
+- *Searching:* Slower than arrays (arrays support random access and Binary Search in O(log n)), but faster than a single linked list (you only need to search 1/26th of the users).
+- *Inserting:* Faster than arrays (O(1) to append/insert into the linked list without shifting elements or reallocating array memory), and same speed as linked lists.
+*(Note: This hybrid concept is the foundation of Hash Tables with separate chaining, covered in Chapter 5).*
+
+---
+
+### Chapter 3: Recursion
+
+**3.1. Suppose I show you a call stack like this:**
+```text
+[ greet2 | name: maggie ]
+[ greet  | name: maggie ]
+```
+**What can you tell me about the current state of these function calls?**
+- `greet` was called first with `name = maggie`.
+- `greet` called `greet2` with `name = maggie`.
+- `greet` is currently in an incomplete, suspended state.
+- `greet2` is currently executing at the top of the stack.
+- Once `greet2` finishes and pops off the stack, `greet` will resume execution.
+
+**3.2. Suppose you accidentally write an infinite recursive function that keeps calling itself. What happens to the stack?**
+- Every function call allocates a new stack frame in memory. Without a base case to terminate, the call stack grows continuously until memory is exhausted, throwing a **Stack Overflow** error.
+
+---
+
+### Chapter 4: Quicksort & Divide-and-Conquer (D&C)
+
+**4.1. Write out the code for the recursive `sum` function.**
+```typescript
+function sum(arr: number[]): number {
+  if (arr.length === 0) return 0; // Base case
+  return arr[0] + sum(arr.slice(1)); // Recursive case
+}
+```
+
+**4.2. Write a recursive function to count the number of items in a list.**
+```typescript
+function count<T>(arr: T[]): number {
+  if (arr.length === 0) return 0; // Base case
+  return 1 + count(arr.slice(1)); // Recursive case
+}
+```
+
+**4.3. Find the maximum number in a list recursively.**
+```typescript
+function max(arr: number[]): number {
+  if (arr.length === 1) return arr[0]; // Base case
+  const subMax = max(arr.slice(1)); // Recursive case
+  return arr[0] > subMax ? arr[0] : subMax;
+}
+```
+
+**4.4. Remember binary search from chapter 1? It’s a divide-and-conquer algorithm, too. What are the base case and recursive case for binary search?**
+- *Base case:* A list with zero or one element (if empty, target not found; if single element matches target, found; otherwise, not in list).
+- *Recursive case:* Compare target with middle element. If target is smaller, recursively search the left sub-array; if larger, recursively search the right sub-array.
