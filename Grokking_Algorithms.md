@@ -81,4 +81,30 @@ function max(arr: number[]): number {
 
 **4.4. Remember binary search from chapter 1? It’s a divide-and-conquer algorithm, too. What are the base case and recursive case for binary search?**
 - *Base case:* A list with zero or one element (if empty, target not found; if single element matches target, found; otherwise, not in list).
-- *Recursive case:* Compare target with middle element. If target is smaller, recursively search the left sub-array; if larger, recursively search the right sub-array.
+- *Recursive case:* Compare target with middle element. If target is smaller, recursively search the left sub-array; if larger, recursively search the right sub-array.
+
+**4.5. Printing the value of each element in an array.** - *O(n)*
+
+**4.6. Doubling the value of each element in an array.** - *O(n)*
+
+**4.7. Doubling the value of just the first element in an array.** - *O(1)*
+
+**4.8. Creating a multiplication table with all the elements in the array (e.g. [2, 3, 7, 8, 10], multiplying every element by each element).** - *O(n²)*
+
+---
+
+### Chapter 5: Hash Tables
+
+**Which of these hash functions are consistent?**
+
+**5.1. `f(x) = 1` (Returns 1 for all input)**
+- *Consistent:* It always returns the same output for the same input, though it causes maximum collisions (everything ends up in slot 1).
+
+**5.2. `f(x) = rand()` (Returns a random number every time)**
+- *Inconsistent:* Different outputs for the same input make retrieval impossible.
+
+**5.3. `f(x) = next_empty_slot()` (Returns the index of the next empty slot in the hash table)**
+- *Inconsistent:* Output changes depending on current table capacity and filled slots.
+
+**5.4. `f(x) = len(x)` (Uses the length of the string as the index)**
+- *Consistent:* The same string always has the same length, though words of equal length will collide.
