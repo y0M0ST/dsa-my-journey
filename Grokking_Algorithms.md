@@ -107,4 +107,34 @@ function max(arr: number[]): number {
 - *Inconsistent:* Output changes depending on current table capacity and filled slots.
 
 **5.4. `f(x) = len(x)` (Uses the length of the string as the index)**
-- *Consistent:* The same string always has the same length, though words of equal length will collide.
+- *Consistent:* The same string always has the same length, though words of equal length will collide.
+
+**It's important for hash functions to distribute keys evenly. Suppose you have these hash functions for strings:**
+- **Function A:** Return `1` for all input.
+- **Function B:** Use the length of the string as the index.
+- **Function C:** Use the first character of the string as the index (`a` -> 0, `b` -> 1, etc.).
+- **Function D:** Map every letter to a prime number (`a = 2, b = 3, c = 5, ...`), sum them up and modulo table size.
+
+**Which of these hash functions will provide a good distribution for each scenario below?**
+
+**5.5. A phonebook where keys are names and values are phone numbers. The names are Esther, Ben, Bob, Dan.**
+- **Functions C and D** provide a good distribution.
+  - Function C puts Esther in `E`, Ben and Bob in `B`, Dan in `D` (minimal collisions).
+  - Function D distributes names uniformly based on prime weighting.
+  - Function B collides Ben, Bob, Dan (all length 3). Function A puts everyone into slot 1.
+
+**5.6. A mapping from battery size to power. The sizes are A, AA, AAA, AAAA.**
+- **Functions B and D** provide a good distribution.
+  - Function B works great here because each battery size has a distinct length (1, 2, 3, 4).
+  - Function C would be terrible because all sizes start with `A`, putting every entry into slot 0.
+
+**5.7. A mapping from book titles to authors. Titles: "Moby Dick", "The Great Gatsby", "Catch-22".**
+- **Functions C and D** provide a good distribution.
+  - Function D provides the most uniform distribution across general text.
+  - Function C works reasonably well if titles start with diverse letters.
+  - Function B can easily collide if titles have identical lengths.
+
+**Hash Table Performance & Resizing Rule:**
+- **Average Case:** $O(1)$ for Search, Insert, and Delete.
+- **Worst Case (Heavy collisions):** $O(n)$.
+- **Load Factor:** $\frac{\text{number of items}}{\text{total number of slots}}$. When load factor $> 0.7$, we should resize (double table size and re-hash items) to maintain $O(1)$ performance.
