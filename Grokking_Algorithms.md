@@ -185,4 +185,44 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 ```
 - **Time Complexity:** $O(V + E)$ where $V$ is number of vertices (nodes) and $E$ is number of edges (connections).
 - **Space Complexity:** $O(V)$ for the queue and visited set.
+
+---
+
+### Chapter 7: Dijkstra's Algorithm & Weighted Graphs
+
+**7.1. In each of these graphs, what is the weight of the shortest path from start to finish?**
+
+- **Graph A:**
+  - `Start -> A (5)`, `Start -> B (2)`
+  - `B -> A (8)`, `B -> D (7)`
+  - `A -> C (4)`, `A -> D (2)`
+  - `C -> D (6)`, `C -> Finish (3)`
+  - `D -> Finish (1)`
+  - *Shortest path:* `Start -> A -> D -> Finish` with total weight $5 + 2 + 1 = \mathbf{8}$.
+
+- **Graph B:**
+  - `Start -> A (10)`
+  - `A -> B (20)`
+  - `B -> C (1)`, `B -> Finish (30)`
+  - `C -> A (1)` *(cycle with positive weight)*
+  - *Shortest path:* `Start -> A -> B -> Finish` with total weight $10 + 20 + 30 = \mathbf{60}$.
+
+- **Graph C (Negative-weight edge):**
+  - `Start -> A (2)`, `Start -> B (2)`
+  - `B -> A (2)`
+  - `A -> Finish (2)`
+  - `B -> Finish (-1)`
+  - *Shortest path:* `Start -> B -> Finish` with total weight $2 + (-1) = \mathbf{1}$.
+  - *(Warning: Dijkstra's algorithm fails when negative-weight edges exist because once a node is processed, it assumes its shortest path is finalized. To handle negative weights, use the **Bellman-Ford Algorithm**).*
+
+**7.2. Comparison: BFS vs Dijkstra's Algorithm:**
+
+| Feature | Breadth-First Search (BFS) | Dijkstra's Algorithm |
+| :--- | :--- | :--- |
+| **Graph Type** | Unweighted graphs (all edges have equal cost) | Weighted graphs |
+| **Optimality Goal** | Shortest path by *fewest segments / steps* | Shortest path by *lowest total weight* |
+| **Negative weights** | N/A | Fails with negative edge weights (use Bellman-Ford) |
+| **Data structure** | Queue (FIFO) | Priority Queue / Min-Heap |
+| **Time Complexity** | $O(V + E)$ | $O(E \log V)$ with min-heap |
+
 
