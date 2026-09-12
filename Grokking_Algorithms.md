@@ -107,4 +107,122 @@ function max(arr: number[]): number {
 - *Inconsistent:* Output changes depending on current table capacity and filled slots.
 
 **5.4. `f(x) = len(x)` (Uses the length of the string as the index)**
-- *Consistent:* The same string always has the same length, though words of equal length will collide.
+- *Consistent:* The same string always has the same length, though words of equal length will collide.
+
+**It's important for hash functions to distribute keys evenly. Suppose you have these hash functions for strings:**
+- **Function A:** Return `1` for all input.
+- **Function B:** Use the length of the string as the index.
+- **Function C:** Use the first character of the string as the index (`a` -> 0, `b` -> 1, etc.).
+- **Function D:** Map every letter to a prime number (`a = 2, b = 3, c = 5, ...`), sum them up and modulo table size.
+
+**Which of these hash functions will provide a good distribution for each scenario below?**
+
+**5.5. A phonebook where keys are names and values are phone numbers. The names are Esther, Ben, Bob, Dan.**
+- **Functions C and D** provide a good distribution.
+  - Function C puts Esther in `E`, Ben and Bob in `B`, Dan in `D` (minimal collisions).
+  - Function D distributes names uniformly based on prime weighting.
+  - Function B collides Ben, Bob, Dan (all length 3). Function A puts everyone into slot 1.
+
+**5.6. A mapping from battery size to power. The sizes are A, AA, AAA, AAAA.**
+- **Functions B and D** provide a good distribution.
+  - Function B works great here because each battery size has a distinct length (1, 2, 3, 4).
+  - Function C would be terrible because all sizes start with `A`, putting every entry into slot 0.
+
+**5.7. A mapping from book titles to authors. Titles: "Moby Dick", "The Great Gatsby", "Catch-22".**
+- **Functions C and D** provide a good distribution.
+  - Function D provides the most uniform distribution across general text.
+  - Function C works reasonably well if titles start with diverse letters.
+  - Function B can easily collide if titles have identical lengths.
+
+**Hash Table Performance & Resizing Rule:**
+- **Average Case:** $O(1)$ for Search, Insert, and Delete.
+- **Worst Case (Heavy collisions):** $O(n)$.
+- **Load Factor:** $\frac{\text{number of items}}{\text{total number of slots}}$. When load factor $> 0.7$, we should resize (double table size and re-hash items) to maintain $O(1)$ performance.
+
+---
+
+### Chapter 6: Breadth-First Search (BFS) & Graphs
+
+**6.1. Find the length of the shortest path from start to finish in this graph:**
+- `Start -> [A, B]`
+- `A -> [Finish]`
+- `B -> [A, Finish]`
+- *Answer:* The shortest path length is **2** (`Start -> A -> Finish` or `Start -> B -> Finish`).
+
+**6.2. Find the length of the shortest path from "cab" to "bat" where you can only change one letter at a time (Word Ladder):**
+- Candidate dictionary words: `cab`, `cat`, `car`, `bar`, `mat`, `bat`.
+- *Shortest path:* `cab` $\to$ `cat` $\to$ `bat` (Length = **2 transitions**).
+- *(BFS searches level-by-level, guaranteeing that the shortest 2-step path is found before exploring longer 3-step paths like `cab` $\to$ `car` $\to$ `bar` $\to$ `bat`).*
+
+**6.3. Here are three morning routines with dependency rules. Which ones are valid topological sorts?**
+- Rules: `Wake up` must precede `Brush teeth`, `Shower` must precede `Get dressed`, `Brush teeth` must precede `Eat breakfast`.
+  - **A.** `Wake up` $\to$ `Shower` $\to$ `Brush teeth` $\to$ `Eat breakfast` $\to$ `Get dressed` $\implies$ **Valid**
+  - **B.** `Shower` $\to$ `Wake up` $\to$ `Get dressed` $\to$ `Brush teeth` $\to$ `Eat breakfast` $\implies$ **Valid**
+  - **C.** `Shower` $\to$ `Get dressed` $\to$ `Brush teeth` $\to$ `Wake up` $\to$ `Eat breakfast` $\implies$ **Invalid** (`Brush teeth` cannot happen before `Wake up`).
+
+**6.4. Which graphs are trees?**
+- A tree is a connected, acyclic graph. If a graph has a cycle or disconnected components, it is not a tree. Any tree with $V$ vertices has exactly $V - 1$ edges.
+
+**6.5. BFS Implementation in TypeScript & Complexity:**
+```typescript
+function bfs(graph: Record<string, string[]>, start: string, target: string): boolean {
+  const queue: string[] = [start];
+  const visited = new Set<string>([start]);
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (current === target) return true;
+
+    for (const neighbor of graph[current] ?? []) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        queue.push(neighbor);
+      }
+    }
+  }
+  return false;
+}
+```
+- **Time Complexity:** $O(V + E)$ where $V$ is number of vertices (nodes) and $E$ is number of edges (connections).
+- **Space Complexity:** $O(V)$ for the queue and visited set.
+
+---
+
+### Chapter 7: Dijkstra's Algorithm & Weighted Graphs
+
+**7.1. In each of these graphs, what is the weight of the shortest path from start to finish?**
+
+- **Graph A:**
+  - `Start -> A (5)`, `Start -> B (2)`
+  - `B -> A (8)`, `B -> D (7)`
+  - `A -> C (4)`, `A -> D (2)`
+  - `C -> D (6)`, `C -> Finish (3)`
+  - `D -> Finish (1)`
+  - *Shortest path:* `Start -> A -> D -> Finish` with total weight $5 + 2 + 1 = \mathbf{8}$.
+
+- **Graph B:**
+  - `Start -> A (10)`
+  - `A -> B (20)`
+  - `B -> C (1)`, `B -> Finish (30)`
+  - `C -> A (1)` *(cycle with positive weight)*
+  - *Shortest path:* `Start -> A -> B -> Finish` with total weight $10 + 20 + 30 = \mathbf{60}$.
+
+- **Graph C (Negative-weight edge):**
+  - `Start -> A (2)`, `Start -> B (2)`
+  - `B -> A (2)`
+  - `A -> Finish (2)`
+  - `B -> Finish (-1)`
+  - *Shortest path:* `Start -> B -> Finish` with total weight $2 + (-1) = \mathbf{1}$.
+  - *(Warning: Dijkstra's algorithm fails when negative-weight edges exist because once a node is processed, it assumes its shortest path is finalized. To handle negative weights, use the **Bellman-Ford Algorithm**).*
+
+**7.2. Comparison: BFS vs Dijkstra's Algorithm:**
+
+| Feature | Breadth-First Search (BFS) | Dijkstra's Algorithm |
+| :--- | :--- | :--- |
+| **Graph Type** | Unweighted graphs (all edges have equal cost) | Weighted graphs |
+| **Optimality Goal** | Shortest path by *fewest segments / steps* | Shortest path by *lowest total weight* |
+| **Negative weights** | N/A | Fails with negative edge weights (use Bellman-Ford) |
+| **Data structure** | Queue (FIFO) | Priority Queue / Min-Heap |
+| **Time Complexity** | $O(V + E)$ | $O(E \log V)$ with min-heap |
+
+
