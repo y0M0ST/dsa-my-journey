@@ -137,4 +137,52 @@ function max(arr: number[]): number {
 **Hash Table Performance & Resizing Rule:**
 - **Average Case:** $O(1)$ for Search, Insert, and Delete.
 - **Worst Case (Heavy collisions):** $O(n)$.
-- **Load Factor:** $\frac{\text{number of items}}{\text{total number of slots}}$. When load factor $> 0.7$, we should resize (double table size and re-hash items) to maintain $O(1)$ performance.
+- **Load Factor:** $\frac{\text{number of items}}{\text{total number of slots}}$. When load factor $> 0.7$, we should resize (double table size and re-hash items) to maintain $O(1)$ performance.
+
+---
+
+### Chapter 6: Breadth-First Search (BFS) & Graphs
+
+**6.1. Find the length of the shortest path from start to finish in this graph:**
+- `Start -> [A, B]`
+- `A -> [Finish]`
+- `B -> [A, Finish]`
+- *Answer:* The shortest path length is **2** (`Start -> A -> Finish` or `Start -> B -> Finish`).
+
+**6.2. Find the length of the shortest path from "cab" to "bat" where you can only change one letter at a time (Word Ladder):**
+- Candidate dictionary words: `cab`, `cat`, `car`, `bar`, `mat`, `bat`.
+- *Shortest path:* `cab` $\to$ `cat` $\to$ `bat` (Length = **2 transitions**).
+- *(BFS searches level-by-level, guaranteeing that the shortest 2-step path is found before exploring longer 3-step paths like `cab` $\to$ `car` $\to$ `bar` $\to$ `bat`).*
+
+**6.3. Here are three morning routines with dependency rules. Which ones are valid topological sorts?**
+- Rules: `Wake up` must precede `Brush teeth`, `Shower` must precede `Get dressed`, `Brush teeth` must precede `Eat breakfast`.
+  - **A.** `Wake up` $\to$ `Shower` $\to$ `Brush teeth` $\to$ `Eat breakfast` $\to$ `Get dressed` $\implies$ **Valid**
+  - **B.** `Shower` $\to$ `Wake up` $\to$ `Get dressed` $\to$ `Brush teeth` $\to$ `Eat breakfast` $\implies$ **Valid**
+  - **C.** `Shower` $\to$ `Get dressed` $\to$ `Brush teeth` $\to$ `Wake up` $\to$ `Eat breakfast` $\implies$ **Invalid** (`Brush teeth` cannot happen before `Wake up`).
+
+**6.4. Which graphs are trees?**
+- A tree is a connected, acyclic graph. If a graph has a cycle or disconnected components, it is not a tree. Any tree with $V$ vertices has exactly $V - 1$ edges.
+
+**6.5. BFS Implementation in TypeScript & Complexity:**
+```typescript
+function bfs(graph: Record<string, string[]>, start: string, target: string): boolean {
+  const queue: string[] = [start];
+  const visited = new Set<string>([start]);
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (current === target) return true;
+
+    for (const neighbor of graph[current] ?? []) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        queue.push(neighbor);
+      }
+    }
+  }
+  return false;
+}
+```
+- **Time Complexity:** $O(V + E)$ where $V$ is number of vertices (nodes) and $E$ is number of edges (connections).
+- **Space Complexity:** $O(V)$ for the queue and visited set.
+
