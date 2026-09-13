@@ -310,6 +310,38 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 **9.4. Levenshtein Distance:**
 - A string metric used in spell-checkers and DNA sequencing to measure the minimum number of single-character edits (insertions, deletions, or substitutions) required to transform one word into another.
 
+---
+
+### Chapter 10: K-Nearest Neighbors (KNN)
+
+**10.1. Calculating Similarity with Distance Metrics:**
+- **Euclidean Distance (Pythagorean Theorem in $N$ dimensions):**
+  $$\text{Distance} = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2 + \dots + (z_1 - z_2)^2}$$
+- **Cosine Similarity:** Measures the cosine of the angle between two vectors instead of direct Euclidean distance. Ideal when user rating habits differ (e.g. a harsh critic rating 3/5 vs an enthusiastic user rating 5/5 for the same enjoyment).
+
+**10.2. Classification vs. Regression:**
+- **Classification:** Predicting a **category/class** (Discrete label).
+  - *Mechanism:* Take the **majority vote** among the $K$ nearest neighbors.
+  - *Examples:* Is this email spam or not? Is this fruit an orange or grapefruit?
+- **Regression:** Predicting a **numerical value** (Continuous number).
+  - *Mechanism:* Take the **average (or distance-weighted average)** of the values of the $K$ nearest neighbors.
+  - *Examples:* How many loaves of bread will the bakery sell tomorrow? How many stars (1–5) will user A give to this movie?
+
+**10.3. Feature Extraction & Normalization:**
+- **Feature Selection:** Choosing features that directly correlate to the target prediction without introducing noise or bias.
+- **Normalization:** If features have vastly different scales (e.g. age: $18 - 80$ vs ratings: $1 - 5$), the feature with larger numbers will disproportionately dominate Euclidean distance. All features must be normalized (e.g. scaled to a $[0, 1]$ range).
+
+**10.4. How to choose $K$:**
+- **Too small $K$ (e.g., $K = 1$):** High variance, extremely sensitive to outliers and noisy data (overfitting).
+- **Too large $K$ (e.g., $K = N$):** High bias, dilutes local patterns and predicts the global majority everywhere (underfitting).
+- *Rule of thumb:* Typically $K = \sqrt{N}$ and preferably an **odd number** to avoid tie votes in binary classification.
+
+**10.5. Real-World Applications of KNN:**
+- **Recommendation Engines:** Netflix movie recommendations, Spotify playlist suggestions.
+- **OCR (Optical Character Recognition):** Classifying handwritten digits (e.g. MNIST) by treating pixel intensities as high-dimensional coordinates.
+- **Spam Filtering:** Classifying incoming emails based on word-frequency vectors.
+
+
 
 
 
