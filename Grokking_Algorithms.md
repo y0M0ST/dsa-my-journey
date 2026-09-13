@@ -266,5 +266,50 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 - Can't be broken down into smaller sub-problems (unlike Dynamic Programming or D&C).
 - If the problem involves a sequence (like traveling salesperson) or a set of objects (like knapsack/set cover) and is hard to solve.
 
+---
+
+### Chapter 9: Dynamic Programming (DP)
+
+**Dynamic Programming Core Concept:**
+- DP solves problems by breaking them down into **subproblems** and solving subproblems first.
+- DP only works when subproblems are **discrete and independent** (they don't depend on each other or external state).
+- Every DP solution involves a **grid / table**:
+  - The values in the cells are usually what you want to optimize.
+  - Each cell represents a subproblem.
+
+**9.1. Suppose you can steal another item: an MP3 player. It weighs 1 lb and is worth \$1,000. How does the knapsack grid update? Should you steal it?**
+- *Answer:* Yes. Recalculating the DP grid with the 1 lb / \$1,000 MP3 player shows that it pairs with the laptop (3 lbs, \$2,000) for a 4 lb knapsack, raising the maximum total stolen value from \$3,000 (stereo + guitar) to **\$3,000 -> \$3,500** or higher depending on available items.
+- *Knapsack recurrence formula:*
+  $$\text{cell}[i][j] = \max(\text{cell}[i-1][j], \text{item\_value} + \text{cell}[i-1][j - \text{item\_weight}])$$
+
+**9.2. Suppose you're going camping with a knapsack capacity of 6 lbs. Available items:**
+- Water: 3 lbs, value 10
+- Book: 1 lb, value 3
+- Food: 2 lbs, value 9
+- Jacket: 2 lbs, value 5
+- Camera: 1 lb, value 6
+
+*What is the optimal set of items to take?*
+- By filling out the DP table for weights 1 to 6 lbs:
+  - Weight 1: Camera (value 6)
+  - Weight 2: Food (value 9)
+  - Weight 3: Water (value 10) or Food + Camera (value 9 + 6 = 15)
+  - Weight 5: Water (3 lbs, 10) + Food (2 lbs, 9) = 19
+  - Weight 6: **Water (3 lbs, 10) + Food (2 lbs, 9) + Camera (1 lb, 6) = 6 lbs with maximum value $\mathbf{25}$**.
+
+**9.3. Longest Common Substring vs. Longest Common Subsequence:**
+
+- **Longest Common Substring:** Measures consecutive matching characters between two strings (e.g., `fish` and `hish` $\to$ `ish` with length 3).
+  - *Cell formula:*
+    $$\text{cell}[i][j] = \begin{cases} \text{cell}[i-1][j-1] + 1 & \text{if } s_1[i] == s_2[j] \\ 0 & \text{otherwise} \end{cases}$$
+
+- **Longest Common Subsequence (LCS):** Measures characters that appear in the same relative order, but not necessarily consecutively (e.g., `fosh` and `fish` $\to$ `fsh` with length 3).
+  - *Cell formula:*
+    $$\text{cell}[i][j] = \begin{cases} \text{cell}[i-1][j-1] + 1 & \text{if } s_1[i] == s_2[j] \\ \max(\text{cell}[i-1][j], \text{cell}[i][j-1]) & \text{otherwise} \end{cases}$$
+
+**9.4. Levenshtein Distance:**
+- A string metric used in spell-checkers and DNA sequencing to measure the minimum number of single-character edits (insertions, deletions, or substitutions) required to transform one word into another.
+
+
 
 
