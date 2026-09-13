@@ -225,4 +225,46 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 | **Data structure** | Queue (FIFO) | Priority Queue / Min-Heap |
 | **Time Complexity** | $O(V + E)$ | $O(E \log V)$ with min-heap |
 
+---
+
+### Chapter 8: Greedy Algorithms & NP-Complete Problems
+
+**8.1. You work for a furniture company, and you have to ship boxes all over the country. You need to pack your truck with boxes. All the boxes are of different sizes, and you’re trying to maximize the space you use in the truck. How would you pick boxes to maximize space? Is this a greedy strategy?**
+- *Greedy strategy:* At each step, pick the largest remaining box that still fits into the truck until no more boxes fit.
+- *Is it optimal?* No. Similar to the Knapsack Problem, a greedy approach does not guarantee the globally optimal packing (a combination of smaller boxes might utilize remaining empty space much better than a single bulky box).
+
+**8.2. You’re going to Europe, and you have seven days to see everything you can. You have a list of sights with a rating (value) and time needed (cost). How can you see the best sights in the given time? Is this a greedy strategy?**
+- *Greedy strategy:* Always pick the sight with the highest rating (or best rating-to-time ratio) that fits into your remaining schedule.
+- *Is it optimal?* No, this is another variation of the Knapsack Problem. Greedy choices can leave awkward chunks of unused time that could have accommodated multiple high-value sights.
+
+**8.3. For each of these algorithms, is it a greedy algorithm or not?**
+- **Quicksort:** *Not greedy.* It uses Divide-and-Conquer (partitions the array around a pivot and recursively sorts sub-arrays).
+- **Breadth-First Search (BFS):** *Not greedy.* It systematically explores all nodes level by level to guarantee the shortest unweighted path, rather than making locally greedy choices.
+- **Dijkstra's Algorithm:** *Greedy.* At each step, it greedily selects the unvisited node with the lowest known distance from the source.
+
+**8.4. A postman needs to deliver mail to 20 houses. He needs to find the shortest route that visits all 20 houses and returns home. Is this an NP-complete problem?**
+- *Yes.* This is the classic **Traveling Salesperson Problem (TSP)**, which is NP-complete ($O(n!)$ brute force).
+
+**8.5. Finding the largest clique in a group of people (a clique is a group where everyone knows each other). Is this NP-complete?**
+- *Yes.* The **Max-Clique Problem** is a well-known NP-complete problem.
+
+**8.6. You're making a map of the USA and need to color adjacent states with different colors. What's the minimum number of colors needed? Is this NP-complete?**
+- *Yes.* The **Graph Coloring Problem** (finding the chromatic number) is NP-complete.
+
+**8.7. The Set-Covering Problem & Greedy Approximation Algorithm:**
+- *Problem:* You want to broadcast a radio show across 50 US states. You have a list of radio stations, each covering a subset of states. Find the minimum set of stations to cover all 50 states.
+- *Exact solution:* Check every possible subset of stations $\implies O(2^n)$ (intractable for large $n$).
+- *Greedy Approximation:*
+  1. Pick the station that covers the most uncovered states.
+  2. Add it to the solution and remove those states from the needed set.
+  3. Repeat until all states are covered.
+- *Performance:* Runs in $O(n^2)$ time and produces an approximation close to optimal ($O(\log n)$ approximation factor).
+
+**8.8. How to identify NP-Complete problems:**
+- Your algorithm runs quickly with a few items, but grinds to a halt as $n$ grows.
+- "Find all combinations of X" or "Find every possible route through X" usually means NP-complete.
+- Can't be broken down into smaller sub-problems (unlike Dynamic Programming or D&C).
+- If the problem involves a sequence (like traveling salesperson) or a set of objects (like knapsack/set cover) and is hard to solve.
+
+
 
