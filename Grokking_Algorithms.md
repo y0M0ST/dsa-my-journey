@@ -225,4 +225,123 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 | **Data structure** | Queue (FIFO) | Priority Queue / Min-Heap |
 | **Time Complexity** | $O(V + E)$ | $O(E \log V)$ with min-heap |
 
+---
+
+### Chapter 8: Greedy Algorithms & NP-Complete Problems
+
+**8.1. You work for a furniture company, and you have to ship boxes all over the country. You need to pack your truck with boxes. All the boxes are of different sizes, and you’re trying to maximize the space you use in the truck. How would you pick boxes to maximize space? Is this a greedy strategy?**
+- *Greedy strategy:* At each step, pick the largest remaining box that still fits into the truck until no more boxes fit.
+- *Is it optimal?* No. Similar to the Knapsack Problem, a greedy approach does not guarantee the globally optimal packing (a combination of smaller boxes might utilize remaining empty space much better than a single bulky box).
+
+**8.2. You’re going to Europe, and you have seven days to see everything you can. You have a list of sights with a rating (value) and time needed (cost). How can you see the best sights in the given time? Is this a greedy strategy?**
+- *Greedy strategy:* Always pick the sight with the highest rating (or best rating-to-time ratio) that fits into your remaining schedule.
+- *Is it optimal?* No, this is another variation of the Knapsack Problem. Greedy choices can leave awkward chunks of unused time that could have accommodated multiple high-value sights.
+
+**8.3. For each of these algorithms, is it a greedy algorithm or not?**
+- **Quicksort:** *Not greedy.* It uses Divide-and-Conquer (partitions the array around a pivot and recursively sorts sub-arrays).
+- **Breadth-First Search (BFS):** *Not greedy.* It systematically explores all nodes level by level to guarantee the shortest unweighted path, rather than making locally greedy choices.
+- **Dijkstra's Algorithm:** *Greedy.* At each step, it greedily selects the unvisited node with the lowest known distance from the source.
+
+**8.4. A postman needs to deliver mail to 20 houses. He needs to find the shortest route that visits all 20 houses and returns home. Is this an NP-complete problem?**
+- *Yes.* This is the classic **Traveling Salesperson Problem (TSP)**, which is NP-complete ($O(n!)$ brute force).
+
+**8.5. Finding the largest clique in a group of people (a clique is a group where everyone knows each other). Is this NP-complete?**
+- *Yes.* The **Max-Clique Problem** is a well-known NP-complete problem.
+
+**8.6. You're making a map of the USA and need to color adjacent states with different colors. What's the minimum number of colors needed? Is this NP-complete?**
+- *Yes.* The **Graph Coloring Problem** (finding the chromatic number) is NP-complete.
+
+**8.7. The Set-Covering Problem & Greedy Approximation Algorithm:**
+- *Problem:* You want to broadcast a radio show across 50 US states. You have a list of radio stations, each covering a subset of states. Find the minimum set of stations to cover all 50 states.
+- *Exact solution:* Check every possible subset of stations $\implies O(2^n)$ (intractable for large $n$).
+- *Greedy Approximation:*
+  1. Pick the station that covers the most uncovered states.
+  2. Add it to the solution and remove those states from the needed set.
+  3. Repeat until all states are covered.
+- *Performance:* Runs in $O(n^2)$ time and produces an approximation close to optimal ($O(\log n)$ approximation factor).
+
+**8.8. How to identify NP-Complete problems:**
+- Your algorithm runs quickly with a few items, but grinds to a halt as $n$ grows.
+- "Find all combinations of X" or "Find every possible route through X" usually means NP-complete.
+- Can't be broken down into smaller sub-problems (unlike Dynamic Programming or D&C).
+- If the problem involves a sequence (like traveling salesperson) or a set of objects (like knapsack/set cover) and is hard to solve.
+
+---
+
+### Chapter 9: Dynamic Programming (DP)
+
+**Dynamic Programming Core Concept:**
+- DP solves problems by breaking them down into **subproblems** and solving subproblems first.
+- DP only works when subproblems are **discrete and independent** (they don't depend on each other or external state).
+- Every DP solution involves a **grid / table**:
+  - The values in the cells are usually what you want to optimize.
+  - Each cell represents a subproblem.
+
+**9.1. Suppose you can steal another item: an MP3 player. It weighs 1 lb and is worth \$1,000. How does the knapsack grid update? Should you steal it?**
+- *Answer:* Yes. Recalculating the DP grid with the 1 lb / \$1,000 MP3 player shows that it pairs with the laptop (3 lbs, \$2,000) for a 4 lb knapsack, raising the maximum total stolen value from \$3,000 (stereo + guitar) to **\$3,000 -> \$3,500** or higher depending on available items.
+- *Knapsack recurrence formula:*
+  $$\text{cell}[i][j] = \max(\text{cell}[i-1][j], \text{item\_value} + \text{cell}[i-1][j - \text{item\_weight}])$$
+
+**9.2. Suppose you're going camping with a knapsack capacity of 6 lbs. Available items:**
+- Water: 3 lbs, value 10
+- Book: 1 lb, value 3
+- Food: 2 lbs, value 9
+- Jacket: 2 lbs, value 5
+- Camera: 1 lb, value 6
+
+*What is the optimal set of items to take?*
+- By filling out the DP table for weights 1 to 6 lbs:
+  - Weight 1: Camera (value 6)
+  - Weight 2: Food (value 9)
+  - Weight 3: Water (value 10) or Food + Camera (value 9 + 6 = 15)
+  - Weight 5: Water (3 lbs, 10) + Food (2 lbs, 9) = 19
+  - Weight 6: **Water (3 lbs, 10) + Food (2 lbs, 9) + Camera (1 lb, 6) = 6 lbs with maximum value $\mathbf{25}$**.
+
+**9.3. Longest Common Substring vs. Longest Common Subsequence:**
+
+- **Longest Common Substring:** Measures consecutive matching characters between two strings (e.g., `fish` and `hish` $\to$ `ish` with length 3).
+  - *Cell formula:*
+    $$\text{cell}[i][j] = \begin{cases} \text{cell}[i-1][j-1] + 1 & \text{if } s_1[i] == s_2[j] \\ 0 & \text{otherwise} \end{cases}$$
+
+- **Longest Common Subsequence (LCS):** Measures characters that appear in the same relative order, but not necessarily consecutively (e.g., `fosh` and `fish` $\to$ `fsh` with length 3).
+  - *Cell formula:*
+    $$\text{cell}[i][j] = \begin{cases} \text{cell}[i-1][j-1] + 1 & \text{if } s_1[i] == s_2[j] \\ \max(\text{cell}[i-1][j], \text{cell}[i][j-1]) & \text{otherwise} \end{cases}$$
+
+**9.4. Levenshtein Distance:**
+- A string metric used in spell-checkers and DNA sequencing to measure the minimum number of single-character edits (insertions, deletions, or substitutions) required to transform one word into another.
+
+---
+
+### Chapter 10: K-Nearest Neighbors (KNN)
+
+**10.1. Calculating Similarity with Distance Metrics:**
+- **Euclidean Distance (Pythagorean Theorem in $N$ dimensions):**
+  $$\text{Distance} = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2 + \dots + (z_1 - z_2)^2}$$
+- **Cosine Similarity:** Measures the cosine of the angle between two vectors instead of direct Euclidean distance. Ideal when user rating habits differ (e.g. a harsh critic rating 3/5 vs an enthusiastic user rating 5/5 for the same enjoyment).
+
+**10.2. Classification vs. Regression:**
+- **Classification:** Predicting a **category/class** (Discrete label).
+  - *Mechanism:* Take the **majority vote** among the $K$ nearest neighbors.
+  - *Examples:* Is this email spam or not? Is this fruit an orange or grapefruit?
+- **Regression:** Predicting a **numerical value** (Continuous number).
+  - *Mechanism:* Take the **average (or distance-weighted average)** of the values of the $K$ nearest neighbors.
+  - *Examples:* How many loaves of bread will the bakery sell tomorrow? How many stars (1–5) will user A give to this movie?
+
+**10.3. Feature Extraction & Normalization:**
+- **Feature Selection:** Choosing features that directly correlate to the target prediction without introducing noise or bias.
+- **Normalization:** If features have vastly different scales (e.g. age: $18 - 80$ vs ratings: $1 - 5$), the feature with larger numbers will disproportionately dominate Euclidean distance. All features must be normalized (e.g. scaled to a $[0, 1]$ range).
+
+**10.4. How to choose $K$:**
+- **Too small $K$ (e.g., $K = 1$):** High variance, extremely sensitive to outliers and noisy data (overfitting).
+- **Too large $K$ (e.g., $K = N$):** High bias, dilutes local patterns and predicts the global majority everywhere (underfitting).
+- *Rule of thumb:* Typically $K = \sqrt{N}$ and preferably an **odd number** to avoid tie votes in binary classification.
+
+**10.5. Real-World Applications of KNN:**
+- **Recommendation Engines:** Netflix movie recommendations, Spotify playlist suggestions.
+- **OCR (Optical Character Recognition):** Classifying handwritten digits (e.g. MNIST) by treating pixel intensities as high-dimensional coordinates.
+- **Spam Filtering:** Classifying incoming emails based on word-frequency vectors.
+
+
+
+
 

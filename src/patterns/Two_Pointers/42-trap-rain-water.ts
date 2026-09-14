@@ -34,3 +34,49 @@ export function trapRainWater(height: number[]): number {
   return total;
 }
 
+// LC42 — TRAPPING RAIN WATER
+
+// Water at i:
+// min(maxLeft, maxRight) - height[i]
+
+// Goal:
+// O(N²) → O(N)
+// O(N)  → O(1) space
+
+// Variables:
+// left
+// right
+// leftMax
+// rightMax
+// water
+
+// Start:
+// left = 0
+// right = n - 1
+
+// Loop:
+// while (left < right)
+
+//   If:
+//   leftMax <= rightMax
+//     ↓
+// process left
+//     ↓
+// leftMax = max(leftMax, height[left])
+// water += leftMax - height[left]
+// left++
+
+// Else:
+// process right
+//     ↓
+// rightMax = max(rightMax, height[right])
+// water += rightMax - height[right]
+// right--
+
+// Key invariant:
+// leftMax = max seen from left
+// rightMax = max seen from right
+
+// Core idea:
+// smaller boundary determines water level
+
