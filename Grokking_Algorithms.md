@@ -412,4 +412,48 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
     $$x + 2y \le 20, \quad 2x + y \le 18, \quad x \ge 0, \quad y \ge 0$$
 - **The Simplex Algorithm:** Traverses the vertices (corner points) of the feasible convex polygon/polytope to find the optimal global maximum or minimum.
 - *Real-World Applications:* Supply chain logistics, airline crew scheduling, factory resource allocation.
-
+
+---
+
+### Summary: Algorithm Complexity & Selection Matrix
+
+#### 1. Complete Big-O Complexity Comparison
+
+| Algorithm / Technique | Book Chapter | Paradigm | Average Time | Worst Time | Space Complexity | Best For |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Binary Search** | Ch. 1 | Divide & Conquer | $O(\log n)$ | $O(\log n)$ | $O(1)$ | Sorted arrays lookup |
+| **Selection Sort** | Ch. 2 | Brute Force | $O(n^2)$ | $O(n^2)$ | $O(1)$ | Tiny arrays, minimal writes |
+| **Quicksort** | Ch. 4 | Divide & Conquer | $O(n \log n)$ | $O(n^2)$ | $O(\log n)$ | General in-place sorting |
+| **Hash Table Lookup** | Ch. 5 | Hashing | $O(1)$ | $O(n)$ | $O(n)$ | Key-value caching, fast lookup |
+| **Breadth-First Search** | Ch. 6 | Graph Traversal | $O(V + E)$ | $O(V + E)$ | $O(V)$ | Shortest path in unweighted graphs |
+| **Dijkstra's Algorithm** | Ch. 7 | Greedy | $O((V + E) \log V)$ | $O(V^2)$ | $O(V)$ | Shortest path with non-negative weights |
+| **Greedy Set-Covering** | Ch. 8 | Greedy Approx. | $O(n^2)$ | $O(n^2)$ | $O(n)$ | NP-complete optimization approx. |
+| **Knapsack Problem (0/1)**| Ch. 9 | Dynamic Prog. | $O(n \times W)$ | $O(n \times W)$ | $O(n \times W)$ | Discrete resource optimization |
+| **Longest Common Substr** | Ch. 9 | Dynamic Prog. | $O(m \times n)$ | $O(m \times n)$ | $O(m \times n)$ | String alignment / similarity |
+| **K-Nearest Neighbors** | Ch. 10 | Instance-based | $O(n \times d)$ | $O(n \times d)$ | $O(n \times d)$ | Classification / regression |
+| **Binary Search Tree** | Ch. 11 | Hierarchical | $O(\log n)$ | $O(n)$ | $O(n)$ | Dynamic sorted data |
+
+---
+
+#### 2. Algorithm Decision Flowchart
+
+When solving a problem, use this decision framework:
+
+1. **Are you searching in a linear collection?**
+   - Sorted array $\implies$ **Binary Search** ($O(\log n)$).
+   - Unsorted $\implies$ **Hash Table** for $O(1)$ lookup or sort first ($O(n \log n)$).
+
+2. **Are you finding the shortest path on a graph/network?**
+   - Unweighted edges (fewest steps) $\implies$ **Breadth-First Search (BFS)**.
+   - Weighted edges (positive weights) $\implies$ **Dijkstra's Algorithm**.
+   - Weighted edges (contains negative weights) $\implies$ **Bellman-Ford Algorithm**.
+
+3. **Are you optimizing under constraints?**
+   - Can you break down into discrete, independent subproblems with overlapping solutions? $\implies$ **Dynamic Programming (DP)**.
+   - Is it an NP-Complete problem (TSP, Set Cover) requiring a fast, near-optimal answer? $\implies$ **Greedy Approximation**.
+   - Are both objective and constraints strictly linear? $\implies$ **Linear Programming (Simplex)**.
+
+4. **Are you measuring similarity / recommendations?**
+   - Low-dimensional feature points $\implies$ **KNN with Euclidean Distance**.
+   - High-dimensional / angle-focused (ratings, text) $\implies$ **Cosine Similarity**.
+   - Near-duplicate detection across millions of documents $\implies$ **Locality-Sensitive Hashing (Simhash)**.
