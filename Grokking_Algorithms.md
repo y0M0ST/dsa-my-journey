@@ -341,7 +341,75 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 - **OCR (Optical Character Recognition):** Classifying handwritten digits (e.g. MNIST) by treating pixel intensities as high-dimensional coordinates.
 - **Spam Filtering:** Classifying incoming emails based on word-frequency vectors.
 
+---
 
+### Chapter 11: Where to Go Next? (Advanced Topics & Data Structures)
 
+**11.1. Binary Search Trees (BST) & Balanced Trees**
+- **Binary Search Tree (BST):** A tree where every node has at most two children. For any node $N$, all values in its left subtree are $< N$, and all values in its right subtree are $> N$.
+  - *Time Complexity:* Average $O(\log n)$ for Search, Insert, and Delete. Worst case $O(n)$ if the tree becomes completely unbalanced (skewed like a linked list).
+- **Balanced Trees (AVL Trees, Red-Black Trees):** Self-balancing binary search trees that automatically perform rotations during insertion/deletion to keep height balanced at $O(\log n)$, guaranteeing $O(\log n)$ worst-case time complexity.
+- **B-Trees:** Multi-way balanced search trees where nodes can store multiple keys and have dozens or hundreds of children.
+  - *Use Case:* Primary indexing structure in relational databases (PostgreSQL, MySQL InnoDB) and file systems (NTFS, ext4). B-trees minimize expensive disk I/O reads by grouping keys to match physical disk page sizes.
 
+**11.2. Inverted Indexes (Full-Text Search Engines)**
+- **Concept:** Instead of mapping a document to the words it contains (`Doc -> [Words]`), an inverted index maps each unique word to the list of documents where it appears (`Word -> [Doc IDs]`).
+  - *Example:*
+    ```text
+    "algorithm" -> [Doc 1, Doc 4, Doc 7]
+    "binary"    -> [Doc 2, Doc 4, Doc 9]
+    ```
+- **Search Execution:** Searching for `"algorithm AND binary"` takes the intersection of the two sorted document lists in $O(\min(|A|, |B|))$ time.
+- *Real-World:* Powers search engines like Google, Elasticsearch, and Apache Lucene.
+
+**11.3. The Fourier Transform**
+- **Concept:** A mathematical transform that decomposes a complex signal (like an audio wave) into its individual constituent pure frequencies (sine and cosine waves).
+- **Analogy:** Given a smoothie, the Fourier transform tells you the exact proportions of strawberries, bananas, and milk that made it up.
+- *Real-World Applications:*
+  - **Audio Compression (MP3):** Identifies frequencies humans cannot hear and filters them out.
+  - **Image Processing (JPEG):** Uses the Discrete Cosine Transform (DCT) to compress high-frequency visual noise.
+  - **Music Recognition (Shazam):** Generates audio fingerprints from key peak frequencies.
+
+**11.4. Parallel Algorithms & Distributed Computing (MapReduce)**
+- **Limits of Single-Core CPUs:** CPU clock speeds have plateaued; performance gains now come from multi-core processors and distributed server clusters.
+- **Challenges of Parallelization:**
+  - *Overhead:* Thread creation, context switching, and inter-thread synchronization costs.
+  - *Race Conditions & Deadlocks:* Multiple threads reading/writing shared memory concurrently without proper locking.
+  - *Load Balancing:* Difficult to ensure all cores finish at the exact same time (Amdahl's Law).
+- **MapReduce Model:** A distributed computing framework for processing massive datasets across hundreds or thousands of commodity machines:
+  - **Map:** Distribute the input dataset across worker nodes to process data locally and emit `(key, value)` pairs.
+  - **Shuffle & Sort:** Group all values by key across the cluster network.
+  - **Reduce:** Aggregate and combine the grouped values for each key into final results.
+  - *Real-World:* Apache Hadoop, Apache Spark, Google BigQuery.
+
+**11.5. Probabilistic Data Structures: Bloom Filters & HyperLogLog**
+- **Bloom Filters:** A space-efficient probabilistic data structure used to test whether an element is a member of a set:
+  - *Mechanism:* Uses a bit array of size $m$ and $k$ independent hash functions. When adding an item, hash it $k$ times and set those bit indices to `1`. When querying, check if all $k$ bits are `1`.
+  - **Core Guarantee:**
+    - *No False Negatives:* If it returns "Item is NOT present", the item is **100% guaranteed** not in the set.
+    - *Possible False Positives:* If it returns "Item IS present", the item **might** be in the set (bits could have been set by other elements).
+  - *Use Cases:* Web crawlers (avoid re-crawling URLs), Google Chrome (checking malicious URLs locally before querying server), Apache Cassandra/Google Bigtable (avoiding costly disk reads for non-existent row keys).
+- **HyperLogLog (HLL):** Estimates the number of unique elements (cardinality) in massive streams with negligible memory:
+  - *Use Case:* Counting billions of distinct daily visitors to a website using only $\approx 1.5\text{ KB}$ of memory with an error rate of under $1\%$.
+
+**11.6. Locality-Sensitive Hashing (LSH) & Simhash**
+- **Cryptographic Hashes (e.g. SHA-256):** Feature the **Avalanche Effect** — changing a single bit in the input produces a completely different, unpredictable hash.
+- **Locality-Sensitive Hashing (Simhash):** Designed with the opposite objective — similar inputs produce similar hash values.
+  - *Mechanism:* Compares the Hamming distance (number of differing bits) between hashes. A small Hamming distance implies high document similarity.
+  - *Use Cases:* Detecting near-duplicate web pages at Google scale, detecting plagiarism, copyright fingerprinting on streaming platforms.
+
+**11.7. Cryptography: Diffie-Hellman Key Exchange & RSA**
+- **Symmetric vs. Asymmetric Cryptography:**
+  - *Symmetric (e.g. AES):* Same secret key encrypts and decrypts (fast, but requires a secure channel to share the secret).
+  - *Asymmetric (Public/Private Key):* Public key encrypts, private key decrypts.
+- **Diffie-Hellman Key Exchange:** Allows two parties (Alice and Bob) who have never met to negotiate a shared secret key over an insecure, public channel without an eavesdropper being able to calculate it.
+  - *Mathematical Foundation:* Based on the difficulty of the **Discrete Logarithm Problem** ($g^a \pmod p$).
+- **RSA Encryption:** Asymmetric cryptosystem based on the asymmetry of prime factorization: multiplying two massive prime numbers is trivial ($O(1)$), but factoring their large product back into its prime factors is computationally infeasible without the private key.
+
+**11.8. Linear Programming & The Simplex Algorithm**
+- **Concept:** A technique for optimizing a linear objective function subject to linear equality and inequality constraints.
+  - *Example Problem:* Maximize profit $P = 3x + 5y$ subject to:
+    $$x + 2y \le 20, \quad 2x + y \le 18, \quad x \ge 0, \quad y \ge 0$$
+- **The Simplex Algorithm:** Traverses the vertices (corner points) of the feasible convex polygon/polytope to find the optimal global maximum or minimum.
+- *Real-World Applications:* Supply chain logistics, airline crew scheduling, factory resource allocation.
 
