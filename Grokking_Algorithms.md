@@ -457,3 +457,36 @@ When solving a problem, use this decision framework:
    - Low-dimensional feature points $\implies$ **KNN with Euclidean Distance**.
    - High-dimensional / angle-focused (ratings, text) $\implies$ **Cosine Similarity**.
    - Near-duplicate detection across millions of documents $\implies$ **Locality-Sensitive Hashing (Simhash)**.
+---
+
+### Practical LeetCode Mapping & TypeScript DSA Journey
+
+Mapping concepts from *Grokking Algorithms* directly to the active patterns in this repository (`dsa-ts-journey`):
+
+#### 1. Repository Pattern Mapping
+
+| Book Topic | Corresponding Repo Pattern | Key LeetCode Practice Problems |
+| :--- | :--- | :--- |
+| **Ch. 1: Binary Search** | `src/patterns/Binary_Search/` | [LC 704: Binary Search](https://leetcode.com/problems/binary-search/)<br>[LC 33: Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/)<br>[LC 153: Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) |
+| **Ch. 2: Arrays & Lists** | `src/data_structures/linked_list/`<br>`src/patterns/Linked_List/` | [LC 206: Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/)<br>[LC 21: Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/)<br>[LC 141: Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) |
+| **Ch. 4: Two Pointers / D&C**| `src/patterns/Two_Pointers/`<br>`src/patterns/Sliding_Window/` | [LC 11: Container With Most Water](https://leetcode.com/problems/container-with-most-water/)<br>[LC 15: 3Sum](https://leetcode.com/problems/3sum/)<br>[LC 42: Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)<br>[LC 121: Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) |
+| **Ch. 5: Hash Tables** | `src/patterns/Hash_Map/` | [LC 1: Two Sum](https://leetcode.com/problems/two-sum/)<br>[LC 242: Valid Anagram](https://leetcode.com/problems/valid-anagram/)<br>[LC 49: Group Anagrams](https://leetcode.com/problems/group-anagrams/) |
+| **Ch. 6: BFS & Graphs** | `src/patterns/Graph_BFS/` *(Recommended)* | [LC 102: Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)<br>[LC 200: Number of Islands](https://leetcode.com/problems/number-of-islands/)<br>[LC 127: Word Ladder](https://leetcode.com/problems/word-ladder/) |
+| **Ch. 7: Dijkstra** | `src/patterns/Dijkstra/` *(Recommended)* | [LC 743: Network Delay Time](https://leetcode.com/problems/network-delay-time/)<br>[LC 787: Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/) |
+| **Ch. 8: Greedy** | `src/patterns/Greedy/` *(Recommended)* | [LC 55: Jump Game](https://leetcode.com/problems/jump-game/)<br>[LC 45: Jump Game II](https://leetcode.com/problems/jump-game-ii/)<br>[LC 435: Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) |
+| **Ch. 9: Dynamic Prog.** | `src/patterns/Dynamic_Programming/` *(Recommended)* | [LC 70: Climbing Stairs](https://leetcode.com/problems/climbing-stairs/)<br>[LC 322: Coin Change](https://leetcode.com/problems/coin-change/)<br>[LC 1143: Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) |
+
+---
+
+#### 2. Critical TypeScript/JavaScript Gotchas in DSA
+
+1. **`Array.prototype.shift()` is $O(n)$:**
+   - In JavaScript, `queue.shift()` shifts all subsequent elements in memory, turning BFS from $O(V + E)$ into $O(V^2 + E)$.
+   - *Fix:* Use an index pointer `head` or implement a circular buffer / linked-list queue for true $O(1)$ dequeues.
+
+2. **Number Precision:**
+   - JS numbers are IEEE 754 64-bit floats. Safe integers are bounded by `Number.MAX_SAFE_INTEGER` ($2^{53} - 1$).
+   - For 64-bit integer overflow problems (e.g. large factorials, modulo arithmetic), use `BigInt`.
+
+3. **Map vs. Object `{}`:**
+   - Always prefer `new Map()` for hash maps in DSA because it avoids prototype key collisions, maintains insertion order, supports non-string keys, and provides clean `.has()`, `.get()`, `.set()`, `.delete()` methods in $O(1)$.
