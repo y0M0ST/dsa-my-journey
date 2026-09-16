@@ -5,33 +5,26 @@
  * Space Complexity: O(1)
  */
 export function trapRainWater(height: number[]): number {
-  if (!height || height.length < 3) return 0;
-
+  if (!height || height.length === 0) {
+    return 0;
+  }
   let left = 0;
   let right = height.length - 1;
-  let leftMax = 0;
-  let rightMax = 0;
-  let total = 0;
-
+  let leftMax = height[left];
+  let rightMax = height[right];
+  let totalWater = 0;
   while (left < right) {
-    if (height[left] < height[right]) {
-      if (height[left] >= leftMax) {
-        leftMax = height[left];
-      } else {
-        total += leftMax - height[left];
-      }
+    if (leftMax < rightMax) {
       left++;
+      leftMax = Math.max(leftMax, height[left]);
+      totalWater += leftMax - height[left];
     } else {
-      if (height[right] >= rightMax) {
-        rightMax = height[right];
-      } else {
-        total += rightMax - height[right];
-      }
       right--;
+      rightMax = Math.max(rightMax, height[right]);
+      totalWater += rightMax - height[right];
     }
   }
-
-  return total;
+  return totalWater;
 }
 
 // LC42 — TRAPPING RAIN WATER
