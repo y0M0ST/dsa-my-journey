@@ -1,5 +1,23 @@
 # Grokking Algorithms: Study Notes, Exercises & TypeScript Implementations
 
+## Table of Contents
+- [Chapter 1: Introduction to Algorithms & Binary Search](#chapter-1-introduction-to-algorithms--binary-search)
+- [Chapter 2: Selection Sort, Arrays & Linked Lists](#chapter-2-selection-sort-arrays--linked-lists)
+- [Chapter 3: Recursion](#chapter-3-recursion)
+- [Chapter 4: Quicksort & Divide-and-Conquer (D&C)](#chapter-4-quicksort--divide-and-conquer-dc)
+- [Chapter 5: Hash Tables](#chapter-5-hash-tables)
+- [Chapter 6: Breadth-First Search (BFS) & Graphs](#chapter-6-breadth-first-search-bfs--graphs)
+- [Chapter 7: Dijkstra's Algorithm & Weighted Graphs](#chapter-7-dijkstras-algorithm--weighted-graphs)
+- [Chapter 8: Greedy Algorithms & NP-Complete Problems](#chapter-8-greedy-algorithms--np-complete-problems)
+- [Chapter 9: Dynamic Programming (DP)](#chapter-9-dynamic-programming-dp)
+- [Chapter 10: K-Nearest Neighbors (KNN)](#chapter-10-k-nearest-neighbors-knn)
+- [Chapter 11: Where to Go Next? (Advanced Topics)](#chapter-11-where-to-go-next-advanced-topics--data-structures)
+- [Summary: Algorithm Complexity & Decision Flowchart](#summary-algorithm-complexity--selection-matrix)
+- [Core Algorithmic Paradigms & Mental Models](#core-algorithmic-paradigms--mental-models)
+- [Practical LeetCode Mapping & TypeScript DSA Journey](#practical-leetcode-mapping--typescript-dsa-journey)
+
+---
+
 ### Chapter 1: Introduction to Algorithms & Binary Search
 
 **1.1. Suppose you have a sorted list of 128 names, and you’re searching through it using binary search. What’s the maximum number of steps it would take?** - *O(log 128) = 7*
@@ -884,6 +902,44 @@ When solving a problem, use this decision framework:
    - Low-dimensional feature points $\implies$ **KNN with Euclidean Distance**.
    - High-dimensional / angle-focused (ratings, text) $\implies$ **Cosine Similarity**.
    - Near-duplicate detection across millions of documents $\implies$ **Locality-Sensitive Hashing (Simhash)**.
+
+---
+
+### Core Algorithmic Paradigms & Mental Models
+
+#### 1. The 4 Major Algorithmic Design Paradigms
+
+| Paradigm | How It Thinks | Subproblem Relationship | Optimal Substructure? | When to Use | Classic Examples |
+| :--- | :--- | :--- | :---: | :--- | :--- |
+| **Divide & Conquer (D&C)** | Break into smaller, disjoint subproblems, solve recursively, and combine. | Non-overlapping, independent | Yes | Subproblems do not repeat; problem splits evenly. | Binary Search, Quicksort, Merge Sort |
+| **Greedy** | Make the locally optimal choice at each step, hoping for global optimum. | Sequential, never backtracks | Yes (Greedy Choice Property) | Local optimum is guaranteed to lead to global optimum. | Dijkstra, Prim/Kruskal, Huffman Coding, Interval Scheduling |
+| **Dynamic Programming (DP)** | Solve all subproblems once and store results in a memo/grid. | Overlapping subproblems | Yes | Overlapping subproblems with recurrence relationship. | 0/1 Knapsack, Longest Common Subsequence, Coin Change |
+| **Backtracking (Brute Force Pruning)** | Build candidates incrementally, abandon ("backtrack") invalid paths. | Tree exploration with early pruning | No | Exhaustive search with constraints. | N-Queens, Sudoku, Subsets/Permutations |
+
+#### 2. Shortest Path & Graph Traversal Mental Models
+
+```text
+[Graph Traversal Decision Tree]
+               Is the graph weighted?
+                     /        \
+                   No          Yes
+                  /              \
+            Use BFS        Are there negative edge weights?
+          O(V + E)               /            \
+                               No              Yes
+                              /                  \
+                      Use Dijkstra          Use Bellman-Ford
+                   O((V + E) log V)             O(V * E)
+```
+
+| Traversal / Algorithm | Edge Weights | Cycle Handling | Data Structure | Guarantees Shortest Path? |
+| :--- | :--- | :--- | :--- | :--- |
+| **BFS** | Unweighted ($w = 1$) | `visited` Set | Queue (FIFO) | **Yes** (fewest edges) |
+| **DFS** | Irrelevant | `visited` Set | Stack / Call Stack | **No** (deep exploration) |
+| **Dijkstra** | Non-negative ($w \ge 0$) | `processed` Set / Min-Heap | Priority Queue | **Yes** (minimal weight) |
+| **Bellman-Ford** | Any (detects negative cycles) | Iterative relaxation | Array | **Yes** (handles negative weights) |
+| **Topological Sort** | Directed Acyclic Graph (DAG) | In-degree count / DFS post-order | Queue / Stack | N/A (linear dependency ordering) |
+
 ---
 
 ### Practical LeetCode Mapping & TypeScript DSA Journey
