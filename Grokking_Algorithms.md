@@ -594,6 +594,149 @@ Graph structure: `Start -> A (5)`, `Start -> B (2)`, `B -> A (8)`, `B -> D (7)`,
 **9.4. Levenshtein Distance:**
 - A string metric used in spell-checkers and DNA sequencing to measure the minimum number of single-character edits (insertions, deletions, or substitutions) required to transform one word into another.
 
+#### 9.5. Dynamic Programming Implementations in TypeScript
+
+##### 1. The 0/1 Knapsack Problem (Full 2D DP Table & Item Backtracking)
+
+```typescript
+interface KnapsackResult {
+  maxValue: number;
+  selectedIndices: number[];
+}
+
+/**
+ * 0/1 Knapsack with DP grid and backtracking
+ * Time Complexity: O(n * W) where n is items count, W is capacity
+ * Space Complexity: O(n * W)
+ */
+function knapsack01(
+  weights: number[],
+  values: number[],
+  capacity: number
+): KnapsackResult {
+  const n = weights.length;
+  // dp[i][w] = max value using a subset of items from 0 to i - 1 with capacity w
+  const dp: number[][] = Array.from({ length: n + 1 }, () =>
+    new Array(capacity + 1).fill(0)
+  );
+
+  // Fill DP Table
+  for (let i = 1; i <= n; i++) {
+    const weight = weights[i - 1]!;
+    const val = values[i - 1]!;
+
+    for (let w = 1; w <= capacity; w++) {
+      if (weight <= w) {
+        // Option 1: don't include item i-1 vs Option 2: include item i-1
+        dp[i]![w] = Math.max(dp[i - 1]![w]!, val + dp[i - 1]![w - weight]!);
+      } else {
+        dp[i]![w] = dp[i - 1]![w]!;
+      }
+    }
+  }
+
+  // Backtrack to find which items were chosen
+  const selectedIndices: number[] = [];
+  let currW = capacity;
+  for (let i = n; i > 0; i--) {
+    // If value came from including this item
+    if (dp[i]![currW] !== dp[i - 1]![currW]) {
+      selectedIndices.push(i - 1);
+      currW -= weights[i - 1]!;
+    }
+  }
+
+  return {
+    maxValue: dp[n]![capacity]!,
+    selectedIndices: selectedIndices.reverse(),
+  };
+}
+
+/**
+ * Space-Optimized 0/1 Knapsack (1D Rolling Array)
+ * Notice: traverse capacity backwards to prevent using the same item twice!
+ * Space Complexity: O(W)
+ */
+function knapsack01Optimized(
+  weights: number[],
+  values: number[],
+  capacity: number
+): number {
+  const dp: number[] = new Array(capacity + 1).fill(0);
+
+  for (let i = 0; i < weights.length; i++) {
+    const weight = weights[i]!;
+    const val = values[i]!;
+
+    for (let w = capacity; w >= weight; w--) {
+      dp[w] = Math.max(dp[w]!, val + dp[w - weight]!);
+    }
+  }
+
+  return dp[capacity]!;
+}
+```
+
+##### 2. Longest Common Subsequence (LCS) vs. Longest Common Substring
+
+```typescript
+/**
+ * Longest Common Subsequence (e.g. "fosh" & "fish" -> "fsh", length 3)
+ * Time Complexity: O(m * n)
+ * Space Complexity: O(m * n)
+ */
+function longestCommonSubsequence(text1: string, text2: string): number {
+  const m = text1.length;
+  const n = text2.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    new Array(n + 1).fill(0)
+  );
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (text1[i - 1] === text2[j - 1]) {
+        dp[i]![j] = dp[i - 1]![j - 1]! + 1;
+      } else {
+        dp[i]![j] = Math.max(dp[i - 1]![j]!, dp[i]![j - 1]!);
+      }
+    }
+  }
+
+  return dp[m]![n]!;
+}
+
+/**
+ * Longest Common Substring (consecutive match, e.g. "fish" & "hish" -> "ish", length 3)
+ * Time Complexity: O(m * n)
+ * Space Complexity: O(m * n)
+ */
+function longestCommonSubstring(s1: string, s2: string): string {
+  const m = s1.length;
+  const n = s2.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    new Array(n + 1).fill(0)
+  );
+  let maxLen = 0;
+  let endIndexInS1 = 0;
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (s1[i - 1] === s2[j - 1]) {
+        dp[i]![j] = dp[i - 1]![j - 1]! + 1;
+        if (dp[i]![j]! > maxLen) {
+          maxLen = dp[i]![j]!;
+          endIndexInS1 = i;
+        }
+      } else {
+        dp[i]![j] = 0; // Reset counter for non-consecutive characters
+      }
+    }
+  }
+
+  return s1.slice(endIndexInS1 - maxLen, endIndexInS1);
+}
+```
+
 ---
 
 ### Chapter 10: K-Nearest Neighbors (KNN)
