@@ -162,6 +162,100 @@ function max(arr: number[]): number {
 
 **4.8. Creating a multiplication table with all the elements in the array (e.g. [2, 3, 7, 8, 10], multiplying every element by each element).** - *O(n²)*
 
+#### Quicksort Implementation in TypeScript
+
+Quicksort is the quintessential Divide-and-Conquer algorithm:
+1. **Base Case:** Arrays with 0 or 1 element are already sorted.
+2. **Recursive Case:**
+   - Pick a **pivot**.
+   - Partition the array into two sub-arrays: elements $\le$ pivot and elements $>$ pivot.
+   - Recursively call `quicksort` on both sub-arrays and combine: `[...quicksort(less), pivot, ...quicksort(greater)]`.
+
+```typescript
+/**
+ * Pure Functional Quicksort (as taught in Grokking Algorithms)
+ * Elegant and intuitive, but creates sub-arrays at each recursive call.
+ * Time Complexity: Average O(n log n), Worst O(n^2)
+ * Space Complexity: O(n) auxiliary memory
+ */
+function quicksort(arr: number[]): number[] {
+  // Base case: arrays with 0 or 1 element are already "sorted"
+  if (arr.length < 2) {
+    return arr;
+  }
+
+  // Choose pivot (here picking the middle element reduces worst-case risk)
+  const mid = Math.floor(arr.length / 2);
+  const pivot = arr[mid]!;
+  
+  const rest = [...arr.slice(0, mid), ...arr.slice(mid + 1)];
+  const less = rest.filter((item) => item <= pivot);
+  const greater = rest.filter((item) => item > pivot);
+
+  return [...quicksort(less), pivot, ...quicksort(greater)];
+}
+
+/**
+ * In-Place Quicksort (Lomuto Partition Scheme)
+ * Memory-efficient version commonly expected in technical interviews.
+ * Space Complexity: O(log n) call stack frames
+ */
+function quicksortInPlace(
+  arr: number[],
+  low: number = 0,
+  high: number = arr.length - 1
+): number[] {
+  if (low < high) {
+    const pivotIdx = partition(arr, low, high);
+    quicksortInPlace(arr, low, pivotIdx - 1);
+    quicksortInPlace(arr, pivotIdx + 1, high);
+  }
+  return arr;
+}
+
+function partition(arr: number[], low: number, high: number): number {
+  // Pick last element as pivot
+  const pivot = arr[high]!;
+  let i = low - 1; // Boundary of elements <= pivot
+
+  for (let j = low; j < high; j++) {
+    if (arr[j]! <= pivot) {
+      i++;
+      [arr[i], arr[j]] = [arr[j]!, arr[i]!];
+    }
+  }
+
+  // Place pivot right after the smaller elements partition
+  [arr[i + 1], arr[high]] = [arr[high]!, arr[i + 1]!];
+  return i + 1;
+}
+```
+
+#### Quicksort Call Stack & Pivot Performance Breakdown
+
+| Scenario | Pivot Choice on Sorted Array `[1, 2, 3, 4, 5]` | Call Stack Depth | Work per Level | Total Time Complexity |
+| :--- | :--- | :--- | :--- | :--- |
+| **Worst Case** | Always pick first or last element | $O(n)$ frames (linear degradation) | $O(n)$ | $\mathbf{O(n^2)}$ |
+| **Best / Average Case** | Pick middle or random element | $O(\log n)$ frames (balanced tree) | $O(n)$ | $\mathbf{O(n \log n)}$ |
+
+```text
+[Average Case: Balanced Tree O(log n) levels]
+               [3, 5, 2, 1, 4]  (pivot = 3)
+                 /          \
+            [2, 1]          [5, 4]
+            /    \          /    \
+          [1]    [2]      [4]    [5]
+Total work at each level: O(n) x log n levels = O(n log n)
+
+[Worst Case: Unbalanced Call Stack O(n) levels]
+            [1, 2, 3, 4, 5] (pivot = 1)
+                \
+                [2, 3, 4, 5] (pivot = 2)
+                    \
+                    [3, 4, 5] (pivot = 3)
+Total work: n + (n - 1) + (n - 2) + ... + 1 = O(n^2)
+```
+
 ---
 
 ### Chapter 5: Hash Tables
