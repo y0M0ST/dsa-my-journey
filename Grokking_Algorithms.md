@@ -390,6 +390,125 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 | **Data structure** | Queue (FIFO) | Priority Queue / Min-Heap |
 | **Time Complexity** | $O(V + E)$ | $O(E \log V)$ with min-heap |
 
+#### 7.3. Dijkstra's Algorithm Implementation in TypeScript
+
+In *Grokking Algorithms*, Dijkstra's algorithm uses three key data structures:
+1. **`graph`**: Adjacency list storing outgoing edges and their weights.
+2. **`costs`**: Maps each node to the lowest cost found so far from `start`.
+3. **`parents`**: Maps each node to its predecessor along the lowest cost path.
+4. **`processed`**: Set of nodes whose lowest cost path is already finalized.
+
+```typescript
+type WeightedGraph = Record<string, Record<string, number>>;
+
+interface DijkstraResult {
+  distance: number;
+  path: string[];
+}
+
+/**
+ * Finds the unprocessed node with the lowest cost.
+ */
+function findLowestCostNode(
+  costs: Record<string, number>,
+  processed: Set<string>
+): string | null {
+  let lowestCost = Infinity;
+  let lowestNode: string | null = null;
+
+  for (const node in costs) {
+    const cost = costs[node]!;
+    if (cost < lowestCost && !processed.has(node)) {
+      lowestCost = cost;
+      lowestNode = node;
+    }
+  }
+
+  return lowestNode;
+}
+
+/**
+ * Dijkstra's Algorithm (Grokking Algorithms implementation pattern)
+ * Time Complexity: O(V^2) with array/object scan; O((V + E) log V) with Min-Heap
+ * Space Complexity: O(V)
+ */
+function dijkstra(
+  graph: WeightedGraph,
+  start: string,
+  finish: string
+): DijkstraResult {
+  // 1. Initialize costs table
+  const costs: Record<string, number> = {};
+  const parents: Record<string, string | null> = {};
+  const processed = new Set<string>();
+
+  // Set initial costs for direct neighbors of start, Infinity for others
+  for (const node in graph) {
+    if (node === start) continue;
+    costs[node] = Infinity;
+    parents[node] = null;
+  }
+
+  for (const neighbor in graph[start] ?? {}) {
+    costs[neighbor] = graph[start]![neighbor]!;
+    parents[neighbor] = start;
+  }
+
+  // 2. Main loop: process node with lowest cost
+  let node = findLowestCostNode(costs, processed);
+
+  while (node !== null) {
+    const cost = costs[node]!;
+    const neighbors = graph[node] ?? {};
+
+    // Check all neighbors of current node
+    for (const neighbor in neighbors) {
+      const edgeWeight = neighbors[neighbor]!;
+      const newCost = cost + edgeWeight;
+
+      // If we found a cheaper way to reach neighbor, update cost and parent
+      if ((costs[neighbor] ?? Infinity) > newCost) {
+        costs[neighbor] = newCost;
+        parents[neighbor] = node;
+      }
+    }
+
+    // Mark current node as processed
+    processed.add(node);
+    node = findLowestCostNode(costs, processed);
+  }
+
+  // 3. Reconstruct shortest path from finish back to start
+  const path: string[] = [];
+  let curr: string | null = finish;
+
+  while (curr !== null) {
+    path.unshift(curr);
+    curr = parents[curr] ?? null;
+  }
+
+  return {
+    distance: costs[finish] ?? Infinity,
+    path: path[0] === start ? path : [],
+  };
+}
+```
+
+#### 7.4. Step-by-Step Execution Trace (Exercise 7.1 Graph A)
+
+Graph structure: `Start -> A (5)`, `Start -> B (2)`, `B -> A (8)`, `B -> D (7)`, `A -> C (4)`, `A -> D (2)`, `C -> Finish (3)`, `D -> Finish (1)`.
+
+| Step | Node Processed | Neighbors Checked | Tentative Cost Calculation | Updated `costs` | Updated `parents` | `processed` |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Init** | - | - | Direct neighbors of Start | `{A: 5, B: 2, C: ∞, D: ∞, Finish: ∞}` | `{A: Start, B: Start}` | `{}` |
+| **1** | **B** (cost 2) | `A (8)`, `D (7)` | `A: 2 + 8 = 10 > 5` (no change)<br>`D: 2 + 7 = 9 < ∞` | `{A: 5, B: 2, C: ∞, D: 9, Finish: ∞}` | `{A: Start, B: Start, D: B}` | `{B}` |
+| **2** | **A** (cost 5) | `C (4)`, `D (2)` | `C: 5 + 4 = 9 < ∞`<br>`D: 5 + 2 = 7 < 9` (cheaper path found!) | `{A: 5, B: 2, C: 9, D: 7, Finish: ∞}` | `{A: Start, B: Start, C: A, D: A}` | `{B, A}` |
+| **3** | **D** (cost 7) | `Finish (1)` | `Finish: 7 + 1 = 8 < ∞` | `{A: 5, B: 2, C: 9, D: 7, Finish: 8}` | `{..., Finish: D}` | `{B, A, D}` |
+| **4** | **Finish** (cost 8) | None | - | No updates | No updates | `{B, A, D, Finish}` |
+| **5** | **C** (cost 9) | `Finish (3)` | `Finish: 9 + 3 = 12 > 8` (no change) | `{A: 5, B: 2, C: 9, D: 7, Finish: 8}` | `{..., Finish: D}` | `{B, A, D, Finish, C}` |
+
+- **Final Shortest Path:** Backtracking from `Finish`: `Finish <- D <- A <- Start` $\implies$ `Start -> A -> D -> Finish` (Total Cost = **8**).
+
 ---
 
 ### Chapter 8: Greedy Algorithms & NP-Complete Problems
