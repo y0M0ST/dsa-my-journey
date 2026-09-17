@@ -1,8 +1,28 @@
-### Excercises at Grokking Algorithms
+# Grokking Algorithms: Study Notes, Exercises & TypeScript Implementations
 
-**1.1. Suppose you have a sorted list of 128 names, and you’re searching through it using binary search. What’s the maximum number of teps it would take?** - *O(log 128)= 7*
+## Table of Contents
+- [Chapter 1: Introduction to Algorithms & Binary Search](#chapter-1-introduction-to-algorithms--binary-search)
+- [Chapter 2: Selection Sort, Arrays & Linked Lists](#chapter-2-selection-sort-arrays--linked-lists)
+- [Chapter 3: Recursion](#chapter-3-recursion)
+- [Chapter 4: Quicksort & Divide-and-Conquer (D&C)](#chapter-4-quicksort--divide-and-conquer-dc)
+- [Chapter 5: Hash Tables](#chapter-5-hash-tables)
+- [Chapter 6: Breadth-First Search (BFS) & Graphs](#chapter-6-breadth-first-search-bfs--graphs)
+- [Chapter 7: Dijkstra's Algorithm & Weighted Graphs](#chapter-7-dijkstras-algorithm--weighted-graphs)
+- [Chapter 8: Greedy Algorithms & NP-Complete Problems](#chapter-8-greedy-algorithms--np-complete-problems)
+- [Chapter 9: Dynamic Programming (DP)](#chapter-9-dynamic-programming-dp)
+- [Chapter 10: K-Nearest Neighbors (KNN)](#chapter-10-k-nearest-neighbors-knn)
+- [Chapter 11: Where to Go Next? (Advanced Topics)](#chapter-11-where-to-go-next-advanced-topics--data-structures)
+- [Summary: Algorithm Complexity & Decision Flowchart](#summary-algorithm-complexity--selection-matrix)
+- [Core Algorithmic Paradigms & Mental Models](#core-algorithmic-paradigms--mental-models)
+- [Practical LeetCode Mapping & TypeScript DSA Journey](#practical-leetcode-mapping--typescript-dsa-journey)
 
-**1.2 Suppose you double the size of the list. What’s the maximum number of steps now?** - *O(log 256)= 8*
+---
+
+### Chapter 1: Introduction to Algorithms & Binary Search
+
+**1.1. Suppose you have a sorted list of 128 names, and you’re searching through it using binary search. What’s the maximum number of steps it would take?** - *O(log 128) = 7*
+
+**1.2 Suppose you double the size of the list. What’s the maximum number of steps now?** - *O(log 256) = 8*
 
 **1.3 You have a name, and you want to find the person’s phone number in the phone book.** - *O(log n)*
 
@@ -10,26 +30,95 @@
 
 **1.5 You want to read the numbers of every person in the phone book.** - *O(n)*
 
-**1.6 You want to read the numbers of just the As. (his is a tricky one! It involves concepts that are covered more in chapter 4. Read the answer—you may be surprised!)** - *O(n)* 
+**1.6 You want to read the numbers of just the As. (This is a tricky one! It involves concepts that are covered more in chapter 4. Read the answer—you may be surprised!)** - *O(n)*
 
-**2.1. Suppose you’re building an app to keep track of your inances.Every day, you write down everything you spent money on. At the end of the month, you review your expenses and sum up how much you spent. So, you have lots of inserts and a few reads. Should you use an array or a list?** - *List*
+---
 
-**2.2 Suppose you’re building an app for restaurants to take customer orders. Your app needs to store a list of orders. Servers keep adding orders to this list, and chefs take orders of the list and make them. It’s an order queue: servers add orders to the back of the queue, and the chef takes the irst order of the queue and cooks it. Would you use an array or a linked list to implement this queue? (Hint: Linked lists are good for inserts/deletes, and arrays are good for random access. Which one are you going to be doing here?)** - *List*
+### Chapter 2: Selection Sort, Arrays & Linked Lists
 
-**2.3. Let’s run a thought experiment. Suppose Facebook keeps a list of usernames. When someone tries to log in to Facebook, a search is done for their username. If their name is in the list of usernames, they can log in. People log in to Facebook pretty oten, so there are a lot of searches through this list of usernames. Suppose Facebook uses binary search to search the list. Binary search needs random access—you need to be able to get to the middle of the list of usernames instantly. Knowing this, would you implement the list as an array or a linked list?** - *Array*
+**2.1. Suppose you’re building an app to keep track of your finances. Every day, you write down everything you spent money on. At the end of the month, you review your expenses and sum up how much you spent. So, you have lots of inserts and a few reads. Should you use an array or a list?** - *List*
 
-**2.4. People sign up for Facebook pretty oten, too. Suppose you decided to use an array to store the list of users. What are the downsides of an array for inserts? In particular, suppose you’re using binary search to search for logins. What happens when you add new users to an array?**
+**2.2 Suppose you’re building an app for restaurants to take customer orders. Your app needs to store a list of orders. Servers keep adding orders to this list, and chefs take orders off the list and make them. It’s an order queue: servers add orders to the back of the queue, and the chef takes the first order of the queue and cooks it. Would you use an array or a linked list to implement this queue? (Hint: Linked lists are good for inserts/deletes, and arrays are good for random access. Which one are you going to be doing here?)** - *List*
 
-*Using array to store a list of users, there are several dictint disadvantages:*
+**2.3. Let’s run a thought experiment. Suppose Facebook keeps a list of usernames. When someone tries to log in to Facebook, a search is done for their username. If their name is in the list of usernames, they can log in. People log in to Facebook pretty often, so there are a lot of searches through this list of usernames. Suppose Facebook uses binary search to search the list. Binary search needs random access—you need to be able to get to the middle of the list of usernames instantly. Knowing this, would you implement the list as an array or a linked list?** - *Array*
 
-* Array has length fix, if its full, we must create new array that bigger than and coppy all data from old array. Additionally, if we want to insert an element at a specific position (to maintain the array's order), we must shift multiple subsequent elements, incurring a cost of O(n).
+**2.4. People sign up for Facebook pretty often, too. Suppose you decided to use an array to store the list of users. What are the downsides of an array for inserts? In particular, suppose you’re using binary search to search for logins. What happens when you add new users to an array?**
 
-* Binary search: To use Binary Search, the array must be ordered, we must insert the element at specific position, this is also similar to above. So, although find fast O(log n), insert slowdown O(n)
+*Using an array to store a list of users, there are several distinct disadvantages:*
+
+- **Fixed capacity & re-allocation:** Arrays allocate contiguous memory. If the allocated chunk is full, a larger block must be allocated and all existing elements copied over ($O(n)$).
+- **Element shifting on insert:** To keep the array sorted for Binary Search, inserting a new username into the correct position requires shifting all subsequent elements to the right ($O(n)$).
+- *Takeaway:* While Binary Search enables fast lookup in $O(\log n)$, keeping an array sorted imposes an $O(n)$ insertion penalty.
 
 **2.5. In reality, Facebook uses neither an array nor a linked list to store user information. Let’s consider a hybrid data structure: an array of 26 linked lists (each element points to a linked list of usernames starting with that letter). Compare this hybrid data structure to arrays and linked lists. Is it slower or faster than each for searching and inserting?**
-- *Searching:* Slower than arrays (arrays support random access and Binary Search in O(log n)), but faster than a single linked list (you only need to search 1/26th of the users).
-- *Inserting:* Faster than arrays (O(1) to append/insert into the linked list without shifting elements or reallocating array memory), and same speed as linked lists.
+- *Searching:* Slower than arrays (arrays support random access and Binary Search in $O(\log n)$), but faster than a single linked list (you only need to search $1/26$th of the users).
+- *Inserting:* Faster than arrays ($O(1)$ to append/insert into the linked list without shifting elements or reallocating array memory), and same speed as linked lists.
 *(Note: This hybrid concept is the foundation of Hash Tables with separate chaining, covered in Chapter 5).*
+
+#### Selection Sort Implementation in TypeScript
+Selection sort repeatedly finds the minimum element from the unsorted portion and moves it to the sorted portion.
+
+```typescript
+/**
+ * Finds the index of the smallest element in an array
+ */
+function findSmallestIndex(arr: number[]): number {
+  let smallest = arr[0]!;
+  let smallestIndex = 0;
+
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i]! < smallest) {
+      smallest = arr[i]!;
+      smallestIndex = i;
+    }
+  }
+
+  return smallestIndex;
+}
+
+/**
+ * Pure out-of-place Selection Sort (as introduced in Grokking Algorithms)
+ * Time Complexity: O(n^2)
+ * Space Complexity: O(n)
+ */
+function selectionSort(arr: number[]): number[] {
+  const copy = [...arr];
+  const sorted: number[] = [];
+
+  while (copy.length > 0) {
+    const smallestIdx = findSmallestIndex(copy);
+    sorted.push(copy.splice(smallestIdx, 1)[0]!);
+  }
+
+  return sorted;
+}
+
+/**
+ * In-place Selection Sort (optimal memory)
+ * Time Complexity: O(n^2)
+ * Space Complexity: O(1)
+ */
+function selectionSortInPlace(arr: number[]): number[] {
+  const n = arr.length;
+  for (let i = 0; i < n - 1; i++) {
+    let minIdx = i;
+    for (let j = i + 1; j < n; j++) {
+      if (arr[j]! < arr[minIdx]!) {
+        minIdx = j;
+      }
+    }
+    if (minIdx !== i) {
+      [arr[i], arr[minIdx]] = [arr[minIdx]!, arr[i]!];
+    }
+  }
+  return arr;
+}
+```
+
+- **Why is Selection Sort $O(n^2)$?**
+  Checking for the smallest element takes $n$ operations, then $n - 1$, then $n - 2, \dots, 1$.
+  $$\text{Total steps} = \frac{n(n + 1)}{2} = \frac{n^2 + n}{2} \implies O(n^2)$$
+  Even though you examine fewer elements each pass, constants are dropped in Big-O notation.
 
 ---
 
@@ -90,6 +179,100 @@ function max(arr: number[]): number {
 **4.7. Doubling the value of just the first element in an array.** - *O(1)*
 
 **4.8. Creating a multiplication table with all the elements in the array (e.g. [2, 3, 7, 8, 10], multiplying every element by each element).** - *O(n²)*
+
+#### Quicksort Implementation in TypeScript
+
+Quicksort is the quintessential Divide-and-Conquer algorithm:
+1. **Base Case:** Arrays with 0 or 1 element are already sorted.
+2. **Recursive Case:**
+   - Pick a **pivot**.
+   - Partition the array into two sub-arrays: elements $\le$ pivot and elements $>$ pivot.
+   - Recursively call `quicksort` on both sub-arrays and combine: `[...quicksort(less), pivot, ...quicksort(greater)]`.
+
+```typescript
+/**
+ * Pure Functional Quicksort (as taught in Grokking Algorithms)
+ * Elegant and intuitive, but creates sub-arrays at each recursive call.
+ * Time Complexity: Average O(n log n), Worst O(n^2)
+ * Space Complexity: O(n) auxiliary memory
+ */
+function quicksort(arr: number[]): number[] {
+  // Base case: arrays with 0 or 1 element are already "sorted"
+  if (arr.length < 2) {
+    return arr;
+  }
+
+  // Choose pivot (here picking the middle element reduces worst-case risk)
+  const mid = Math.floor(arr.length / 2);
+  const pivot = arr[mid]!;
+  
+  const rest = [...arr.slice(0, mid), ...arr.slice(mid + 1)];
+  const less = rest.filter((item) => item <= pivot);
+  const greater = rest.filter((item) => item > pivot);
+
+  return [...quicksort(less), pivot, ...quicksort(greater)];
+}
+
+/**
+ * In-Place Quicksort (Lomuto Partition Scheme)
+ * Memory-efficient version commonly expected in technical interviews.
+ * Space Complexity: O(log n) call stack frames
+ */
+function quicksortInPlace(
+  arr: number[],
+  low: number = 0,
+  high: number = arr.length - 1
+): number[] {
+  if (low < high) {
+    const pivotIdx = partition(arr, low, high);
+    quicksortInPlace(arr, low, pivotIdx - 1);
+    quicksortInPlace(arr, pivotIdx + 1, high);
+  }
+  return arr;
+}
+
+function partition(arr: number[], low: number, high: number): number {
+  // Pick last element as pivot
+  const pivot = arr[high]!;
+  let i = low - 1; // Boundary of elements <= pivot
+
+  for (let j = low; j < high; j++) {
+    if (arr[j]! <= pivot) {
+      i++;
+      [arr[i], arr[j]] = [arr[j]!, arr[i]!];
+    }
+  }
+
+  // Place pivot right after the smaller elements partition
+  [arr[i + 1], arr[high]] = [arr[high]!, arr[i + 1]!];
+  return i + 1;
+}
+```
+
+#### Quicksort Call Stack & Pivot Performance Breakdown
+
+| Scenario | Pivot Choice on Sorted Array `[1, 2, 3, 4, 5]` | Call Stack Depth | Work per Level | Total Time Complexity |
+| :--- | :--- | :--- | :--- | :--- |
+| **Worst Case** | Always pick first or last element | $O(n)$ frames (linear degradation) | $O(n)$ | $\mathbf{O(n^2)}$ |
+| **Best / Average Case** | Pick middle or random element | $O(\log n)$ frames (balanced tree) | $O(n)$ | $\mathbf{O(n \log n)}$ |
+
+```text
+[Average Case: Balanced Tree O(log n) levels]
+               [3, 5, 2, 1, 4]  (pivot = 3)
+                 /          \
+            [2, 1]          [5, 4]
+            /    \          /    \
+          [1]    [2]      [4]    [5]
+Total work at each level: O(n) x log n levels = O(n log n)
+
+[Worst Case: Unbalanced Call Stack O(n) levels]
+            [1, 2, 3, 4, 5] (pivot = 1)
+                \
+                [2, 3, 4, 5] (pivot = 2)
+                    \
+                    [3, 4, 5] (pivot = 3)
+Total work: n + (n - 1) + (n - 2) + ... + 1 = O(n^2)
+```
 
 ---
 
@@ -225,6 +408,125 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 | **Data structure** | Queue (FIFO) | Priority Queue / Min-Heap |
 | **Time Complexity** | $O(V + E)$ | $O(E \log V)$ with min-heap |
 
+#### 7.3. Dijkstra's Algorithm Implementation in TypeScript
+
+In *Grokking Algorithms*, Dijkstra's algorithm uses three key data structures:
+1. **`graph`**: Adjacency list storing outgoing edges and their weights.
+2. **`costs`**: Maps each node to the lowest cost found so far from `start`.
+3. **`parents`**: Maps each node to its predecessor along the lowest cost path.
+4. **`processed`**: Set of nodes whose lowest cost path is already finalized.
+
+```typescript
+type WeightedGraph = Record<string, Record<string, number>>;
+
+interface DijkstraResult {
+  distance: number;
+  path: string[];
+}
+
+/**
+ * Finds the unprocessed node with the lowest cost.
+ */
+function findLowestCostNode(
+  costs: Record<string, number>,
+  processed: Set<string>
+): string | null {
+  let lowestCost = Infinity;
+  let lowestNode: string | null = null;
+
+  for (const node in costs) {
+    const cost = costs[node]!;
+    if (cost < lowestCost && !processed.has(node)) {
+      lowestCost = cost;
+      lowestNode = node;
+    }
+  }
+
+  return lowestNode;
+}
+
+/**
+ * Dijkstra's Algorithm (Grokking Algorithms implementation pattern)
+ * Time Complexity: O(V^2) with array/object scan; O((V + E) log V) with Min-Heap
+ * Space Complexity: O(V)
+ */
+function dijkstra(
+  graph: WeightedGraph,
+  start: string,
+  finish: string
+): DijkstraResult {
+  // 1. Initialize costs table
+  const costs: Record<string, number> = {};
+  const parents: Record<string, string | null> = {};
+  const processed = new Set<string>();
+
+  // Set initial costs for direct neighbors of start, Infinity for others
+  for (const node in graph) {
+    if (node === start) continue;
+    costs[node] = Infinity;
+    parents[node] = null;
+  }
+
+  for (const neighbor in graph[start] ?? {}) {
+    costs[neighbor] = graph[start]![neighbor]!;
+    parents[neighbor] = start;
+  }
+
+  // 2. Main loop: process node with lowest cost
+  let node = findLowestCostNode(costs, processed);
+
+  while (node !== null) {
+    const cost = costs[node]!;
+    const neighbors = graph[node] ?? {};
+
+    // Check all neighbors of current node
+    for (const neighbor in neighbors) {
+      const edgeWeight = neighbors[neighbor]!;
+      const newCost = cost + edgeWeight;
+
+      // If we found a cheaper way to reach neighbor, update cost and parent
+      if ((costs[neighbor] ?? Infinity) > newCost) {
+        costs[neighbor] = newCost;
+        parents[neighbor] = node;
+      }
+    }
+
+    // Mark current node as processed
+    processed.add(node);
+    node = findLowestCostNode(costs, processed);
+  }
+
+  // 3. Reconstruct shortest path from finish back to start
+  const path: string[] = [];
+  let curr: string | null = finish;
+
+  while (curr !== null) {
+    path.unshift(curr);
+    curr = parents[curr] ?? null;
+  }
+
+  return {
+    distance: costs[finish] ?? Infinity,
+    path: path[0] === start ? path : [],
+  };
+}
+```
+
+#### 7.4. Step-by-Step Execution Trace (Exercise 7.1 Graph A)
+
+Graph structure: `Start -> A (5)`, `Start -> B (2)`, `B -> A (8)`, `B -> D (7)`, `A -> C (4)`, `A -> D (2)`, `C -> Finish (3)`, `D -> Finish (1)`.
+
+| Step | Node Processed | Neighbors Checked | Tentative Cost Calculation | Updated `costs` | Updated `parents` | `processed` |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Init** | - | - | Direct neighbors of Start | `{A: 5, B: 2, C: ∞, D: ∞, Finish: ∞}` | `{A: Start, B: Start}` | `{}` |
+| **1** | **B** (cost 2) | `A (8)`, `D (7)` | `A: 2 + 8 = 10 > 5` (no change)<br>`D: 2 + 7 = 9 < ∞` | `{A: 5, B: 2, C: ∞, D: 9, Finish: ∞}` | `{A: Start, B: Start, D: B}` | `{B}` |
+| **2** | **A** (cost 5) | `C (4)`, `D (2)` | `C: 5 + 4 = 9 < ∞`<br>`D: 5 + 2 = 7 < 9` (cheaper path found!) | `{A: 5, B: 2, C: 9, D: 7, Finish: ∞}` | `{A: Start, B: Start, C: A, D: A}` | `{B, A}` |
+| **3** | **D** (cost 7) | `Finish (1)` | `Finish: 7 + 1 = 8 < ∞` | `{A: 5, B: 2, C: 9, D: 7, Finish: 8}` | `{..., Finish: D}` | `{B, A, D}` |
+| **4** | **Finish** (cost 8) | None | - | No updates | No updates | `{B, A, D, Finish}` |
+| **5** | **C** (cost 9) | `Finish (3)` | `Finish: 9 + 3 = 12 > 8` (no change) | `{A: 5, B: 2, C: 9, D: 7, Finish: 8}` | `{..., Finish: D}` | `{B, A, D, Finish, C}` |
+
+- **Final Shortest Path:** Backtracking from `Finish`: `Finish <- D <- A <- Start` $\implies$ `Start -> A -> D -> Finish` (Total Cost = **8**).
+
 ---
 
 ### Chapter 8: Greedy Algorithms & NP-Complete Problems
@@ -309,6 +611,149 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 
 **9.4. Levenshtein Distance:**
 - A string metric used in spell-checkers and DNA sequencing to measure the minimum number of single-character edits (insertions, deletions, or substitutions) required to transform one word into another.
+
+#### 9.5. Dynamic Programming Implementations in TypeScript
+
+##### 1. The 0/1 Knapsack Problem (Full 2D DP Table & Item Backtracking)
+
+```typescript
+interface KnapsackResult {
+  maxValue: number;
+  selectedIndices: number[];
+}
+
+/**
+ * 0/1 Knapsack with DP grid and backtracking
+ * Time Complexity: O(n * W) where n is items count, W is capacity
+ * Space Complexity: O(n * W)
+ */
+function knapsack01(
+  weights: number[],
+  values: number[],
+  capacity: number
+): KnapsackResult {
+  const n = weights.length;
+  // dp[i][w] = max value using a subset of items from 0 to i - 1 with capacity w
+  const dp: number[][] = Array.from({ length: n + 1 }, () =>
+    new Array(capacity + 1).fill(0)
+  );
+
+  // Fill DP Table
+  for (let i = 1; i <= n; i++) {
+    const weight = weights[i - 1]!;
+    const val = values[i - 1]!;
+
+    for (let w = 1; w <= capacity; w++) {
+      if (weight <= w) {
+        // Option 1: don't include item i-1 vs Option 2: include item i-1
+        dp[i]![w] = Math.max(dp[i - 1]![w]!, val + dp[i - 1]![w - weight]!);
+      } else {
+        dp[i]![w] = dp[i - 1]![w]!;
+      }
+    }
+  }
+
+  // Backtrack to find which items were chosen
+  const selectedIndices: number[] = [];
+  let currW = capacity;
+  for (let i = n; i > 0; i--) {
+    // If value came from including this item
+    if (dp[i]![currW] !== dp[i - 1]![currW]) {
+      selectedIndices.push(i - 1);
+      currW -= weights[i - 1]!;
+    }
+  }
+
+  return {
+    maxValue: dp[n]![capacity]!,
+    selectedIndices: selectedIndices.reverse(),
+  };
+}
+
+/**
+ * Space-Optimized 0/1 Knapsack (1D Rolling Array)
+ * Notice: traverse capacity backwards to prevent using the same item twice!
+ * Space Complexity: O(W)
+ */
+function knapsack01Optimized(
+  weights: number[],
+  values: number[],
+  capacity: number
+): number {
+  const dp: number[] = new Array(capacity + 1).fill(0);
+
+  for (let i = 0; i < weights.length; i++) {
+    const weight = weights[i]!;
+    const val = values[i]!;
+
+    for (let w = capacity; w >= weight; w--) {
+      dp[w] = Math.max(dp[w]!, val + dp[w - weight]!);
+    }
+  }
+
+  return dp[capacity]!;
+}
+```
+
+##### 2. Longest Common Subsequence (LCS) vs. Longest Common Substring
+
+```typescript
+/**
+ * Longest Common Subsequence (e.g. "fosh" & "fish" -> "fsh", length 3)
+ * Time Complexity: O(m * n)
+ * Space Complexity: O(m * n)
+ */
+function longestCommonSubsequence(text1: string, text2: string): number {
+  const m = text1.length;
+  const n = text2.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    new Array(n + 1).fill(0)
+  );
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (text1[i - 1] === text2[j - 1]) {
+        dp[i]![j] = dp[i - 1]![j - 1]! + 1;
+      } else {
+        dp[i]![j] = Math.max(dp[i - 1]![j]!, dp[i]![j - 1]!);
+      }
+    }
+  }
+
+  return dp[m]![n]!;
+}
+
+/**
+ * Longest Common Substring (consecutive match, e.g. "fish" & "hish" -> "ish", length 3)
+ * Time Complexity: O(m * n)
+ * Space Complexity: O(m * n)
+ */
+function longestCommonSubstring(s1: string, s2: string): string {
+  const m = s1.length;
+  const n = s2.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    new Array(n + 1).fill(0)
+  );
+  let maxLen = 0;
+  let endIndexInS1 = 0;
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (s1[i - 1] === s2[j - 1]) {
+        dp[i]![j] = dp[i - 1]![j - 1]! + 1;
+        if (dp[i]![j]! > maxLen) {
+          maxLen = dp[i]![j]!;
+          endIndexInS1 = i;
+        }
+      } else {
+        dp[i]![j] = 0; // Reset counter for non-consecutive characters
+      }
+    }
+  }
+
+  return s1.slice(endIndexInS1 - maxLen, endIndexInS1);
+}
+```
 
 ---
 
@@ -457,6 +902,44 @@ When solving a problem, use this decision framework:
    - Low-dimensional feature points $\implies$ **KNN with Euclidean Distance**.
    - High-dimensional / angle-focused (ratings, text) $\implies$ **Cosine Similarity**.
    - Near-duplicate detection across millions of documents $\implies$ **Locality-Sensitive Hashing (Simhash)**.
+
+---
+
+### Core Algorithmic Paradigms & Mental Models
+
+#### 1. The 4 Major Algorithmic Design Paradigms
+
+| Paradigm | How It Thinks | Subproblem Relationship | Optimal Substructure? | When to Use | Classic Examples |
+| :--- | :--- | :--- | :---: | :--- | :--- |
+| **Divide & Conquer (D&C)** | Break into smaller, disjoint subproblems, solve recursively, and combine. | Non-overlapping, independent | Yes | Subproblems do not repeat; problem splits evenly. | Binary Search, Quicksort, Merge Sort |
+| **Greedy** | Make the locally optimal choice at each step, hoping for global optimum. | Sequential, never backtracks | Yes (Greedy Choice Property) | Local optimum is guaranteed to lead to global optimum. | Dijkstra, Prim/Kruskal, Huffman Coding, Interval Scheduling |
+| **Dynamic Programming (DP)** | Solve all subproblems once and store results in a memo/grid. | Overlapping subproblems | Yes | Overlapping subproblems with recurrence relationship. | 0/1 Knapsack, Longest Common Subsequence, Coin Change |
+| **Backtracking (Brute Force Pruning)** | Build candidates incrementally, abandon ("backtrack") invalid paths. | Tree exploration with early pruning | No | Exhaustive search with constraints. | N-Queens, Sudoku, Subsets/Permutations |
+
+#### 2. Shortest Path & Graph Traversal Mental Models
+
+```text
+[Graph Traversal Decision Tree]
+               Is the graph weighted?
+                     /        \
+                   No          Yes
+                  /              \
+            Use BFS        Are there negative edge weights?
+          O(V + E)               /            \
+                               No              Yes
+                              /                  \
+                      Use Dijkstra          Use Bellman-Ford
+                   O((V + E) log V)             O(V * E)
+```
+
+| Traversal / Algorithm | Edge Weights | Cycle Handling | Data Structure | Guarantees Shortest Path? |
+| :--- | :--- | :--- | :--- | :--- |
+| **BFS** | Unweighted ($w = 1$) | `visited` Set | Queue (FIFO) | **Yes** (fewest edges) |
+| **DFS** | Irrelevant | `visited` Set | Stack / Call Stack | **No** (deep exploration) |
+| **Dijkstra** | Non-negative ($w \ge 0$) | `processed` Set / Min-Heap | Priority Queue | **Yes** (minimal weight) |
+| **Bellman-Ford** | Any (detects negative cycles) | Iterative relaxation | Array | **Yes** (handles negative weights) |
+| **Topological Sort** | Directed Acyclic Graph (DAG) | In-degree count / DFS post-order | Queue / Stack | N/A (linear dependency ordering) |
+
 ---
 
 ### Practical LeetCode Mapping & TypeScript DSA Journey
