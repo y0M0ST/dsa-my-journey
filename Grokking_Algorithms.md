@@ -1360,6 +1360,139 @@ function knnRegress(
 - **The Simplex Algorithm:** Traverses the vertices (corner points) of the feasible convex polygon/polytope to find the optimal global maximum or minimum.
 - *Real-World Applications:* Supply chain logistics, airline crew scheduling, factory resource allocation.
 
+#### 11.9. Binary Search Tree (BST) Implementation in TypeScript
+
+```typescript
+class BSTNode {
+  val: number;
+  left: BSTNode | null = null;
+  right: BSTNode | null = null;
+
+  constructor(val: number) {
+    this.val = val;
+  }
+}
+
+class BinarySearchTree {
+  root: BSTNode | null = null;
+
+  /**
+   * Inserts a value into the BST
+   * Time Complexity: O(log n) average, O(n) worst case
+   */
+  insert(val: number): void {
+    const newNode = new BSTNode(val);
+    if (!this.root) {
+      this.root = newNode;
+      return;
+    }
+
+    let curr = this.root;
+    while (true) {
+      if (val < curr.val) {
+        if (!curr.left) {
+          curr.left = newNode;
+          return;
+        }
+        curr = curr.left;
+      } else {
+        if (!curr.right) {
+          curr.right = newNode;
+          return;
+        }
+        curr = curr.right;
+      }
+    }
+  }
+
+  /**
+   * Searches for a value in the BST
+   * Time Complexity: O(log n) average, O(n) worst case
+   */
+  search(val: number): boolean {
+    let curr = this.root;
+    while (curr !== null) {
+      if (curr.val === val) return true;
+      curr = val < curr.val ? curr.left : curr.right;
+    }
+    return false;
+  }
+
+  /**
+   * In-order traversal yields elements in sorted ascending order
+   */
+  inOrder(node: BSTNode | null = this.root, result: number[] = []): number[] {
+    if (node) {
+      this.inOrder(node.left, result);
+      result.push(node.val);
+      this.inOrder(node.right, result);
+    }
+    return result;
+  }
+}
+```
+
+#### 11.10. Bloom Filter Implementation in TypeScript
+
+```typescript
+class BloomFilter {
+  private bitArray: Uint8Array;
+  private size: number;
+  private hashSeeds: number[];
+
+  constructor(size: number = 1024, hashSeeds: number[] = [31, 37, 41]) {
+    this.size = size;
+    this.bitArray = new Uint8Array(Math.ceil(size / 8));
+    this.hashSeeds = hashSeeds;
+  }
+
+  private hash(str: string, seed: number): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash * seed + str.charCodeAt(i)) % this.size;
+    }
+    return Math.abs(hash);
+  }
+
+  private setBit(index: number): void {
+    const byteIndex = Math.floor(index / 8);
+    const bitOffset = index % 8;
+    this.bitArray[byteIndex]! |= 1 << bitOffset;
+  }
+
+  private getBit(index: number): boolean {
+    const byteIndex = Math.floor(index / 8);
+    const bitOffset = index % 8;
+    return (this.bitArray[byteIndex]! & (1 << bitOffset)) !== 0;
+  }
+
+  /**
+   * Adds an element to the Bloom filter
+   */
+  add(item: string): void {
+    for (const seed of this.hashSeeds) {
+      const bitIndex = this.hash(item, seed);
+      this.setBit(bitIndex);
+    }
+  }
+
+  /**
+   * Queries membership:
+   * Returns false => Guaranteed 100% NOT in set (No false negatives).
+   * Returns true  => PROBABLY in set (False positive possible).
+   */
+  mightContain(item: string): boolean {
+    for (const seed of this.hashSeeds) {
+      const bitIndex = this.hash(item, seed);
+      if (!this.getBit(bitIndex)) {
+        return false; // Definitely not present
+      }
+    }
+    return true; // Probably present
+  }
+}
+```
+
 ---
 
 ### Summary: Algorithm Complexity & Selection Matrix
@@ -1475,3 +1608,15 @@ Mapping concepts from *Grokking Algorithms* directly to the active patterns in t
 
 3. **Map vs. Object `{}`:**
    - Always prefer `new Map()` for hash maps in DSA because it avoids prototype key collisions, maintains insertion order, supports non-string keys, and provides clean `.has()`, `.get()`, `.set()`, `.delete()` methods in $O(1)$.
+
+4. **Default Lexicographical `Array.prototype.sort()`:**
+   - In JavaScript, `[10, 2, 5].sort()` produces `[10, 2, 5]` because elements are converted to strings prior to comparison (`"10" < "2"`).
+   - *Fix:* Always provide an explicit comparator for numbers: `arr.sort((a, b) => a - b)`.
+
+5. **Absence of Native Priority Queue / Min-Heap:**
+   - ECMAScript standard library has no built-in `PriorityQueue` or `Heap` (unlike Python's `heapq` or C++'s `std::priority_queue`).
+   - For Dijkstra, Top K, or K-way merge problems, either implement a concise binary heap or use an array with sorted insertion if $N$ is small.
+
+6. **Call Stack Limit (~10,000 frames) & Iterative DFS:**
+   - V8 engines limit call stack recursion depth to $\approx 10^4$ frames. Deep recursion (e.g. DFS on large trees or 2D grids) throws `RangeError: Maximum call stack size exceeded`.
+   - *Fix:* Rewrite recursion into an iterative loop with an explicit array stack `stack: [number, number][] = [[startRow, startCol]]`.
