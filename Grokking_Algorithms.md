@@ -32,6 +32,65 @@
 
 **1.6 You want to read the numbers of just the As. (This is a tricky one! It involves concepts that are covered more in chapter 4. Read the answer—you may be surprised!)** - *O(n)*
 
+#### Binary Search Implementation in TypeScript
+
+Binary Search works exclusively on **sorted collections**, halving the search space at each step.
+
+```typescript
+/**
+ * Classic Iterative Binary Search
+ * Time Complexity: O(log n)
+ * Space Complexity: O(1)
+ */
+function binarySearch(arr: number[], target: number): number {
+  let low = 0;
+  let high = arr.length - 1;
+
+  while (low <= high) {
+    // Avoid integer overflow: equivalent to Math.floor((low + high) / 2)
+    const mid = low + Math.floor((high - low) / 2);
+    const guess = arr[mid]!;
+
+    if (guess === target) {
+      return mid; // Target found
+    } else if (guess > target) {
+      high = mid - 1; // Target is in the left half
+    } else {
+      low = mid + 1; // Target is in the right half
+    }
+  }
+
+  return -1; // Target not found
+}
+
+/**
+ * Leftmost / Lower Bound Binary Search (Search Insert Position)
+ * Returns the first index where arr[index] >= target
+ * Time Complexity: O(log n)
+ * Space Complexity: O(1)
+ */
+function lowerBound(arr: number[], target: number): number {
+  let low = 0;
+  let high = arr.length; // Range [0, n] allows inserting at the end
+
+  while (low < high) {
+    const mid = low + Math.floor((high - low) / 2);
+    if (arr[mid]! >= target) {
+      high = mid; // Narrow down to the left boundary
+    } else {
+      low = mid + 1;
+    }
+  }
+
+  return low;
+}
+```
+
+- **Why is Binary Search $O(\log n)$?**
+  With each comparison, the search range is divided by 2:
+  $$\frac{n}{2^k} = 1 \implies 2^k = n \implies k = \log_2 n$$
+  For an array of $1,000,000$ elements, Binary Search takes at most $\lceil \log_2(1,000,000) \rceil = \mathbf{20}$ comparisons, whereas linear search could take $1,000,000$.
+
 ---
 
 ### Chapter 2: Selection Sort, Arrays & Linked Lists
@@ -138,6 +197,64 @@ function selectionSortInPlace(arr: number[]): number[] {
 
 **3.2. Suppose you accidentally write an infinite recursive function that keeps calling itself. What happens to the stack?**
 - Every function call allocates a new stack frame in memory. Without a base case to terminate, the call stack grows continuously until memory is exhausted, throwing a **Stack Overflow** error.
+
+#### Recursion Anatomy & The Call Stack in TypeScript
+
+Every recursive function requires two core components:
+1. **Base Case:** The condition under which the function stops calling itself, preventing an infinite loop.
+2. **Recursive Case:** The branch where the function calls itself with a smaller or simpler input, moving closer to the base case.
+
+```typescript
+/**
+ * Classic Factorial using Recursion
+ * Time Complexity: O(n)
+ * Space Complexity: O(n) call stack frames
+ */
+function factorial(x: number): number {
+  if (x <= 1) {
+    return 1; // Base case
+  }
+  return x * factorial(x - 1); // Recursive case
+}
+```
+
+##### Visualizing the Call Stack for `factorial(3)`
+
+The call stack operates on a **LIFO** (Last In, First Out) principle:
+
+```text
+[1. PUSH PHASE: Building up the stack frames]
+Step 1: Call factorial(3)
+| factorial(3) | -> waiting for factorial(2)
+
+Step 2: factorial(3) calls factorial(2)
+| factorial(2) | -> waiting for factorial(1)
+| factorial(3) | -> suspended
+
+Step 3: factorial(2) calls factorial(1)
+| factorial(1) | -> reaches BASE CASE (returns 1)
+| factorial(2) | -> suspended
+| factorial(3) | -> suspended
+
+----------------------------------------------------
+[2. POP PHASE: Resolving and unwinding the stack]
+Step 4: factorial(1) returns 1 and is popped
+| factorial(2) | -> computes 2 * 1 = 2, returns 2
+| factorial(3) | -> suspended
+
+Step 5: factorial(2) returns 2 and is popped
+| factorial(3) | -> computes 3 * 2 = 6, returns 6
+
+Step 6: factorial(3) returns 6 -> Final Result = 6 (Stack is now empty)
+```
+
+##### Stack Overflow & Memory Constraints in JavaScript / V8
+- Each function invocation allocates a stack frame storing:
+  - Local variables and arguments.
+  - Return address (where in memory to return once execution completes).
+- In modern JavaScript engines (V8 in Node.js / Chrome), the maximum call stack size is typically around **$10,000$ to $12,000$ frames**.
+- If recursion exceeds this threshold without reaching a base case, the engine aborts with `RangeError: Maximum call stack size exceeded`.
+- **Mitigation:** When recursion depth may exceed $10^4$, convert to an iterative loop with an explicit array stack, or use Tail Call Optimization where supported.
 
 ---
 
