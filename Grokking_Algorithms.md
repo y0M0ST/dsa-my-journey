@@ -32,6 +32,65 @@
 
 **1.6 You want to read the numbers of just the As. (This is a tricky one! It involves concepts that are covered more in chapter 4. Read the answer—you may be surprised!)** - *O(n)*
 
+#### Binary Search Implementation in TypeScript
+
+Binary Search works exclusively on **sorted collections**, halving the search space at each step.
+
+```typescript
+/**
+ * Classic Iterative Binary Search
+ * Time Complexity: O(log n)
+ * Space Complexity: O(1)
+ */
+function binarySearch(arr: number[], target: number): number {
+  let low = 0;
+  let high = arr.length - 1;
+
+  while (low <= high) {
+    // Avoid integer overflow: equivalent to Math.floor((low + high) / 2)
+    const mid = low + Math.floor((high - low) / 2);
+    const guess = arr[mid]!;
+
+    if (guess === target) {
+      return mid; // Target found
+    } else if (guess > target) {
+      high = mid - 1; // Target is in the left half
+    } else {
+      low = mid + 1; // Target is in the right half
+    }
+  }
+
+  return -1; // Target not found
+}
+
+/**
+ * Leftmost / Lower Bound Binary Search (Search Insert Position)
+ * Returns the first index where arr[index] >= target
+ * Time Complexity: O(log n)
+ * Space Complexity: O(1)
+ */
+function lowerBound(arr: number[], target: number): number {
+  let low = 0;
+  let high = arr.length; // Range [0, n] allows inserting at the end
+
+  while (low < high) {
+    const mid = low + Math.floor((high - low) / 2);
+    if (arr[mid]! >= target) {
+      high = mid; // Narrow down to the left boundary
+    } else {
+      low = mid + 1;
+    }
+  }
+
+  return low;
+}
+```
+
+- **Why is Binary Search $O(\log n)$?**
+  With each comparison, the search range is divided by 2:
+  $$\frac{n}{2^k} = 1 \implies 2^k = n \implies k = \log_2 n$$
+  For an array of $1,000,000$ elements, Binary Search takes at most $\lceil \log_2(1,000,000) \rceil = \mathbf{20}$ comparisons, whereas linear search could take $1,000,000$.
+
 ---
 
 ### Chapter 2: Selection Sort, Arrays & Linked Lists
@@ -138,6 +197,64 @@ function selectionSortInPlace(arr: number[]): number[] {
 
 **3.2. Suppose you accidentally write an infinite recursive function that keeps calling itself. What happens to the stack?**
 - Every function call allocates a new stack frame in memory. Without a base case to terminate, the call stack grows continuously until memory is exhausted, throwing a **Stack Overflow** error.
+
+#### Recursion Anatomy & The Call Stack in TypeScript
+
+Every recursive function requires two core components:
+1. **Base Case:** The condition under which the function stops calling itself, preventing an infinite loop.
+2. **Recursive Case:** The branch where the function calls itself with a smaller or simpler input, moving closer to the base case.
+
+```typescript
+/**
+ * Classic Factorial using Recursion
+ * Time Complexity: O(n)
+ * Space Complexity: O(n) call stack frames
+ */
+function factorial(x: number): number {
+  if (x <= 1) {
+    return 1; // Base case
+  }
+  return x * factorial(x - 1); // Recursive case
+}
+```
+
+##### Visualizing the Call Stack for `factorial(3)`
+
+The call stack operates on a **LIFO** (Last In, First Out) principle:
+
+```text
+[1. PUSH PHASE: Building up the stack frames]
+Step 1: Call factorial(3)
+| factorial(3) | -> waiting for factorial(2)
+
+Step 2: factorial(3) calls factorial(2)
+| factorial(2) | -> waiting for factorial(1)
+| factorial(3) | -> suspended
+
+Step 3: factorial(2) calls factorial(1)
+| factorial(1) | -> reaches BASE CASE (returns 1)
+| factorial(2) | -> suspended
+| factorial(3) | -> suspended
+
+----------------------------------------------------
+[2. POP PHASE: Resolving and unwinding the stack]
+Step 4: factorial(1) returns 1 and is popped
+| factorial(2) | -> computes 2 * 1 = 2, returns 2
+| factorial(3) | -> suspended
+
+Step 5: factorial(2) returns 2 and is popped
+| factorial(3) | -> computes 3 * 2 = 6, returns 6
+
+Step 6: factorial(3) returns 6 -> Final Result = 6 (Stack is now empty)
+```
+
+##### Stack Overflow & Memory Constraints in JavaScript / V8
+- Each function invocation allocates a stack frame storing:
+  - Local variables and arguments.
+  - Return address (where in memory to return once execution completes).
+- In modern JavaScript engines (V8 in Node.js / Chrome), the maximum call stack size is typically around **$10,000$ to $12,000$ frames**.
+- If recursion exceeds this threshold without reaching a base case, the engine aborts with `RangeError: Maximum call stack size exceeded`.
+- **Mitigation:** When recursion depth may exceed $10^4$, convert to an iterative loop with an explicit array stack, or use Tail Call Optimization where supported.
 
 ---
 
@@ -322,6 +439,117 @@ Total work: n + (n - 1) + (n - 2) + ... + 1 = O(n^2)
 - **Worst Case (Heavy collisions):** $O(n)$.
 - **Load Factor:** $\frac{\text{number of items}}{\text{total number of slots}}$. When load factor $> 0.7$, we should resize (double table size and re-hash items) to maintain $O(1)$ performance.
 
+#### Hash Table Implementation in TypeScript (Separate Chaining)
+
+In practice, hash collisions are inevitable by the Pigeonhole Principle. One of the most standard collision-resolution strategies is **Separate Chaining**, where each table slot holds a bucket (array or linked list) of key-value pairs.
+
+```typescript
+class HashTable<V> {
+  private buckets: Array<Array<[string, V]>>;
+  private capacity: number;
+  private count: number;
+  private readonly maxLoadFactor = 0.7;
+
+  constructor(capacity: number = 16) {
+    this.capacity = capacity;
+    this.count = 0;
+    this.buckets = Array.from({ length: capacity }, () => []);
+  }
+
+  /**
+   * Polynomial rolling hash function (DJB2 variant)
+   */
+  private hash(key: string): number {
+    let hashVal = 5381;
+    for (let i = 0; i < key.length; i++) {
+      hashVal = (hashVal * 33) ^ key.charCodeAt(i);
+    }
+    return Math.abs(hashVal % this.capacity);
+  }
+
+  /**
+   * Insert or update key-value pair
+   * Time Complexity: O(1) average, O(n) worst case
+   */
+  public set(key: string, value: V): void {
+    if (this.count / this.capacity >= this.maxLoadFactor) {
+      this.resize(this.capacity * 2);
+    }
+
+    const index = this.hash(key);
+    const bucket = this.buckets[index]!;
+
+    for (let i = 0; i < bucket.length; i++) {
+      if (bucket[i]![0] === key) {
+        bucket[i]![1] = value; // Update existing key
+        return;
+      }
+    }
+
+    bucket.push([key, value]);
+    this.count++;
+  }
+
+  /**
+   * Retrieve value by key
+   * Time Complexity: O(1) average, O(n) worst case
+   */
+  public get(key: string): V | undefined {
+    const index = this.hash(key);
+    const bucket = this.buckets[index]!;
+
+    for (const [k, v] of bucket) {
+      if (k === key) return v;
+    }
+    return undefined;
+  }
+
+  /**
+   * Check if key exists
+   */
+  public has(key: string): boolean {
+    return this.get(key) !== undefined;
+  }
+
+  /**
+   * Delete key from table
+   */
+  public delete(key: string): boolean {
+    const index = this.hash(key);
+    const bucket = this.buckets[index]!;
+
+    for (let i = 0; i < bucket.length; i++) {
+      if (bucket[i]![0] === key) {
+        bucket.splice(i, 1);
+        this.count--;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Re-hashes all existing entries into a newly sized bucket array
+   */
+  private resize(newCapacity: number): void {
+    const oldBuckets = this.buckets;
+    this.capacity = newCapacity;
+    this.count = 0;
+    this.buckets = Array.from({ length: newCapacity }, () => []);
+
+    for (const bucket of oldBuckets) {
+      for (const [key, value] of bucket) {
+        this.set(key, value);
+      }
+    }
+  }
+
+  public get size(): number {
+    return this.count;
+  }
+}
+```
+
 ---
 
 ### Chapter 6: Breadth-First Search (BFS) & Graphs
@@ -368,6 +596,115 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 ```
 - **Time Complexity:** $O(V + E)$ where $V$ is number of vertices (nodes) and $E$ is number of edges (connections).
 - **Space Complexity:** $O(V)$ for the queue and visited set.
+
+#### 6.6. Shortest Path Reconstruction with BFS
+
+In real applications (e.g. navigation, social network shortest connection), we don't just want to know *if* a path exists—we need the actual sequence of nodes forming the path.
+
+```typescript
+/**
+ * BFS Shortest Path Reconstruction
+ * Returns the shortest path from start to target, or null if unreachable.
+ * Time Complexity: O(V + E)
+ * Space Complexity: O(V)
+ */
+function findShortestPath(
+  graph: Record<string, string[]>,
+  start: string,
+  target: string
+): string[] | null {
+  if (start === target) return [start];
+
+  const queue: string[] = [start];
+  const visited = new Set<string>([start]);
+  const parent = new Map<string, string | null>();
+  parent.set(start, null);
+
+  let head = 0; // Index pointer avoids O(n) array.shift() overhead
+  let found = false;
+
+  while (head < queue.length) {
+    const current = queue[head++]!;
+    if (current === target) {
+      found = true;
+      break;
+    }
+
+    for (const neighbor of graph[current] ?? []) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        parent.set(neighbor, current);
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  if (!found) return null;
+
+  // Reconstruct path by backtracking parent pointers
+  const path: string[] = [];
+  let curr: string | null = target;
+  while (curr !== null) {
+    path.push(curr);
+    curr = parent.get(curr) ?? null;
+  }
+
+  return path.reverse();
+}
+```
+
+#### 6.7. Topological Sort in TypeScript (Kahn's Algorithm - BFS Approach)
+
+Directly applied to Exercise 6.3 (validating and ordering morning routines and dependency graphs):
+
+```typescript
+/**
+ * Kahn's Algorithm for Topological Sorting (DAG dependency resolution)
+ * Time Complexity: O(V + E)
+ * Space Complexity: O(V + E)
+ */
+function topologicalSort(
+  nodes: string[],
+  edges: [from: string, to: string][]
+): string[] | null {
+  const adj = new Map<string, string[]>();
+  const inDegree = new Map<string, number>();
+
+  for (const node of nodes) {
+    adj.set(node, []);
+    inDegree.set(node, 0);
+  }
+
+  for (const [from, to] of edges) {
+    adj.get(from)!.push(to);
+    inDegree.set(to, (inDegree.get(to) ?? 0) + 1);
+  }
+
+  // Queue all nodes with in-degree 0 (no prerequisites)
+  const queue: string[] = [];
+  for (const [node, degree] of inDegree.entries()) {
+    if (degree === 0) queue.push(node);
+  }
+
+  const order: string[] = [];
+  let head = 0;
+
+  while (head < queue.length) {
+    const u = queue[head++]!;
+    order.push(u);
+
+    for (const neighbor of adj.get(u) ?? []) {
+      inDegree.set(neighbor, inDegree.get(neighbor)! - 1);
+      if (inDegree.get(neighbor) === 0) {
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  // If order length matches total nodes, DAG is acyclic and sorted; otherwise, cycle exists
+  return order.length === nodes.length ? order : null;
+}
+```
 
 ---
 
@@ -567,6 +904,87 @@ Graph structure: `Start -> A (5)`, `Start -> B (2)`, `B -> A (8)`, `B -> D (7)`,
 - "Find all combinations of X" or "Find every possible route through X" usually means NP-complete.
 - Can't be broken down into smaller sub-problems (unlike Dynamic Programming or D&C).
 - If the problem involves a sequence (like traveling salesperson) or a set of objects (like knapsack/set cover) and is hard to solve.
+
+#### 8.9. Greedy Set-Covering Implementation in TypeScript
+
+The exact solution to set covering requires checking all $2^n$ station subsets (NP-complete). The greedy approximation picks the locally best station at each step and runs in $O(n^2)$ time:
+
+```typescript
+/**
+ * Greedy Set-Covering Approximation Algorithm
+ * Time Complexity: O(stations * states)
+ * Approximation Factor: O(log n) compared to the optimal subset
+ */
+function greedySetCover(
+  statesNeeded: Set<string>,
+  stations: Record<string, Set<string>>
+): Set<string> {
+  const finalStations = new Set<string>();
+  const remainingStates = new Set<string>(statesNeeded);
+
+  while (remainingStates.size > 0) {
+    let bestStation: string | null = null;
+    let statesCovered = new Set<string>();
+
+    for (const station in stations) {
+      const statesForStation = stations[station]!;
+      // Find intersection of remainingStates and statesForStation
+      const covered = new Set(
+        [...remainingStates].filter((state) => statesForStation.has(state))
+      );
+
+      if (covered.size > statesCovered.size) {
+        bestStation = station;
+        statesCovered = covered;
+      }
+    }
+
+    if (!bestStation || statesCovered.size === 0) {
+      break; // No further coverage possible
+    }
+
+    finalStations.add(bestStation);
+    for (const state of statesCovered) {
+      remainingStates.delete(state);
+    }
+  }
+
+  return finalStations;
+}
+```
+
+#### 8.10. Interval Scheduling (Greedy Activity Selection) in TypeScript
+
+Classic interview greedy pattern (e.g. LeetCode 435 / Non-overlapping Intervals):
+1. Sort intervals by **end time** ascending.
+2. Greedily pick intervals that end earliest, leaving the maximum remaining time for subsequent intervals.
+
+```typescript
+/**
+ * Activity Selection / Max Non-overlapping Intervals
+ * Time Complexity: O(n log n) due to sorting
+ * Space Complexity: O(1) auxiliary
+ */
+function maxNonOverlappingIntervals(intervals: [start: number, end: number][]): number {
+  if (intervals.length === 0) return 0;
+
+  // Sort by end time ascending
+  intervals.sort((a, b) => a[1] - b[1]);
+
+  let count = 1;
+  let lastEnd = intervals[0]![1];
+
+  for (let i = 1; i < intervals.length; i++) {
+    const [start, end] = intervals[i]!;
+    if (start >= lastEnd) {
+      count++;
+      lastEnd = end;
+    }
+  }
+
+  return count;
+}
+```
 
 ---
 
@@ -786,6 +1204,90 @@ function longestCommonSubstring(s1: string, s2: string): string {
 - **OCR (Optical Character Recognition):** Classifying handwritten digits (e.g. MNIST) by treating pixel intensities as high-dimensional coordinates.
 - **Spam Filtering:** Classifying incoming emails based on word-frequency vectors.
 
+#### 10.6. K-Nearest Neighbors (KNN) Implementation in TypeScript
+
+```typescript
+interface LabeledPoint {
+  features: number[];
+  label: string;
+}
+
+interface ContinuousPoint {
+  features: number[];
+  value: number;
+}
+
+/**
+ * Calculates Euclidean distance between two N-dimensional feature vectors
+ */
+function euclideanDistance(a: number[], b: number[]): number {
+  let sumSq = 0;
+  for (let i = 0; i < a.length; i++) {
+    const diff = (a[i] ?? 0) - (b[i] ?? 0);
+    sumSq += diff * diff;
+  }
+  return Math.sqrt(sumSq);
+}
+
+/**
+ * KNN Classification (Discrete Majority Vote)
+ * Time Complexity: O(n * d + n log n) where n is dataset size, d is dimensions
+ */
+function knnClassify(
+  dataset: LabeledPoint[],
+  query: number[],
+  k: number
+): string {
+  // 1. Calculate distance from query to every dataset point
+  const distances = dataset.map((point) => ({
+    label: point.label,
+    dist: euclideanDistance(point.features, query),
+  }));
+
+  // 2. Sort by distance ascending and take top K neighbors
+  distances.sort((a, b) => a.dist - b.dist);
+  const kNearest = distances.slice(0, k);
+
+  // 3. Majority vote
+  const votes = new Map<string, number>();
+  for (const neighbor of kNearest) {
+    votes.set(neighbor.label, (votes.get(neighbor.label) ?? 0) + 1);
+  }
+
+  let winner = '';
+  let maxVotes = -1;
+  for (const [label, count] of votes.entries()) {
+    if (count > maxVotes) {
+      maxVotes = count;
+      winner = label;
+    }
+  }
+
+  return winner;
+}
+
+/**
+ * KNN Regression (Continuous Numerical Average)
+ * Time Complexity: O(n * d + n log n)
+ */
+function knnRegress(
+  dataset: ContinuousPoint[],
+  query: number[],
+  k: number
+): number {
+  const distances = dataset.map((point) => ({
+    value: point.value,
+    dist: euclideanDistance(point.features, query),
+  }));
+
+  distances.sort((a, b) => a.dist - b.dist);
+  const kNearest = distances.slice(0, k);
+
+  const sum = kNearest.reduce((acc, curr) => acc + curr.value, 0);
+  return sum / kNearest.length;
+}
+```
+
 ---
 
 ### Chapter 11: Where to Go Next? (Advanced Topics & Data Structures)
@@ -857,6 +1359,139 @@ function longestCommonSubstring(s1: string, s2: string): string {
     $$x + 2y \le 20, \quad 2x + y \le 18, \quad x \ge 0, \quad y \ge 0$$
 - **The Simplex Algorithm:** Traverses the vertices (corner points) of the feasible convex polygon/polytope to find the optimal global maximum or minimum.
 - *Real-World Applications:* Supply chain logistics, airline crew scheduling, factory resource allocation.
+
+#### 11.9. Binary Search Tree (BST) Implementation in TypeScript
+
+```typescript
+class BSTNode {
+  val: number;
+  left: BSTNode | null = null;
+  right: BSTNode | null = null;
+
+  constructor(val: number) {
+    this.val = val;
+  }
+}
+
+class BinarySearchTree {
+  root: BSTNode | null = null;
+
+  /**
+   * Inserts a value into the BST
+   * Time Complexity: O(log n) average, O(n) worst case
+   */
+  insert(val: number): void {
+    const newNode = new BSTNode(val);
+    if (!this.root) {
+      this.root = newNode;
+      return;
+    }
+
+    let curr = this.root;
+    while (true) {
+      if (val < curr.val) {
+        if (!curr.left) {
+          curr.left = newNode;
+          return;
+        }
+        curr = curr.left;
+      } else {
+        if (!curr.right) {
+          curr.right = newNode;
+          return;
+        }
+        curr = curr.right;
+      }
+    }
+  }
+
+  /**
+   * Searches for a value in the BST
+   * Time Complexity: O(log n) average, O(n) worst case
+   */
+  search(val: number): boolean {
+    let curr = this.root;
+    while (curr !== null) {
+      if (curr.val === val) return true;
+      curr = val < curr.val ? curr.left : curr.right;
+    }
+    return false;
+  }
+
+  /**
+   * In-order traversal yields elements in sorted ascending order
+   */
+  inOrder(node: BSTNode | null = this.root, result: number[] = []): number[] {
+    if (node) {
+      this.inOrder(node.left, result);
+      result.push(node.val);
+      this.inOrder(node.right, result);
+    }
+    return result;
+  }
+}
+```
+
+#### 11.10. Bloom Filter Implementation in TypeScript
+
+```typescript
+class BloomFilter {
+  private bitArray: Uint8Array;
+  private size: number;
+  private hashSeeds: number[];
+
+  constructor(size: number = 1024, hashSeeds: number[] = [31, 37, 41]) {
+    this.size = size;
+    this.bitArray = new Uint8Array(Math.ceil(size / 8));
+    this.hashSeeds = hashSeeds;
+  }
+
+  private hash(str: string, seed: number): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash * seed + str.charCodeAt(i)) % this.size;
+    }
+    return Math.abs(hash);
+  }
+
+  private setBit(index: number): void {
+    const byteIndex = Math.floor(index / 8);
+    const bitOffset = index % 8;
+    this.bitArray[byteIndex]! |= 1 << bitOffset;
+  }
+
+  private getBit(index: number): boolean {
+    const byteIndex = Math.floor(index / 8);
+    const bitOffset = index % 8;
+    return (this.bitArray[byteIndex]! & (1 << bitOffset)) !== 0;
+  }
+
+  /**
+   * Adds an element to the Bloom filter
+   */
+  add(item: string): void {
+    for (const seed of this.hashSeeds) {
+      const bitIndex = this.hash(item, seed);
+      this.setBit(bitIndex);
+    }
+  }
+
+  /**
+   * Queries membership:
+   * Returns false => Guaranteed 100% NOT in set (No false negatives).
+   * Returns true  => PROBABLY in set (False positive possible).
+   */
+  mightContain(item: string): boolean {
+    for (const seed of this.hashSeeds) {
+      const bitIndex = this.hash(item, seed);
+      if (!this.getBit(bitIndex)) {
+        return false; // Definitely not present
+      }
+    }
+    return true; // Probably present
+  }
+}
+```
 
 ---
 
@@ -973,3 +1608,15 @@ Mapping concepts from *Grokking Algorithms* directly to the active patterns in t
 
 3. **Map vs. Object `{}`:**
    - Always prefer `new Map()` for hash maps in DSA because it avoids prototype key collisions, maintains insertion order, supports non-string keys, and provides clean `.has()`, `.get()`, `.set()`, `.delete()` methods in $O(1)$.
+
+4. **Default Lexicographical `Array.prototype.sort()`:**
+   - In JavaScript, `[10, 2, 5].sort()` produces `[10, 2, 5]` because elements are converted to strings prior to comparison (`"10" < "2"`).
+   - *Fix:* Always provide an explicit comparator for numbers: `arr.sort((a, b) => a - b)`.
+
+5. **Absence of Native Priority Queue / Min-Heap:**
+   - ECMAScript standard library has no built-in `PriorityQueue` or `Heap` (unlike Python's `heapq` or C++'s `std::priority_queue`).
+   - For Dijkstra, Top K, or K-way merge problems, either implement a concise binary heap or use an array with sorted insertion if $N$ is small.
+
+6. **Call Stack Limit (~10,000 frames) & Iterative DFS:**
+   - V8 engines limit call stack recursion depth to $\approx 10^4$ frames. Deep recursion (e.g. DFS on large trees or 2D grids) throws `RangeError: Maximum call stack size exceeded`.
+   - *Fix:* Rewrite recursion into an iterative loop with an explicit array stack `stack: [number, number][] = [[startRow, startCol]]`.
