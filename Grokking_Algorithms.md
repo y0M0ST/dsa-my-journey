@@ -439,6 +439,117 @@ Total work: n + (n - 1) + (n - 2) + ... + 1 = O(n^2)
 - **Worst Case (Heavy collisions):** $O(n)$.
 - **Load Factor:** $\frac{\text{number of items}}{\text{total number of slots}}$. When load factor $> 0.7$, we should resize (double table size and re-hash items) to maintain $O(1)$ performance.
 
+#### Hash Table Implementation in TypeScript (Separate Chaining)
+
+In practice, hash collisions are inevitable by the Pigeonhole Principle. One of the most standard collision-resolution strategies is **Separate Chaining**, where each table slot holds a bucket (array or linked list) of key-value pairs.
+
+```typescript
+class HashTable<V> {
+  private buckets: Array<Array<[string, V]>>;
+  private capacity: number;
+  private count: number;
+  private readonly maxLoadFactor = 0.7;
+
+  constructor(capacity: number = 16) {
+    this.capacity = capacity;
+    this.count = 0;
+    this.buckets = Array.from({ length: capacity }, () => []);
+  }
+
+  /**
+   * Polynomial rolling hash function (DJB2 variant)
+   */
+  private hash(key: string): number {
+    let hashVal = 5381;
+    for (let i = 0; i < key.length; i++) {
+      hashVal = (hashVal * 33) ^ key.charCodeAt(i);
+    }
+    return Math.abs(hashVal % this.capacity);
+  }
+
+  /**
+   * Insert or update key-value pair
+   * Time Complexity: O(1) average, O(n) worst case
+   */
+  public set(key: string, value: V): void {
+    if (this.count / this.capacity >= this.maxLoadFactor) {
+      this.resize(this.capacity * 2);
+    }
+
+    const index = this.hash(key);
+    const bucket = this.buckets[index]!;
+
+    for (let i = 0; i < bucket.length; i++) {
+      if (bucket[i]![0] === key) {
+        bucket[i]![1] = value; // Update existing key
+        return;
+      }
+    }
+
+    bucket.push([key, value]);
+    this.count++;
+  }
+
+  /**
+   * Retrieve value by key
+   * Time Complexity: O(1) average, O(n) worst case
+   */
+  public get(key: string): V | undefined {
+    const index = this.hash(key);
+    const bucket = this.buckets[index]!;
+
+    for (const [k, v] of bucket) {
+      if (k === key) return v;
+    }
+    return undefined;
+  }
+
+  /**
+   * Check if key exists
+   */
+  public has(key: string): boolean {
+    return this.get(key) !== undefined;
+  }
+
+  /**
+   * Delete key from table
+   */
+  public delete(key: string): boolean {
+    const index = this.hash(key);
+    const bucket = this.buckets[index]!;
+
+    for (let i = 0; i < bucket.length; i++) {
+      if (bucket[i]![0] === key) {
+        bucket.splice(i, 1);
+        this.count--;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Re-hashes all existing entries into a newly sized bucket array
+   */
+  private resize(newCapacity: number): void {
+    const oldBuckets = this.buckets;
+    this.capacity = newCapacity;
+    this.count = 0;
+    this.buckets = Array.from({ length: newCapacity }, () => []);
+
+    for (const bucket of oldBuckets) {
+      for (const [key, value] of bucket) {
+        this.set(key, value);
+      }
+    }
+  }
+
+  public get size(): number {
+    return this.count;
+  }
+}
+```
+
 ---
 
 ### Chapter 6: Breadth-First Search (BFS) & Graphs
@@ -485,6 +596,115 @@ function bfs(graph: Record<string, string[]>, start: string, target: string): bo
 ```
 - **Time Complexity:** $O(V + E)$ where $V$ is number of vertices (nodes) and $E$ is number of edges (connections).
 - **Space Complexity:** $O(V)$ for the queue and visited set.
+
+#### 6.6. Shortest Path Reconstruction with BFS
+
+In real applications (e.g. navigation, social network shortest connection), we don't just want to know *if* a path exists—we need the actual sequence of nodes forming the path.
+
+```typescript
+/**
+ * BFS Shortest Path Reconstruction
+ * Returns the shortest path from start to target, or null if unreachable.
+ * Time Complexity: O(V + E)
+ * Space Complexity: O(V)
+ */
+function findShortestPath(
+  graph: Record<string, string[]>,
+  start: string,
+  target: string
+): string[] | null {
+  if (start === target) return [start];
+
+  const queue: string[] = [start];
+  const visited = new Set<string>([start]);
+  const parent = new Map<string, string | null>();
+  parent.set(start, null);
+
+  let head = 0; // Index pointer avoids O(n) array.shift() overhead
+  let found = false;
+
+  while (head < queue.length) {
+    const current = queue[head++]!;
+    if (current === target) {
+      found = true;
+      break;
+    }
+
+    for (const neighbor of graph[current] ?? []) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        parent.set(neighbor, current);
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  if (!found) return null;
+
+  // Reconstruct path by backtracking parent pointers
+  const path: string[] = [];
+  let curr: string | null = target;
+  while (curr !== null) {
+    path.push(curr);
+    curr = parent.get(curr) ?? null;
+  }
+
+  return path.reverse();
+}
+```
+
+#### 6.7. Topological Sort in TypeScript (Kahn's Algorithm - BFS Approach)
+
+Directly applied to Exercise 6.3 (validating and ordering morning routines and dependency graphs):
+
+```typescript
+/**
+ * Kahn's Algorithm for Topological Sorting (DAG dependency resolution)
+ * Time Complexity: O(V + E)
+ * Space Complexity: O(V + E)
+ */
+function topologicalSort(
+  nodes: string[],
+  edges: [from: string, to: string][]
+): string[] | null {
+  const adj = new Map<string, string[]>();
+  const inDegree = new Map<string, number>();
+
+  for (const node of nodes) {
+    adj.set(node, []);
+    inDegree.set(node, 0);
+  }
+
+  for (const [from, to] of edges) {
+    adj.get(from)!.push(to);
+    inDegree.set(to, (inDegree.get(to) ?? 0) + 1);
+  }
+
+  // Queue all nodes with in-degree 0 (no prerequisites)
+  const queue: string[] = [];
+  for (const [node, degree] of inDegree.entries()) {
+    if (degree === 0) queue.push(node);
+  }
+
+  const order: string[] = [];
+  let head = 0;
+
+  while (head < queue.length) {
+    const u = queue[head++]!;
+    order.push(u);
+
+    for (const neighbor of adj.get(u) ?? []) {
+      inDegree.set(neighbor, inDegree.get(neighbor)! - 1);
+      if (inDegree.get(neighbor) === 0) {
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  // If order length matches total nodes, DAG is acyclic and sorted; otherwise, cycle exists
+  return order.length === nodes.length ? order : null;
+}
+```
 
 ---
 
