@@ -905,6 +905,87 @@ Graph structure: `Start -> A (5)`, `Start -> B (2)`, `B -> A (8)`, `B -> D (7)`,
 - Can't be broken down into smaller sub-problems (unlike Dynamic Programming or D&C).
 - If the problem involves a sequence (like traveling salesperson) or a set of objects (like knapsack/set cover) and is hard to solve.
 
+#### 8.9. Greedy Set-Covering Implementation in TypeScript
+
+The exact solution to set covering requires checking all $2^n$ station subsets (NP-complete). The greedy approximation picks the locally best station at each step and runs in $O(n^2)$ time:
+
+```typescript
+/**
+ * Greedy Set-Covering Approximation Algorithm
+ * Time Complexity: O(stations * states)
+ * Approximation Factor: O(log n) compared to the optimal subset
+ */
+function greedySetCover(
+  statesNeeded: Set<string>,
+  stations: Record<string, Set<string>>
+): Set<string> {
+  const finalStations = new Set<string>();
+  const remainingStates = new Set<string>(statesNeeded);
+
+  while (remainingStates.size > 0) {
+    let bestStation: string | null = null;
+    let statesCovered = new Set<string>();
+
+    for (const station in stations) {
+      const statesForStation = stations[station]!;
+      // Find intersection of remainingStates and statesForStation
+      const covered = new Set(
+        [...remainingStates].filter((state) => statesForStation.has(state))
+      );
+
+      if (covered.size > statesCovered.size) {
+        bestStation = station;
+        statesCovered = covered;
+      }
+    }
+
+    if (!bestStation || statesCovered.size === 0) {
+      break; // No further coverage possible
+    }
+
+    finalStations.add(bestStation);
+    for (const state of statesCovered) {
+      remainingStates.delete(state);
+    }
+  }
+
+  return finalStations;
+}
+```
+
+#### 8.10. Interval Scheduling (Greedy Activity Selection) in TypeScript
+
+Classic interview greedy pattern (e.g. LeetCode 435 / Non-overlapping Intervals):
+1. Sort intervals by **end time** ascending.
+2. Greedily pick intervals that end earliest, leaving the maximum remaining time for subsequent intervals.
+
+```typescript
+/**
+ * Activity Selection / Max Non-overlapping Intervals
+ * Time Complexity: O(n log n) due to sorting
+ * Space Complexity: O(1) auxiliary
+ */
+function maxNonOverlappingIntervals(intervals: [start: number, end: number][]): number {
+  if (intervals.length === 0) return 0;
+
+  // Sort by end time ascending
+  intervals.sort((a, b) => a[1] - b[1]);
+
+  let count = 1;
+  let lastEnd = intervals[0]![1];
+
+  for (let i = 1; i < intervals.length; i++) {
+    const [start, end] = intervals[i]!;
+    if (start >= lastEnd) {
+      count++;
+      lastEnd = end;
+    }
+  }
+
+  return count;
+}
+```
+
 ---
 
 ### Chapter 9: Dynamic Programming (DP)
@@ -1122,6 +1203,90 @@ function longestCommonSubstring(s1: string, s2: string): string {
 - **Recommendation Engines:** Netflix movie recommendations, Spotify playlist suggestions.
 - **OCR (Optical Character Recognition):** Classifying handwritten digits (e.g. MNIST) by treating pixel intensities as high-dimensional coordinates.
 - **Spam Filtering:** Classifying incoming emails based on word-frequency vectors.
+
+#### 10.6. K-Nearest Neighbors (KNN) Implementation in TypeScript
+
+```typescript
+interface LabeledPoint {
+  features: number[];
+  label: string;
+}
+
+interface ContinuousPoint {
+  features: number[];
+  value: number;
+}
+
+/**
+ * Calculates Euclidean distance between two N-dimensional feature vectors
+ */
+function euclideanDistance(a: number[], b: number[]): number {
+  let sumSq = 0;
+  for (let i = 0; i < a.length; i++) {
+    const diff = (a[i] ?? 0) - (b[i] ?? 0);
+    sumSq += diff * diff;
+  }
+  return Math.sqrt(sumSq);
+}
+
+/**
+ * KNN Classification (Discrete Majority Vote)
+ * Time Complexity: O(n * d + n log n) where n is dataset size, d is dimensions
+ */
+function knnClassify(
+  dataset: LabeledPoint[],
+  query: number[],
+  k: number
+): string {
+  // 1. Calculate distance from query to every dataset point
+  const distances = dataset.map((point) => ({
+    label: point.label,
+    dist: euclideanDistance(point.features, query),
+  }));
+
+  // 2. Sort by distance ascending and take top K neighbors
+  distances.sort((a, b) => a.dist - b.dist);
+  const kNearest = distances.slice(0, k);
+
+  // 3. Majority vote
+  const votes = new Map<string, number>();
+  for (const neighbor of kNearest) {
+    votes.set(neighbor.label, (votes.get(neighbor.label) ?? 0) + 1);
+  }
+
+  let winner = '';
+  let maxVotes = -1;
+  for (const [label, count] of votes.entries()) {
+    if (count > maxVotes) {
+      maxVotes = count;
+      winner = label;
+    }
+  }
+
+  return winner;
+}
+
+/**
+ * KNN Regression (Continuous Numerical Average)
+ * Time Complexity: O(n * d + n log n)
+ */
+function knnRegress(
+  dataset: ContinuousPoint[],
+  query: number[],
+  k: number
+): number {
+  const distances = dataset.map((point) => ({
+    value: point.value,
+    dist: euclideanDistance(point.features, query),
+  }));
+
+  distances.sort((a, b) => a.dist - b.dist);
+  const kNearest = distances.slice(0, k);
+
+  const sum = kNearest.reduce((acc, curr) => acc + curr.value, 0);
+  return sum / kNearest.length;
+}
+```
 
 ---
 
