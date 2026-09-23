@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { shipWithinDays } from './11-ship-within-days.js';
+import { shipWithinDays } from './1011-ship-within-days.js';
 
 describe('Pattern: Binary_Search -> 11-ship-within-days', () => {
   const testCases = [
