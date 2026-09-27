@@ -5,16 +5,18 @@
  * Space Complexity: O(1)
  */
 export function findMin(nums: number[]): number {
-  let left: number = 0
-  let right: number = nums.length - 1
-  if (nums.length === 0) return 0
+  let left: number = 0;
+  let right: number = nums.length - 1;
+  if (nums.length === 0) return 0;
+
   while (left < right) {
-    let mid: number = left + Math.floor((right - left) / 2)
-    if (nums[mid] > nums[right]) {
-      left = mid + 1
+    const mid: number = left + Math.floor((right - left) / 2);
+    if (nums[mid]! > nums[right]!) {
+      left = mid + 1;
     } else {
-      right = mid
+      right = mid;
     }
-  }  
-  return nums[left]
-}
+  }
+
+  return nums[left]!;
+}
