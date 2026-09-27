@@ -11,12 +11,12 @@ export function maxArea(height: number[]): number {
 
   while (left < right) {
     const currentWidth = right - left;
-    const currentHeight = Math.min(height[left], height[right]);
+    const currentHeight = Math.min(height[left]!, height[right]!);
     const currentWater = currentWidth * currentHeight;
 
     maxWater = Math.max(maxWater, currentWater);
 
-    if (height[left] < height[right]) {
+    if (height[left]! < height[right]!) {
       left++;
     } else {
       right--;
@@ -25,4 +25,3 @@ export function maxArea(height: number[]): number {
 
   return maxWater;
 }
-
