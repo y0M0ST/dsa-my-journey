@@ -1,8 +1,8 @@
 /**
  * Problem: 1011-ship-within-days
  * Pattern: Binary_Search
- * Time Complexity: O(?)
- * Space Complexity: O(?)
+ * Time Complexity: O(n * log(S - M)) - With n = packages count, S = total weight, M = max package weight
+ * Space Complexity: O(1)
  */
 export function shipWithinDays(weights: number[], days: number): number {
   let low = Math.max(...weights);

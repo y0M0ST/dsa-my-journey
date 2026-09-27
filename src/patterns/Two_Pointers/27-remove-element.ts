@@ -1,17 +1,18 @@
 /**
  * Problem: 27-remove-element
  * Pattern: Two Pointers
- * Time Complexity: O(?)
- * Space Complexity: O(?)
+ * Time Complexity: O(n)
+ * Space Complexity: O(1) - In-place modification
  */
 export function removeElement(nums: number[], val: number): number {
-  if (nums.length === 0) return 0
-  let slow: number = 0
+  if (nums.length === 0) return 0;
+  let slow: number = 0;
   for (let fast: number = 0; fast < nums.length; fast++) {
     if (nums[fast] !== val) {
-      nums[slow] = nums[fast]!
-      slow++
+      nums[slow] = nums[fast]!;
+      slow++;
     }
   }
-  return slow
-};
+  return slow;
+}
+
