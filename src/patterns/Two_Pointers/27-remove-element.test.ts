@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { removeElement } from './27-remove-element.js';
 
-describe('27. Remove Element (Slow & Fast Pointers)', () => {
+describe('Pattern: Two_Pointers -> 27-remove-element', () => {
 
   it('Case 1: Ví dụ 1 chuẩn LeetCode - Rác nằm ở 2 đầu', () => {
     let nums = [3, 2, 2, 3];

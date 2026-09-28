@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { removeDuplicates } from './26-remove-duplicates.js';
 
-describe('26. Remove Duplicates from Sorted Array (Slow & Fast Pointers)', () => {
+describe('Pattern: Two_Pointers -> 26-remove-duplicates', () => {
 
   it('Case 1: Ví dụ cơ bản chuẩn LeetCode', () => {
     let nums = [1, 1, 2];

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { searchRange } from './34-search-range.js';
 
-describe('34. Find First and Last Position of Element', () => {
+describe('Pattern: Binary_Search -> 34-search-range', () => {
   it('Case 1: Mảng bình thường, có 2 phần tử target nằm cạnh nhau', () => {
     expect(searchRange([5, 7, 7, 8, 8, 10], 8)).toEqual([3, 4]);
   });

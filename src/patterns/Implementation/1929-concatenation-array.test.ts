@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { concatenationArray } from './1929-concatenation-array.js';
 
-describe('1929. Concatenation of Array', () => {
+describe('Pattern: Implementation -> 1929-concatenation-array', () => {
   it('Case 1: Ví dụ cơ bản chuẩn LeetCode', () => {
     expect(concatenationArray([1, 2, 1])).toEqual([1, 2, 1, 1, 2, 1]);
   });

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { binarySearch } from './704-binary-search.js';
 
-describe('Pattern: 01_binary_search -> 704-binary-search', () => {
+describe('Pattern: Binary_Search -> 704-binary-search', () => {
   // Setup đạn dược (Test Cases) chuẩn chỉnh
   const testCases = [
     { input: [1, 3, 5, 7, 9, 11, 13, 15], target: 9, expected: 4 }, // Tìm thấy 9 ở vị trí số 4
