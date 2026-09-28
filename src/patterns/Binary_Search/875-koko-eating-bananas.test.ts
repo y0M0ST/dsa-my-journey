@@ -11,7 +11,7 @@ describe('Pattern: Binary_Search -> 875-koko-eating-bananas', () => {
   ];
 
   it.each(testCases)(
-    'với input $input thì kết quả phải là $expected',
+    'với piles = $piles và h = $h thì tốc độ tối thiểu phải là $expected',
     ({ piles, h, expected }) => {
       expect(kokoEatingBananas(piles, h)).toEqual(expected);
     }
