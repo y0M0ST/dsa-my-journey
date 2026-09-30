@@ -1,30 +1,43 @@
 /**
- * Problem: 3-longest-substring
- * Pattern: Sliding_Window
- * Time Complexity: O(n)
- * Space Complexity: O(min(m, n))
+ * Problem: 3-longest-substring (Longest Substring Without Repeating Characters)
+ * Pattern: Sliding_Window (Direct Index Jump / Frequency Array Optimization)
+ *
+ * Time Complexity:
+ *   - Trường hợp tốt nhất (Best Case): O(1) khi chuỗi rỗng hoặc có 1 ký tự (Early Exit).
+ *   - Trường hợp trung bình/xấu nhất (Average/Worst Case): O(n)
+ *     + Duyệt qua chuỗi s đúng 1 lần bằng con trỏ right.
+ *     + Con trỏ left nhảy cóc trực tiếp đến vị trí sau ký tự trùng lặp, không cần vòng lặp while co cửa sổ.
+ *
+ * Space Complexity: O(Σ) = O(1)
+ *   - Sử dụng bảng Int32Array kích thước cố định 128 (đủ cho toàn bộ bảng mã ASCII chuẩn: chữ, số, ký hiệu, khoảng trắng).
+ *   - Không cấp phát thêm Map hay Object động.
  */
 export function lengthOfLongestSubstring(s: string): number {
-  const n = s.length;
-  if (n <= 1) return n;
+    const n = s.length
+    if (n <= 1) return n
 
-  const lastSeen = new Map<string, number>();
-  let left = 0;
-  let maxLen = 0;
+    // Lưu vị trí xuất hiện gần nhất của từng ký tự ASCII (0-127)
+    const lastSeen = new Int32Array(128).fill(-1)
+    let left = 0
+    let maxLen = 0
 
-  for (let right = 0; right < n; right++) {
-    const char = s[right]!;
-    const prevIndex = lastSeen.get(char);
+    for (let right = 0; right < n; right++) {
+        const code = s.charCodeAt(right)
 
-    if (prevIndex !== undefined && prevIndex >= left) {
-      left = prevIndex + 1;
+        // Nếu ký tự đã từng xuất hiện và nằm trong window hiện tại
+        if (lastSeen[code] >= left) {
+            left = lastSeen[code] + 1
+        }
+
+        lastSeen[code] = right
+        const currentLen = right - left + 1
+        if (currentLen > maxLen) {
+            maxLen = currentLen
+        }
     }
 
-    lastSeen.set(char, right);
-    maxLen = Math.max(maxLen, right - left + 1);
-  }
-
-  return maxLen;
+    return maxLen
 }
 
-export const longestSubstring = lengthOfLongestSubstring;
+// Export alias hỗ trợ các file test hoặc template generator
+export const longestSubstring = lengthOfLongestSubstring
