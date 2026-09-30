@@ -1,25 +1,26 @@
 /**
  * Problem: 3-longest-substring
  * Pattern: Sliding_Window
- * Time Complexity: O(2n) = O(n)
+ * Time Complexity: O(n)
  * Space Complexity: O(min(m, n))
  */
 export function lengthOfLongestSubstring(s: string): number {
-  if (s.length <= 1) return s.length;
+  const n = s.length;
+  if (n <= 1) return n;
 
-  const charSet = new Set<string>();
+  const lastSeen = new Map<string, number>();
   let left = 0;
   let maxLen = 0;
 
-  for (let right = 0; right < s.length; right++) {
+  for (let right = 0; right < n; right++) {
     const char = s[right]!;
+    const prevIndex = lastSeen.get(char);
 
-    while (charSet.has(char)) {
-      charSet.delete(s[left]!);
-      left++;
+    if (prevIndex !== undefined && prevIndex >= left) {
+      left = prevIndex + 1;
     }
 
-    charSet.add(char);
+    lastSeen.set(char, right);
     maxLen = Math.max(maxLen, right - left + 1);
   }
 
