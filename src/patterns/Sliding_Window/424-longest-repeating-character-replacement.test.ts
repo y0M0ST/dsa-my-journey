@@ -15,7 +15,8 @@ describe('Pattern: Sliding_Window -> 424-longest-repeating-character-replacement
             s: 'ABAB',
             k: 2,
             expected: 4,
-            description: 'LeetCode Ex 1: Thay hai chữ "A" thành "B" (hoặc ngược lại) để thành "BBBB"',
+            description:
+                'LeetCode Ex 1: Thay hai chữ "A" thành "B" (hoặc ngược lại) để thành "BBBB"',
         },
         {
             s: 'AABABBA',
@@ -101,7 +102,8 @@ describe('Pattern: Sliding_Window -> 424-longest-repeating-character-replacement
             s: 'ABCDE',
             k: 1,
             expected: 2,
-            description: 'Tất cả ký tự khác nhau, k = 1 -> chọn bất kỳ 1 ký tự thay thế để đạt độ dài 2',
+            description:
+                'Tất cả ký tự khác nhau, k = 1 -> chọn bất kỳ 1 ký tự thay thế để đạt độ dài 2',
         },
         {
             s: 'ABCDE',
@@ -115,13 +117,15 @@ describe('Pattern: Sliding_Window -> 424-longest-repeating-character-replacement
             s: 'BAAAB',
             k: 2,
             expected: 5,
-            description: 'Hai ký tự B ở hai đầu, k = 2 -> thay 2 chữ B thành A được chuỗi "AAAAA" độ dài 5',
+            description:
+                'Hai ký tự B ở hai đầu, k = 2 -> thay 2 chữ B thành A được chuỗi "AAAAA" độ dài 5',
         },
         {
             s: 'ABBBBA',
             k: 1,
             expected: 5,
-            description: 'Ký tự chủ đạo "B" ở giữa (4 chữ B), k = 1 -> mở rộng thêm 1 ký tự bên cạnh thành 5',
+            description:
+                'Ký tự chủ đạo "B" ở giữa (4 chữ B), k = 1 -> mở rộng thêm 1 ký tự bên cạnh thành 5',
         },
         {
             s: 'KAAABBB',
@@ -133,7 +137,8 @@ describe('Pattern: Sliding_Window -> 424-longest-repeating-character-replacement
             s: 'AAAAABBBBCBB',
             k: 4,
             expected: 10,
-            description: 'Thay 4 ký tự trong cụm "BBBBCBB" (6 ký tự B) bằng 4 ký tự thay thế đạt 10',
+            description:
+                'Thay 4 ký tự trong cụm "BBBBCBB" (6 ký tự B) bằng 4 ký tự thay thế đạt 10',
         },
         {
             s: 'EOEMQLLQ',
@@ -153,7 +158,8 @@ describe('Pattern: Sliding_Window -> 424-longest-repeating-character-replacement
             s: 'AABABAB',
             k: 2,
             expected: 6,
-            description: 'Chuỗi "AABABAB", k = 2 -> cụm "AABABA" thay 2 chữ B được "AAAAAA" độ dài 6',
+            description:
+                'Chuỗi "AABABAB", k = 2 -> cụm "AABABA" thay 2 chữ B được "AAAAAA" độ dài 6',
         },
     ]
 
