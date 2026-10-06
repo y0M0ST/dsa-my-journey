@@ -1,39 +1,34 @@
 /**
  * Problem: 424-longest-repeating-character-replacement
- * Pattern: Sliding_Window
- * Time Complexity: O(26 * n)
- * Space Complexity: O(26) = O(1)
+ * Pattern: Sliding_Window (Frequency Array & Max Frequency Tracking)
+ * Time Complexity: O(n)
+ * Space Complexity: O(1) - mảng cố định 26 chữ cái tiếng Anh in hoa
  */
 export function characterReplacement(s: string, k: number): number {
+    const n = s.length
+    if (n === 0) return 0
+
     let left = 0
     let maxLen = 0
-    const countMap = new Map<string, number>()
+    let maxFreq = 0
+    // Thay thế Map bằng Int32Array(26) để tối ưu truy xuất O(1) và thân thiện với V8 cache
+    const count = new Int32Array(26)
 
-    for (let right = 0; right < s.length; right++) {
-        const char = s[right]!
-        countMap.set(char, (countMap.get(char) || 0) + 1)
+    for (let right = 0; right < n; right++) {
+        const rightCode = s.charCodeAt(right) - 65
+        count[rightCode]++
 
-        // Tìm tần suất lớn nhất của một ký tự trong cửa sổ hiện tại
-        let maxFreq = 0
-        for (const count of countMap.values()) {
-            if (count > maxFreq) {
-                maxFreq = count
-            }
-        }
+        // Tần suất lớn nhất của một ký tự duy nhất trong cửa sổ hiện tại
+        maxFreq = Math.max(maxFreq, count[rightCode]!)
 
-        // Nếu số lượng ký tự cần thay thế vượt quá k, thu hẹp cửa sổ từ bên trái
+        // Điều kiện hợp lệ: (độ dài cửa sổ - tần suất ký tự xuất hiện nhiều nhất) <= k
+        // Nếu số lượng ký tự cần biến đổi > k, ta phải thu hẹp cửa sổ từ phía trái
         while (right - left + 1 - maxFreq > k) {
-            const leftChar = s[left]!
-            countMap.set(leftChar, countMap.get(leftChar)! - 1)
+            const leftCode = s.charCodeAt(left) - 65
+            count[leftCode]--
             left++
-
-            // Cập nhật lại maxFreq sau khi thu hẹp
-            maxFreq = 0
-            for (const count of countMap.values()) {
-                if (count > maxFreq) {
-                    maxFreq = count
-                }
-            }
+            // Lưu ý: Không cần giảm maxFreq khi thu hẹp cửa sổ vì ta chỉ quan tâm
+            // đến việc tìm kiếm một cửa sổ mới có kích thước lớn hơn kỷ lục hiện tại.
         }
 
         maxLen = Math.max(maxLen, right - left + 1)
