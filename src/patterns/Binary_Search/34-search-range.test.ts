@@ -1,28 +1,49 @@
 import { describe, it, expect } from 'vitest';
-import { searchRange } from './34-search-range.js';
+import { searchRange, findFirstAndLastPosition } from './34-search-range.js';
 
 describe('Pattern: Binary_Search -> 34-search-range', () => {
-  it('Case 1: Mảng bình thường, có 2 phần tử target nằm cạnh nhau', () => {
-    expect(searchRange([5, 7, 7, 8, 8, 10], 8)).toEqual([3, 4]);
-  });
+  const testCases = [
+    // Standard LeetCode examples
+    { input: [5, 7, 7, 8, 8, 10], target: 8, expected: [3, 4] },
+    { input: [5, 7, 7, 8, 8, 10], target: 6, expected: [-1, -1] },
+    { input: [], target: 0, expected: [-1, -1] },
 
-  it('Case 2: Tìm con số không hề tồn tại trong mảng', () => {
-    expect(searchRange([5, 7, 7, 8, 8, 10], 6)).toEqual([-1, -1]);
-  });
+    // Boundary early exit checks: Nằm ngoài khoảng [first, last]
+    { input: [5, 7, 7, 8, 8, 10], target: 4, expected: [-1, -1] },
+    { input: [5, 7, 7, 8, 8, 10], target: 12, expected: [-1, -1] },
 
-  it('Case 3: Mảng rỗng không có gì', () => {
-    expect(searchRange([], 0)).toEqual([-1, -1]);
-  });
+    // Boundary checks: Trúng 2 đầu mút
+    { input: [5, 7, 7, 8, 8, 10], target: 5, expected: [0, 0] },
+    { input: [5, 7, 7, 8, 8, 10], target: 10, expected: [5, 5] },
+    { input: [8, 8, 8, 9, 10], target: 8, expected: [0, 2] },
+    { input: [5, 6, 8, 8, 8], target: 8, expected: [2, 4] },
 
-  it('Case 4: Mảng có 1 phần tử và đúng là mục tiêu luôn', () => {
-    expect(searchRange([1], 1)).toEqual([0, 0]);
-  });
+    // Edge cases: Mảng 1 phần tử
+    { input: [1], target: 1, expected: [0, 0] },
+    { input: [1], target: 2, expected: [-1, -1] },
 
-  it('Case 5: Mảng dị nhân - toàn số giống hệt nhau', () => {
-    expect(searchRange([2, 2, 2, 2, 2], 2)).toEqual([0, 4]);
-  });
+    // Edge cases: Mảng dị nhân - toàn số giống hệt nhau
+    { input: [2, 2, 2, 2, 2], target: 2, expected: [0, 4] },
+    { input: [2, 2, 2, 2, 2], target: 3, expected: [-1, -1] },
 
-  it('Case 6: Có đúng 1 phần tử lọt thỏm giữa bầy số khác', () => {
-    expect(searchRange([1, 2, 3, 4, 5], 3)).toEqual([2, 2]);
-  });
+    // Edge cases: Có đúng 1 phần tử lọt thỏm giữa bầy số khác
+    { input: [1, 2, 3, 4, 5], target: 3, expected: [2, 2] },
+    { input: [1, 2, 3, 4, 5], target: 1, expected: [0, 0] },
+    { input: [1, 2, 3, 4, 5], target: 5, expected: [4, 4] },
+
+    // Edge cases: Mảng có số âm
+    { input: [-10, -5, -5, -5, 0, 3], target: -5, expected: [1, 3] },
+    { input: [-10, -5, 0, 3], target: -10, expected: [0, 0] },
+    { input: [-10, -5, 0, 3], target: -20, expected: [-1, -1] },
+    { input: [-10, -5, 0, 3], target: 10, expected: [-1, -1] },
+  ];
+
+  it.each(testCases)(
+    'với mảng $input, target = $target thì dải vị trí phải là $expected',
+    ({ input, target, expected }) => {
+      expect(searchRange(input as number[], target)).toEqual(expected);
+      // Đảm bảo alias `findFirstAndLastPosition` đồng nhất
+      expect(findFirstAndLastPosition(input as number[], target)).toEqual(expected);
+    }
+  );
 });
