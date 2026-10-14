@@ -22,17 +22,17 @@ Nếu đề bài có 3 yếu tố sau, 99% là đất diễn của Sliding Windo
 
 ---
 
-## 2. CHỌN ĐÚNG TRONG 3 TEMPLATE CHUẨN
+## 2. CHỌN ĐÚNG TRONG 4 TEMPLATE CHUẨN
 
 ```
-           [SLIDING WINDOW PATTERN]
-                      │
-       ┌──────────────┼──────────────┐
-       ▼              ▼              ▼
-[Template 1]    [Template 2]    [Template 3]
-Fixed Size     Dynamic Shrink  Non-shrinking
-(Cố định K)    (Co giãn max/min) (Bảo lưu kỷ lục)
- LC 438, 567    LC 3, 209, 76      LC 424
+           [SLIDING WINDOW PATTERNS]
+                       │
+        ┌──────────────┼──────────────┬──────────────┐
+        ▼              ▼              ▼              ▼
+  [Template 1]   [Template 2]   [Template 3]   [Template 4]
+   Fixed Size   Dynamic Shrink  Non-shrinking   Monotonic Deque
+  (Cố định K)   (Co giãn min)  (Bảo lưu max)   (Tìm Min/Max K)
+  LC 438, 567    LC 3, 209, 76     LC 424          LC 239
 ```
 
 ### Template 1: Cửa sổ kích thước cố định (Fixed Size Window)
@@ -90,6 +90,24 @@ Fixed Size     Dynamic Shrink  Non-shrinking
 
 ---
 
+### Template 4: Cửa sổ trượt kết hợp Hàng Đợi Đơn Điệu (Sliding Window + Monotonic Deque)
+*   **Khi nào dùng:** Bài toán cửa sổ trượt (kích thước cố định $K$ hoặc biến thiên) yêu cầu tìm giá trị **CỰC TRỊ (Min hoặc Max)** tại mỗi bước dịch chuyển.
+*   **Vấn đề nan giải:**
+    - Duyệt toàn bộ cửa sổ $O(K) \rightarrow$ Tổng thời gian $O(N \cdot K)$ (TLE khi $N, K \le 10^5$).
+    - Dùng Max-Heap / PriorityQueue $\rightarrow$ Time $O(N \log K)$, nhưng xoá phần tử cũ ngoài cửa sổ trong Heap rất chậm (phải lazy delete hoặc tốn thêm cấu trúc phụ trợ).
+*   **Khẩu quyết Monotonic Deque:** *"Kẻ đến sau mạnh mẽ hơn thì kẻ đi trước yếu đuối không còn tư cách tồn tại!"*
+    - Khi một phần tử mới `nums[i]` bước vào cửa sổ:
+      1. **Thanh trừng từ đuôi (`tail--`):** Mọi phần tử ở cuối Deque có giá trị $\le nums[i]$ đều bị loại bỏ ngay lập tức. Vì chúng vừa nhỏ hơn, vừa già hơn (sẽ trượt ra ngoài trước `nums[i]`), vĩnh viễn không còn cơ hội làm Max!
+      2. **Nạp phần tử mới (`deque[tail++] = i`):** Lưu trữ CHỈ SỐ (`index`) thay vì lưu giá trị, để biết chính xác khi nào phần tử trượt ra khỏi cửa sổ.
+      3. **Loại bỏ quá hạn từ đầu (`head++`):** Nếu `deque[head] < i - k + 1`, phần tử Max cũ đã rơi ra ngoài cửa sổ $\rightarrow$ bỏ qua trong $O(1)$.
+      4. **Gặt hái kết quả:** Đỉnh đầu Deque (`nums[deque[head]]`) luôn luôn là Max hiện tại.
+*   **Bí thuật tối ưu hiệu năng JS/TS:**
+    - CẤM TUYỆT ĐỐI dùng `Array.prototype.shift()` vì V8 phải re-index mảng tốn $O(K)$ và trigger Garbage Collection liên tục.
+    - Cài đặt Deque bằng mảng tĩnh `Int32Array(n)` với 2 con trỏ `head` và `tail`. Thao tác pop front (`head++`), pop back (`tail--`), push back (`deque[tail++] = i`) đều đạt **$O(1)$ tuyệt đối!**
+*   **Bài tiêu biểu:** LC 239 (Sliding Window Maximum - Hard Boss v2).
+
+---
+
 ## 3. CÁC CẠM BẪY TỬ THẦN & CÁCH NÉ
 
 ### ⚠️ Bẫy 1: Sai lệch 1 đơn vị độ dài cửa sổ (Off-by-One Error)
@@ -118,6 +136,11 @@ Fixed Size     Dynamic Shrink  Non-shrinking
 *   **Bản chất:** `Map.set()`, `Map.get()` hoặc Object lookups có chi phí hashing, lookup bucket và overhead phân bổ heap.
 *   **Cách né:** Với chuỗi chỉ chứa chữ cái tiếng Anh (`a-z`, `A-Z`) hoặc bảng mã ASCII (0-127), hãy LUÔN LUÔN ưu tiên dùng Typed Array: `new Int32Array(26)` hoặc `new Int32Array(128)`. Cực kỳ nhẹ, cache locality hoàn hảo, tốc độ vượt trội (Beats 95-100%).
 
+### ⚠️ Bẫy 6: Dùng `Array.prototype.shift()` làm Queue trong JavaScript/TypeScript
+*   **Sai lầm:** Dùng `deque.shift()` để lấy và xóa phần tử ở đầu hàng đợi Deque.
+*   **Hậu quả:** `shift()` trên mảng JavaScript có độ phức tạp thời gian $O(K)$ do động cơ V8 phải dời toàn bộ các phần tử còn lại sang trái. Một thuật toán tưởng chừng $O(N)$ sẽ bị thoái hóa thành $O(N \cdot K) \rightarrow$ Nhận ngay gáo nước lạnh Time Limit Exceeded (TLE) trên LeetCode!
+*   **Cách né:** LUÔN LUÔN dùng 2 con trỏ số nguyên `head = 0` và `tail = 0` trỏ trên mảng `Int32Array`. Lấy phần tử chỉ tốn `head++` ($O(1)$) mà không cần di chuyển bất kỳ ô nhớ nào.
+
 ---
 
 ## 4. BỘ SƯU TẬP PATTERN ĐÃ PHÁ ĐẢO
@@ -137,16 +160,20 @@ Fixed Size     Dynamic Shrink  Non-shrinking
 5. **LC 76 (Minimum Window Substring) — Hard Boss:**
    - *Chiêu thức:* Dynamic Shrinkable Window tối ưu tuyệt đối.
    - *Điểm nhấn:* Dùng mảng `targetFreq = new Int32Array(128)` và biến đếm số ký tự còn thiếu `remaining = t.length`. Co `left` khi `remaining === 0`. Chỉ `slice` chuỗi 1 lần duy nhất ở cuối. Time: $O(M + N)$, Space: $O(1)$.
+6. **LC 239 (Sliding Window Maximum) — Hard Boss v2:**
+   - *Chiêu thức:* Fixed Size Window kết hợp Monotonic Decreasing Deque.
+   - *Điểm nhấn:* Quản lý Deque bằng `Int32Array(n)` với 2 con trỏ `head` và `tail`, loại bỏ hoàn toàn `shift()`, đạt $O(1)$ thao tác mỗi bước. Early Exit thần tốc khi $k = 1$ (sao chép mảng) và $k \ge n$ (tìm max 1 vòng). Time: $O(N)$, Space: $O(K)$.
 
 ---
 
-## 5. BẢNG TỔNG KẾT 3 TEMPLATE SLIDING WINDOW
+## 5. BẢNG TỔNG KẾT 4 TEMPLATE SLIDING WINDOW
 
-| Tiêu chí | Template 1: Fixed Size | Template 2: Dynamic Shrinkable | Template 3: Non-shrinking |
-|---|---|---|---|
-| **Kích thước cửa sổ** | Luôn cố định bằng $K$ | Biến thiên liên tục (mở và co) | Chỉ tăng hoặc giữ nguyên |
-| **Vòng lặp trong** | Không có (trượt $O(1)$) | Có `while` để co `left` | Không có (chỉ `if` tịnh tiến `left`) |
-| **Mục tiêu chính** | Tìm mọi vị trí / đếm cửa sổ khớp | Tìm Min/Max Subarray/Substring | Tìm Max Subarray/Substring |
-| **Chi phí mỗi bước** | $O(1)$ nhờ `matches` | Amortized $O(1)$ (mỗi con trỏ đi $\le N$) | $O(1)$ tuyệt đối |
-| **Bộ nhớ phụ** | $O(1)$ với `Int32Array(26)` | $O(1)$ với biến con trỏ / `Int32Array` | $O(1)$ với `Int32Array(26)` |
-| **Bài tiêu biểu** | LC 438, LC 567 | LC 3, LC 209, LC 76 | LC 424 |
+| Tiêu chí | Template 1: Fixed Size | Template 2: Dynamic Shrinkable | Template 3: Non-shrinking | Template 4: Monotonic Deque |
+|---|---|---|---|---|
+| **Kích thước cửa sổ** | Luôn cố định bằng $K$ | Biến thiên liên tục (mở và co) | Chỉ tăng hoặc giữ nguyên | Thường cố định bằng $K$ |
+| **Vòng lặp trong** | Không có (trượt $O(1)$) | Có `while` để co `left` | Không có (chỉ `if` tịnh tiến `left`) | `while` thanh trừng đuôi Deque |
+| **Mục tiêu chính** | Tìm mọi vị trí / đếm cửa sổ khớp | Tìm Min/Max Subarray/Substring | Tìm Max Subarray/Substring | Tìm Cực trị (Min/Max) mỗi cửa sổ |
+| **Chi phí mỗi bước** | $O(1)$ nhờ `matches` | Amortized $O(1)$ (mỗi con trỏ đi $\le N$) | $O(1)$ tuyệt đối | Amortized $O(1)$ (mỗi index vào/ra 1 lần) |
+| **Bộ nhớ phụ** | $O(1)$ với `Int32Array(26)` | $O(1)$ với biến con trỏ / `Int32Array` | $O(1)$ với `Int32Array(26)` | $O(K)$ với `Int32Array` Deque |
+| **Bài tiêu biểu** | LC 438, LC 567 | LC 3, LC 209, LC 76 | LC 424 | LC 239 |
+
