@@ -1,8 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { levelOrder } from './102-binary-tree-level-order-traversal.js'
+import {
+    levelOrder,
+    levelOrderBFS,
+    levelOrderDFS,
+} from './102-binary-tree-level-order-traversal.js'
 import { arrayToTree } from '../../data_structures/tree/TreeNode.js'
 
-describe('Pattern: Tree_BFS_DFS -> 102-binary-tree-level-order-traversal (BFS Approach)', () => {
+describe('Pattern: Tree_BFS_DFS -> 102-binary-tree-level-order-traversal', () => {
     const testCases = [
         {
             desc: 'Ví dụ 1 LeetCode: Cây chuẩn 3 tầng',
@@ -44,11 +48,37 @@ describe('Pattern: Tree_BFS_DFS -> 102-binary-tree-level-order-traversal (BFS Ap
             input: [1, 2, 3, null, 4, 5, null],
             expected: [[1], [2, 3], [4, 5]],
         },
+        {
+            desc: 'Cây ziczac (Zigzag Tree)',
+            input: [1, 2, null, null, 3, 4],
+            expected: [[1], [2], [3], [4]],
+        },
     ]
 
-    it.each(testCases)('$desc ($input -> $expected)', ({ input, expected }) => {
-        const root = arrayToTree(input)
-        const result = levelOrder(root)
-        expect(result).toEqual(expected)
+    describe('Phương pháp 1: BFS (Optimized Queue with Head Pointer)', () => {
+        it.each(testCases)('$desc ($input -> $expected)', ({ input, expected }) => {
+            const root = arrayToTree(input)
+            expect(levelOrder(root)).toEqual(expected)
+            expect(levelOrderBFS(root)).toEqual(expected)
+        })
+    })
+
+    describe('Phương pháp 2: DFS (Depth-Indexed Pre-order Recursion)', () => {
+        it.each(testCases)('$desc ($input -> $expected)', ({ input, expected }) => {
+            const root = arrayToTree(input)
+            expect(levelOrderDFS(root)).toEqual(expected)
+        })
+    })
+
+    describe('Kiểm tra tính tương đương tuyệt đối: BFS === DFS', () => {
+        it.each(testCases)('BFS và DFS cho cùng kết quả trên $desc', ({ input }) => {
+            const rootBfs = arrayToTree(input)
+            const rootDfs = arrayToTree(input)
+
+            const bfsResult = levelOrderBFS(rootBfs)
+            const dfsResult = levelOrderDFS(rootDfs)
+
+            expect(bfsResult).toEqual(dfsResult)
+        })
     })
 })

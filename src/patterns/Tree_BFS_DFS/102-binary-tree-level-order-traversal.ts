@@ -1,50 +1,50 @@
 /**
  * Problem: 102 - Binary Tree Level Order Traversal
- * Pattern: Tree_BFS_DFS (Breadth-First Search / Level-Order Traversal)
+ * Pattern: Tree_BFS_DFS (Breadth-First Search & Depth-First Search)
  *
- * Time Complexity: O(N)
- *   - Với N là tổng số node của cây.
- *   - Mỗi node được đưa vào hàng đợi (queue) đúng một lần và lấy ra xử lý đúng một lần.
- *   - Mọi thao tác push, pop, gán con trái, con phải đều là O(1).
+ * So sánh 2 trường phái giải thuật:
  *
- * Space Complexity: O(W) = O(N)
- *   - Với W là chiều rộng tối đa (maximum width) của cây nhị phân.
- *   - Trong trường hợp xấu nhất (cây nhị phân hoàn hảo / Perfect Binary Tree),
- *     tầng cuối cùng chứa N / 2 node, do đó hàng đợi cần lưu trữ tối đa O(N) node.
- *   - Bộ nhớ mảng kết quả `result` lưu trữ toàn bộ N giá trị của các node: O(N).
+ * 1. Phương pháp BFS (Breadth-First Search - Hàng đợi tối ưu hóa con trỏ Head):
+ *    - Time Complexity: O(N)
+ *      + Mỗi node được nạp vào hàng đợi và lấy ra xử lý đúng 1 lần.
+ *      + Sử dụng con trỏ `head` di chuyển tới thay vì `queue.shift()` để triệt tiêu chi phí
+ *        dời mảng O(K) trong V8 Engine, đưa thao tác dequeue về O(1) thuần túy.
+ *    - Space Complexity: O(W) = O(N)
+ *      + Với W là chiều rộng tối đa của cây (tầng đáy chứa tối đa N/2 nodes).
+ *
+ * 2. Phương pháp DFS (Depth-First Search - Đệ quy kèm chỉ số tầng `level`):
+ *    - Time Complexity: O(N)
+ *      + Thăm mỗi node đúng 1 lần theo thứ tự Pre-order (Gốc -> Trái -> Phải).
+ *    - Space Complexity: O(H)
+ *      + Với H là chiều cao của cây.
+ *      + Cây cân bằng (Balanced): H = log(N) -> Bộ nhớ Call Stack chỉ tốn O(log N).
+ *      + Cây lệch (Skewed): H = N -> Call Stack tốn O(N).
  */
 import { TreeNode } from '../../data_structures/tree/TreeNode.js'
 
 /**
- * Cách 1: Breadth-First Search (BFS) sử dụng hàng đợi theo từng tầng (Level Batching).
+ * Cách 1: BFS tối ưu hóa con trỏ `head` (Tránh cạm bẫy queue.shift() O(N)).
  *
  * @param root Node gốc của cây nhị phân
- * @returns Mảng 2 chiều chứa các giá trị theo từng tầng từ trên xuống dưới, từ trái sang phải
+ * @returns Mảng 2 chiều chứa các giá trị theo từng tầng
  */
-export function levelOrder(root: TreeNode | null): number[][] {
-    // Early Exit: Cây rỗng không có node nào
+export function levelOrderBFS(root: TreeNode | null): number[][] {
     if (root === null) return []
 
     const result: number[][] = []
     const queue: TreeNode[] = [root]
+    let head = 0 // Con trỏ đọc O(1), không làm dịch chuyển các phần tử mảng
 
-    while (queue.length > 0) {
-        // Cố định số lượng node thuộc tầng hiện tại
-        const levelSize = queue.length
+    while (head < queue.length) {
+        const levelSize = queue.length - head
         const currentLevel: number[] = []
 
-        // Xử lý trọn vẹn toàn bộ các node của tầng này
         for (let i = 0; i < levelSize; i++) {
-            const node = queue.shift()!
+            const node = queue[head++]
             currentLevel.push(node.val)
 
-            // Nạp các con của tầng kế tiếp vào hàng đợi
-            if (node.left !== null) {
-                queue.push(node.left)
-            }
-            if (node.right !== null) {
-                queue.push(node.right)
-            }
+            if (node.left !== null) queue.push(node.left)
+            if (node.right !== null) queue.push(node.right)
         }
 
         result.push(currentLevel)
@@ -53,5 +53,38 @@ export function levelOrder(root: TreeNode | null): number[][] {
     return result
 }
 
-// Export alias chuẩn LeetCode
-export const levelOrderBFS = levelOrder
+/**
+ * Cách 2: DFS Đệ Quy kết hợp chỉ số tầng `level` (Pre-order Traversal).
+ * Khám phá cây theo chiều sâu, tự động khởi tạo mảng con `result[level]`
+ * khi lần đầu tiên chạm tới độ sâu mới.
+ *
+ * @param root Node gốc của cây nhị phân
+ * @returns Mảng 2 chiều chứa các giá trị theo từng tầng
+ */
+export function levelOrderDFS(root: TreeNode | null): number[][] {
+    const result: number[][] = []
+
+    function dfs(node: TreeNode | null, level: number): void {
+        if (node === null) return
+
+        // Khi độ sâu `level` bằng đúng độ dài mảng hiện tại, ta đang ở node đầu tiên của tầng mới
+        if (result.length === level) {
+            result.push([])
+        }
+
+        // Đẩy giá trị của node vào tầng tương ứng
+        result[level].push(node.val)
+
+        // Duyệt nhánh trái trước, nhánh phải sau để bảo toàn thứ tự từ trái sang phải
+        dfs(node.left, level + 1)
+        dfs(node.right, level + 1)
+    }
+
+    dfs(root, 0)
+    return result
+}
+
+/**
+ * Hàm giải chính (Mặc định sử dụng BFS tối ưu O(1) dequeue).
+ */
+export const levelOrder = levelOrderBFS
