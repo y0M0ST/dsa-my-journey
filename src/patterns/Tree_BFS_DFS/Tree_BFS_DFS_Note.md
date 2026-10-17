@@ -178,3 +178,15 @@ function levelOrderDFS(root: TreeNode | null): number[][] {
   1. Kiểm tra Early Exit nếu `root === null` $\rightarrow$ Trả về `[]`.
   2. Triển khai cả 2 phương pháp: BFS (Queue với index pointer $O(1)$) và DFS (Pre-order kèm tham số tầng).
   3. Cả 2 cách đều đạt điểm số tối đa $0\text{ms}$ trên LeetCode!
+
+---
+
+## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
+
+1. **Hỏi ngay interviewer về ràng buộc bộ nhớ:**
+   - Nếu cây rất rộng (wide) nhưng nông (shallow) $\rightarrow$ DFS tiết kiệm bộ nhớ hơn vì Call Stack chỉ $O(H)$.
+   - Nếu cây rất sâu (deep, skewed) nhưng hẹp $\rightarrow$ BFS tiết kiệm bộ nhớ hơn vì Queue chỉ chứa 1-2 node mỗi tầng.
+2. **Cảnh báo `shift()` ngay lập tức:**
+   - Chủ động nói với interviewer: *"In JavaScript, `Array.prototype.shift()` is $O(N)$. To guarantee pure $O(N)$ total time complexity, I will use a head index pointer or circular queue."* $\rightarrow$ Đây là điểm cộng cực lớn cho Meta / Google Senior SWE!
+3. **Thứ tự con khi push:** Luôn push `node.left` trước rồi mới tới `node.right` để đảm bảo thứ tự duyệt từ trái qua phải chuẩn mực.
+
