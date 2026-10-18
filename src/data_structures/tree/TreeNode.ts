@@ -6,10 +6,14 @@ export class TreeNode {
     left: TreeNode | null
     right: TreeNode | null
 
-    constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-        this.val = val === undefined ? 0 : val
-        this.left = left === undefined ? null : left
-        this.right = right === undefined ? null : right
+    constructor(
+        val: number = 0,
+        left: TreeNode | null = null,
+        right: TreeNode | null = null
+    ) {
+        this.val = val
+        this.left = left
+        this.right = right
     }
 }
 
@@ -25,25 +29,21 @@ export function arrayToTree(arr: (number | null)[]): TreeNode | null {
 
     const root = new TreeNode(arr[0])
     const queue: TreeNode[] = [root]
-    let head = 0 // Tối ưu pointer O(1) thay vì queue.shift() O(N)
+    let head = 0
     let i = 1
 
     while (head < queue.length && i < arr.length) {
-        const current = queue[head++]
+        const current = queue[head++]!
 
-        // Gán nút con bên trái
-        if (i < arr.length) {
-            const leftVal = arr[i++]
-            if (leftVal !== null) {
-                current.left = new TreeNode(leftVal)
-                queue.push(current.left)
-            }
+        const leftVal = arr[i++]
+        if (leftVal !== null && leftVal !== undefined) {
+            current.left = new TreeNode(leftVal)
+            queue.push(current.left)
         }
 
-        // Gán nút con bên phải
         if (i < arr.length) {
             const rightVal = arr[i++]
-            if (rightVal !== null) {
+            if (rightVal !== null && rightVal !== undefined) {
                 current.right = new TreeNode(rightVal)
                 queue.push(current.right)
             }
@@ -68,7 +68,7 @@ export function treeToArray(root: TreeNode | null): (number | null)[] {
 
     while (head < queue.length) {
         const current = queue[head++]
-        if (current !== null) {
+        if (current) {
             result.push(current.val)
             queue.push(current.left)
             queue.push(current.right)
@@ -77,7 +77,6 @@ export function treeToArray(root: TreeNode | null): (number | null)[] {
         }
     }
 
-    // Cắt tỉa các giá trị null dư thừa ở cuối mảng theo đúng format LeetCode
     while (result.length > 0 && result[result.length - 1] === null) {
         result.pop()
     }
