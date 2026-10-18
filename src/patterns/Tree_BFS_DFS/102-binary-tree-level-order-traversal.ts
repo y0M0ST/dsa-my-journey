@@ -33,15 +33,15 @@ export function levelOrderBFS(root: TreeNode | null): number[][] {
 
     const result: number[][] = []
     const queue: TreeNode[] = [root]
-    let head = 0 // Con trỏ đọc O(1), không làm dịch chuyển các phần tử mảng
+    let head = 0
 
     while (head < queue.length) {
         const levelSize = queue.length - head
-        const currentLevel: number[] = []
+        const currentLevel: number[] = new Array(levelSize)
 
         for (let i = 0; i < levelSize; i++) {
-            const node = queue[head++]
-            currentLevel.push(node.val)
+            const node = queue[head++]!
+            currentLevel[i] = node.val
 
             if (node.left !== null) queue.push(node.left)
             if (node.right !== null) queue.push(node.right)
@@ -67,15 +67,12 @@ export function levelOrderDFS(root: TreeNode | null): number[][] {
     function dfs(node: TreeNode | null, level: number): void {
         if (node === null) return
 
-        // Khi độ sâu `level` bằng đúng độ dài mảng hiện tại, ta đang ở node đầu tiên của tầng mới
         if (result.length === level) {
             result.push([])
         }
 
-        // Đẩy giá trị của node vào tầng tương ứng
-        result[level].push(node.val)
+        result[level]!.push(node.val)
 
-        // Duyệt nhánh trái trước, nhánh phải sau để bảo toàn thứ tự từ trái sang phải
         dfs(node.left, level + 1)
         dfs(node.right, level + 1)
     }
