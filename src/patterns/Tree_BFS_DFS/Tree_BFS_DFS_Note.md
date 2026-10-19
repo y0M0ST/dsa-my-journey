@@ -155,37 +155,93 @@ function levelOrderDFS(root: TreeNode | null): number[][] {
 }
 ```
 
+### Template 3: DFS Post-order Bottom-up (Vũ khí tính Chiều cao & Độ sâu LC 104)
+
+*Khẩu quyết:* Bài toán tính chiều cao cây bản chất là Divide & Conquer. Độ sâu của cây con tại `node` phụ thuộc vào kết quả trả về từ 2 con của nó: `1 + Math.max(leftDepth, rightDepth)`.
+
+```typescript
+function maxDepthDFS(root: TreeNode | null): number {
+    if (root === null) return 0;
+    // Tối ưu Early Exit: Nếu là leaf node, trả về 1 ngay để bớt 2 frame đệ quy vô ích
+    if (root.left === null && root.right === null) return 1;
+
+    const left = maxDepthDFS(root.left);
+    const right = maxDepthDFS(root.right);
+
+    return 1 + Math.max(left, right);
+}
+```
+
+### Template 4: DFS Khử Đệ Quy Bằng Explicit Stack (Khắc chế Call Stack Overflow)
+
+*Khẩu quyết:* Khi cây lệch quá sâu ($H > 10,000$), Call Stack của V8 sẽ văng lỗi `RangeError: Maximum call stack size exceeded`. Đẩy stack ra ngoài bộ nhớ Heap bằng mảng tuần tự lưu cặp `[node, depth]` để đảm bảo an toàn tuyệt đối.
+
+```typescript
+function maxDepthIterativeDFS(root: TreeNode | null): number {
+    if (root === null) return 0;
+
+    let maxDepth = 0;
+    const stack: [TreeNode, number][] = [[root, 1]];
+
+    while (stack.length > 0) {
+        const [node, currentDepth] = stack.pop()!;
+
+        if (currentDepth > maxDepth) maxDepth = currentDepth;
+
+        if (node.left !== null) stack.push([node.left, currentDepth + 1]);
+        if (node.right !== null) stack.push([node.right, currentDepth + 1]);
+    }
+
+    return maxDepth;
+}
+```
+
 ---
 
-## 5. BẢNG SO SÁNH TRADE-OFF GIỮA BFS VÀ DFS (LC 102)
+## 5. BẢNG SO SÁNH TOÀN DIỆN CÁC PHƯƠNG PHÁP DUYỆT CÂY
 
-| Tiêu chí | BFS (Hàng đợi Level-by-Level) | DFS (Đệ quy với `level`) |
-|---|---|---|
-| **Cấu trúc phụ trợ** | FIFO Queue (Bộ nhớ Heap) | Call Stack (Bộ nhớ Stack hệ thống) |
-| **Time Complexity** | $O(N)$ (Mỗi node duyệt đúng 1 lần) | $O(N)$ (Mỗi node duyệt đúng 1 lần) |
-| **Space Worst-case (Cây cân bằng hoàn hảo)** | **$O(W) = O(N/2) = O(N)$** (Tầng đáy chứa $N/2$ nodes) | **$O(H) = O(\log N)$** (Chiều cao cây nhỏ nhất) |
-| **Space Worst-case (Cây lệch một bên - Skewed)** | **$O(1)$** (Mỗi tầng chỉ có 1 node) | **$O(N)$** (Độ sâu đệ quy chạm tới $N$ frame) |
-| **Trực quan tư duy** | Tư duy tự nhiên theo từng tầng | Đơn giản, code ngắn gọn, không cần xử lý hàng đợi |
+| Tiêu chí | DFS Đệ Quy Post-order | BFS Quét Tầng (Head Pointer) | DFS Khử Đệ Quy (Explicit Stack) |
+|---|---|---|---|
+| **Cấu trúc lưu trữ** | Call Stack (Hệ thống) | FIFO Queue (Vùng Heap) | LIFO Stack (Vùng Heap) |
+| **Time Complexity** | $O(N)$ | $O(N)$ | $O(N)$ |
+| **Space (Cây cân bằng hoàn hảo)** | **$O(\log N)$** (Tối ưu nhất) | **$O(N/2) = O(N)$** (Tầng lá đáy) | **$O(\log N)$** |
+| **Space (Cây lệch thẳng hàng)** | $O(N)$ (Nguy cơ tràn Call Stack) | **$O(1)$** (Mỗi tầng chỉ 1 node) | $O(N)$ (An toàn trên Heap) |
+| **Tối ưu V8 Engine** | Dễ văng RangeError nếu $H > 10^4$ | Dùng `head` pointer tránh $O(N)$ `shift` | Tránh tràn Stack, chủ động bộ nhớ |
 
 ---
 
-## 6. BÀI TOÁN THỰC CHIẾN MẪU: LEETCODE 102
+## 6. BÀI TOÁN THỰC CHIẾN MẪU
 
-- **Đề bài:** Cho con trỏ `root` của cây nhị phân, trả về thứ tự duyệt các node theo từng tầng từ trái sang phải (Level Order Traversal).
+### 6.1. LeetCode 102 - Binary Tree Level Order Traversal (Medium)
+- **Đề bài:** Cho con trỏ `root` của cây nhị phân, trả về thứ tự duyệt các node theo từng tầng từ trái sang phải.
 - **Ví dụ:** Input `root = [3, 9, 20, null, null, 15, 7]` $\rightarrow$ Output `[[3], [9, 20], [15, 7]]`.
 - **Chiến lược tối ưu:**
   1. Kiểm tra Early Exit nếu `root === null` $\rightarrow$ Trả về `[]`.
   2. Triển khai cả 2 phương pháp: BFS (Queue với index pointer $O(1)$) và DFS (Pre-order kèm tham số tầng).
   3. Cả 2 cách đều đạt điểm số tối đa $0\text{ms}$ trên LeetCode!
 
+### 6.2. LeetCode 104 - Maximum Depth of Binary Tree (Easy)
+- **Đề bài:** Cho `root` của cây nhị phân, tìm độ sâu lớn nhất (số node trên đường đi dài nhất từ root tới node lá xa nhất).
+- **Ví dụ:** Input `root = [3, 9, 20, null, null, 15, 7]` $\rightarrow$ Output `3`.
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy Post-order:** Tinh gọn nhất ($1 + \max(left, right)$). Thêm Leaf Early Exit giảm tới 50% số frame gọi hàm đệ quy.
+  2. **BFS Từng tầng:** Đếm số tầng duyệt được bằng Queue tối ưu con trỏ `head`. Cực kỳ tiết kiệm bộ nhớ trên cây lệch ($O(1)$ space).
+  3. **DFS Khử đệ quy:** Dùng Explicit Stack trên Heap, miễn nhiễm với lỗi `Maximum call stack size exceeded`.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
 
-1. **Hỏi ngay interviewer về ràng buộc bộ nhớ:**
-   - Nếu cây rất rộng (wide) nhưng nông (shallow) $\rightarrow$ DFS tiết kiệm bộ nhớ hơn vì Call Stack chỉ $O(H)$.
-   - Nếu cây rất sâu (deep, skewed) nhưng hẹp $\rightarrow$ BFS tiết kiệm bộ nhớ hơn vì Queue chỉ chứa 1-2 node mỗi tầng.
+1. **Hỏi ngay interviewer về ràng buộc bộ nhớ & hình dạng cây:**
+   - Nếu cây rất rộng (wide) nhưng nông (shallow) $\rightarrow$ DFS tiết kiệm bộ nhớ hơn vì Call Stack chỉ $O(H) = O(\log N)$.
+   - Nếu cây rất sâu (deep, skewed) nhưng hẹp $\rightarrow$ BFS tiết kiệm bộ nhớ hơn vì Queue chỉ chứa 1-2 node mỗi tầng ($O(1)$).
 2. **Cảnh báo `shift()` ngay lập tức:**
    - Chủ động nói với interviewer: *"In JavaScript, `Array.prototype.shift()` is $O(N)$. To guarantee pure $O(N)$ total time complexity, I will use a head index pointer or circular queue."* $\rightarrow$ Đây là điểm cộng cực lớn cho Meta / Google Senior SWE!
-3. **Thứ tự con khi push:** Luôn push `node.left` trước rồi mới tới `node.right` để đảm bảo thứ tự duyệt từ trái qua phải chuẩn mực.
+3. **Thứ tự con khi push:**
+   - BFS Level Order: Luôn push `node.left` trước rồi tới `node.right` để duyệt từ trái sang phải chuẩn mực.
+   - DFS Iterative Stack: Muốn duyệt nhánh trái trước thì phải push `node.right` trước rồi mới push `node.left` vào Stack LIFO!
+4. **Kỹ thuật Early Exit trên Leaf Node:**
+   - Trong cây nhị phân đầy đủ, xấp xỉ một nửa số node là node lá ($N/2$). Việc check `if (node.left === null && node.right === null) return 1;` giúp bớt $2 \times (N/2) = N$ lượt gọi đệ quy chạm tới `null`!
+
 
