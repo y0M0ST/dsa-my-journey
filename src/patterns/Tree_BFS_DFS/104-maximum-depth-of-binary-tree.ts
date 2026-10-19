@@ -76,6 +76,42 @@ export function maxDepthBFS(root: TreeNode | null): number {
 }
 
 /**
+ * Cách 3: DFS Khử Đệ Quy bằng Stack Tường Minh (Explicit Stack).
+ * Giải quyết triệt để nguy cơ tràn Call Stack hệ thống (Maximum call stack size exceeded)
+ * trong V8 Engine khi cây suy biến lệch một bên quá sâu (Skewed Tree, H > 10,000).
+ *
+ * Lưu trữ cặp [node, currentDepth] trên Stack nằm tại bộ nhớ Heap,
+ * chủ động pop và cập nhật maxDepth tại mỗi node.
+ *
+ * - Time Complexity: O(N)
+ *   + Mỗi node được push và pop khỏi stack đúng 1 lần.
+ * - Space Complexity: O(H)
+ *   + Kích thước tối đa của stack tương ứng với chiều cao của cây.
+ *
+ * @param root Node gốc của cây nhị phân
+ * @returns Độ sâu lớn nhất của cây
+ */
+export function maxDepthIterativeDFS(root: TreeNode | null): number {
+    if (root === null) return 0
+
+    let max = 0
+    const stack: [TreeNode, number][] = [[root, 1]]
+
+    while (stack.length > 0) {
+        const [node, currentDepth] = stack.pop()!
+
+        if (currentDepth > max) {
+            max = currentDepth
+        }
+
+        if (node.left !== null) stack.push([node.left, currentDepth + 1])
+        if (node.right !== null) stack.push([node.right, currentDepth + 1])
+    }
+
+    return max
+}
+
+/**
  * Hàm giải chính cho LeetCode 104 (Mặc định sử dụng DFS Đệ quy ngắn gọn, thanh lịch).
  */
 export const maxDepth = maxDepthDFS
