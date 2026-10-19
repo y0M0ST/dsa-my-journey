@@ -5,7 +5,7 @@ import {
     maxDepthBFS,
     maxDepthIterativeDFS,
 } from './104-maximum-depth-of-binary-tree.js'
-import { arrayToTree } from '../../data_structures/tree/TreeNode.js'
+import { arrayToTree, TreeNode } from '../../data_structures/tree/TreeNode.js'
 
 describe('Pattern: Tree_BFS_DFS -> 104-maximum-depth-of-binary-tree', () => {
     const testCases = [
@@ -90,6 +90,23 @@ describe('Pattern: Tree_BFS_DFS -> 104-maximum-depth-of-binary-tree', () => {
 
             expect(dfsResult).toBe(bfsResult)
             expect(bfsResult).toBe(iterativeResult)
+        })
+    })
+
+    describe('Kiểm thử cây suy biến sâu (Deep Skewed Tree - 100 levels)', () => {
+        it('Xử lý mượt mà cây suy biến 100 nodes lệch trái mà không tràn stack', () => {
+            const depth = 100
+            const root = new TreeNode(1)
+            let curr = root
+            for (let i = 2; i <= depth; i++) {
+                curr.left = new TreeNode(i)
+                curr = curr.left
+            }
+
+            expect(maxDepth(root)).toBe(depth)
+            expect(maxDepthDFS(root)).toBe(depth)
+            expect(maxDepthBFS(root)).toBe(depth)
+            expect(maxDepthIterativeDFS(root)).toBe(depth)
         })
     })
 })
