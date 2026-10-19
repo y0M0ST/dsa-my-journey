@@ -38,6 +38,44 @@ export function maxDepthDFS(root: TreeNode | null): number {
 }
 
 /**
+ * Cách 2: BFS Duyệt theo từng tầng (Level-by-Level Traversal).
+ * Sử dụng Hàng đợi (Queue) kết hợp con trỏ `head` để đạt O(1) dequeue,
+ * triệt tiêu hoàn toàn chi phí dịch chuyển bộ nhớ O(K) của `Array.prototype.shift()`.
+ *
+ * Mỗi khi quét xong trọn vẹn một tầng (levelSize nodes), biến `depth` được tăng thêm 1.
+ *
+ * - Time Complexity: O(N)
+ *   + Mỗi node được nạp và lấy ra khỏi queue đúng 1 lần.
+ * - Space Complexity: O(W)
+ *   + Với W là bề rộng lớn nhất của cây (tầng đáy chứa tối đa N/2 nodes -> O(N)).
+ *
+ * @param root Node gốc của cây nhị phân
+ * @returns Độ sâu lớn nhất của cây
+ */
+export function maxDepthBFS(root: TreeNode | null): number {
+    if (root === null) return 0
+
+    let depth = 0
+    const queue: TreeNode[] = [root]
+    let head = 0
+
+    while (head < queue.length) {
+        const levelSize = queue.length - head
+
+        for (let i = 0; i < levelSize; i++) {
+            const node = queue[head++]!
+
+            if (node.left !== null) queue.push(node.left)
+            if (node.right !== null) queue.push(node.right)
+        }
+
+        depth++
+    }
+
+    return depth
+}
+
+/**
  * Hàm giải chính cho LeetCode 104 (Mặc định sử dụng DFS Đệ quy ngắn gọn, thanh lịch).
  */
 export const maxDepth = maxDepthDFS

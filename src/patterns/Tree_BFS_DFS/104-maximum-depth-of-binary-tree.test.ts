@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { maxDepth, maxDepthDFS } from './104-maximum-depth-of-binary-tree.js'
+import { maxDepth, maxDepthDFS, maxDepthBFS } from './104-maximum-depth-of-binary-tree.js'
 import { arrayToTree } from '../../data_structures/tree/TreeNode.js'
 
 describe('Pattern: Tree_BFS_DFS -> 104-maximum-depth-of-binary-tree', () => {
@@ -58,4 +58,21 @@ describe('Pattern: Tree_BFS_DFS -> 104-maximum-depth-of-binary-tree', () => {
             expect(maxDepthDFS(root)).toBe(expected)
         })
     })
+
+    describe('Phương pháp 2: BFS Quét Từng Tầng (Optimized Queue with Head Pointer)', () => {
+        it.each(testCases)('$desc ($input -> $expected)', ({ input, expected }) => {
+            const root = arrayToTree(input)
+            expect(maxDepthBFS(root)).toBe(expected)
+        })
+    })
+
+    describe('Kiểm tra tính tương đương tuyệt đối: DFS === BFS', () => {
+        it.each(testCases)('DFS và BFS cho cùng kết quả trên $desc', ({ input }) => {
+            const root1 = arrayToTree(input)
+            const root2 = arrayToTree(input)
+
+            expect(maxDepthDFS(root1)).toBe(maxDepthBFS(root2))
+        })
+    })
 })
+
