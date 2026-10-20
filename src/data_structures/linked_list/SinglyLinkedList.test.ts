@@ -202,4 +202,154 @@ describe('Singly Linked List (Danh Sách Liên Kết Đơn)', () => {
       expect(list.length).toBe(5);
     });
   });
+
+  describe('6. Tiện ích & Xóa theo giá trị (removeValue, contains, clear)', () => {
+    it('removeValue: Xóa node theo giá trị và xử lý edge cases', () => {
+      // List rỗng
+      expect(list.removeValue(10)).toBe(false);
+
+      // List có 1 phần tử và xóa chính nó
+      list.insertAtHead(10);
+      expect(list.removeValue(10)).toBe(true);
+      expect(list.head).toBeNull();
+      expect(list.tail).toBeNull();
+      expect(list.length).toBe(0);
+
+      // Tạo list [10, 20, 30, 40]
+      [10, 20, 30, 40].forEach((v) => list.insertAtTail(v));
+
+      // Xóa ở giữa (20)
+      expect(list.removeValue(20)).toBe(true);
+      expect(list.toArray()).toEqual([10, 30, 40]);
+      expect(list.length).toBe(3);
+
+      // Xóa ở tail (40) -> tail phải cập nhật về 30
+      expect(list.removeValue(40)).toBe(true);
+      expect(list.toArray()).toEqual([10, 30]);
+      expect(list.tail?.val).toBe(30);
+      expect(list.tail?.next).toBeNull();
+      expect(list.length).toBe(2);
+
+      // Xóa ở head (10)
+      expect(list.removeValue(10)).toBe(true);
+      expect(list.toArray()).toEqual([30]);
+      expect(list.head?.val).toBe(30);
+      expect(list.tail?.val).toBe(30);
+
+      // Giá trị không tồn tại
+      expect(list.removeValue(999)).toBe(false);
+    });
+
+    it('contains: Kiểm tra tồn tại giá trị trong danh sách', () => {
+      expect(list.contains(5)).toBe(false);
+      list.insertAtTail(5);
+      list.insertAtTail(15);
+      expect(list.contains(5)).toBe(true);
+      expect(list.contains(15)).toBe(true);
+      expect(list.contains(25)).toBe(false);
+    });
+
+    it('clear: Xóa trắng toàn bộ danh sách', () => {
+      [1, 2, 3].forEach((v) => list.insertAtTail(v));
+      list.clear();
+
+      expect(list.head).toBeNull();
+      expect(list.tail).toBeNull();
+      expect(list.length).toBe(0);
+      expect(list.isEmpty()).toBe(true);
+      expect(list.toArray()).toEqual([]);
+    });
+  });
+
+  describe('7. Thuật toán Rùa & Thỏ: Tìm node giữa (findMiddle - LC876)', () => {
+    it('findMiddle trên list rỗng trả về null', () => {
+      expect(list.findMiddle()).toBeNull();
+    });
+
+    it('findMiddle trên list 1 phần tử [10] trả về node chính nó', () => {
+      list.insertAtHead(10);
+      expect(list.findMiddle()?.val).toBe(10);
+    });
+
+    it('findMiddle trên list số phần tử lẻ [1, 2, 3, 4, 5] trả về node giữa (3)', () => {
+      [1, 2, 3, 4, 5].forEach((v) => list.insertAtTail(v));
+      expect(list.findMiddle()?.val).toBe(3);
+    });
+
+    it('findMiddle trên list số phần tử chẵn [1, 2, 3, 4] trả về node giữa thứ hai (3)', () => {
+      [1, 2, 3, 4].forEach((v) => list.insertAtTail(v));
+      expect(list.findMiddle()?.val).toBe(3);
+    });
+  });
+
+  describe('8. Thuật toán Floyd phát hiện chu trình (hasCycle - LC141)', () => {
+    it('hasCycle trả về false với list rỗng hoặc 1 node không có chu trình', () => {
+      expect(list.hasCycle()).toBe(false);
+
+      list.insertAtHead(1);
+      expect(list.hasCycle()).toBe(false);
+    });
+
+    it('hasCycle trả về false với list tuyến tính nhiều node', () => {
+      [1, 2, 3, 4, 5].forEach((v) => list.insertAtTail(v));
+      expect(list.hasCycle()).toBe(false);
+    });
+
+    it('hasCycle trả về true khi tail nối về head tạo chu trình khép kín', () => {
+      [1, 2, 3].forEach((v) => list.insertAtTail(v));
+      // Tạo chu trình thủ công: 3 -> 1
+      list.tail!.next = list.head;
+
+      expect(list.hasCycle()).toBe(true);
+
+      // Ngắt chu trình để tránh memory leak sau khi test
+      list.tail!.next = null;
+    });
+
+    it('hasCycle trả về true khi tail nối vào node ở giữa (chu trình hình chiếc thìa/lasso)', () => {
+      [1, 2, 3, 4, 5].forEach((v) => list.insertAtTail(v));
+      const middleNode = list.get(2); // node 3
+      list.tail!.next = middleNode;
+
+      expect(list.hasCycle()).toBe(true);
+
+      // Dọn dẹp chu trình
+      list.tail!.next = null;
+    });
+  });
+
+  describe('9. Factory Method & Iterator Protocol (fromArray, for...of, spread)', () => {
+    it('fromArray: Tạo danh sách nhanh từ mảng JavaScript', () => {
+      const newList = SinglyLinkedList.fromArray([10, 20, 30]);
+      expect(newList.length).toBe(3);
+      expect(newList.head?.val).toBe(10);
+      expect(newList.tail?.val).toBe(30);
+      expect(newList.toArray()).toEqual([10, 20, 30]);
+    });
+
+    it('fromArray: Tạo danh sách từ mảng rỗng', () => {
+      const emptyList = SinglyLinkedList.fromArray([]);
+      expect(emptyList.isEmpty()).toBe(true);
+      expect(emptyList.head).toBeNull();
+      expect(emptyList.tail).toBeNull();
+    });
+
+    it('for...of loop: Duyệt danh sách trực tiếp qua Symbol.iterator', () => {
+      const values = [1, 2, 3, 4];
+      values.forEach((v) => list.insertAtTail(v));
+
+      const collected: number[] = [];
+      for (const val of list) {
+        collected.push(val);
+      }
+
+      expect(collected).toEqual([1, 2, 3, 4]);
+    });
+
+    it('Spread operator [...list]: Giải nén các phần tử trực tiếp', () => {
+      [5, 10, 15].forEach((v) => list.insertAtTail(v));
+      expect([...list]).toEqual([5, 10, 15]);
+    });
+  });
 });
+
