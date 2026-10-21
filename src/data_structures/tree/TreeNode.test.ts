@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import { TreeNode, arrayToTree, treeToArray } from './TreeNode.js'
+import {
+    TreeNode,
+    arrayToTree,
+    treeToArray,
+    isSameTree,
+    inorderTraversal,
+    preorderTraversal,
+    postorderTraversal,
+    cloneTree,
+} from './TreeNode.js'
 
 describe('Data Structure: Binary Tree (TreeNode, arrayToTree, treeToArray)', () => {
     it('khởi tạo TreeNode mặc định và có giá trị', () => {
@@ -62,4 +71,73 @@ describe('Data Structure: Binary Tree (TreeNode, arrayToTree, treeToArray)', () 
         const root = arrayToTree(input)
         expect(treeToArray(root)).toEqual(input)
     })
+
+    describe('isSameTree: Kiểm tra sự tương đương cấu trúc & giá trị', () => {
+        it('hai cây rỗng hoặc cùng 1 cấu trúc giống nhau', () => {
+            expect(isSameTree(null, null)).toBe(true)
+
+            const t1 = arrayToTree([1, 2, 3])
+            const t2 = arrayToTree([1, 2, 3])
+            expect(isSameTree(t1, t2)).toBe(true)
+        })
+
+        it('một cây rỗng và một cây có node', () => {
+            const t1 = arrayToTree([1])
+            expect(isSameTree(t1, null)).toBe(false)
+            expect(isSameTree(null, t1)).toBe(false)
+        })
+
+        it('hai cây khác biệt cấu trúc nhưng cùng giá trị các node', () => {
+            const t1 = arrayToTree([1, 2])
+            const t2 = arrayToTree([1, null, 2])
+            expect(isSameTree(t1, t2)).toBe(false)
+        })
+
+        it('hai cây cùng cấu trúc nhưng khác giá trị', () => {
+            const t1 = arrayToTree([1, 2, 1])
+            const t2 = arrayToTree([1, 1, 2])
+            expect(isSameTree(t1, t2)).toBe(false)
+        })
+    })
+
+    describe('Traversals: In-order, Pre-order, Post-order', () => {
+        const tree = arrayToTree([4, 2, 6, 1, 3, 5, 7])
+
+        it('inorderTraversal (Trái -> Gốc -> Phải)', () => {
+            expect(inorderTraversal(tree)).toEqual([1, 2, 3, 4, 5, 6, 7])
+            expect(inorderTraversal(null)).toEqual([])
+        })
+
+        it('preorderTraversal (Gốc -> Trái -> Phải)', () => {
+            expect(preorderTraversal(tree)).toEqual([4, 2, 1, 3, 6, 5, 7])
+            expect(preorderTraversal(null)).toEqual([])
+        })
+
+        it('postorderTraversal (Trái -> Phải -> Gốc)', () => {
+            expect(postorderTraversal(tree)).toEqual([1, 3, 2, 5, 7, 6, 4])
+            expect(postorderTraversal(null)).toEqual([])
+        })
+    })
+
+    describe('cloneTree: Deep clone cây nhị phân độc lập bộ nhớ', () => {
+        it('nhân bản chính xác và không bị dính tham chiếu (independent mutations)', () => {
+            const original = arrayToTree([1, 2, 3, 4, 5])
+            const cloned = cloneTree(original)
+
+            expect(isSameTree(original, cloned)).toBe(true)
+            expect(cloned).not.toBe(original)
+
+            // Thay đổi cây cloned không được ảnh hưởng tới cây original
+            if (cloned) {
+                cloned.val = 999
+            }
+            expect(original?.val).toBe(1)
+            expect(isSameTree(original, cloned)).toBe(false)
+        })
+
+        it('nhân bản cây rỗng (null)', () => {
+            expect(cloneTree(null)).toBeNull()
+        })
+    })
 })
+

@@ -83,3 +83,93 @@ export function treeToArray(root: TreeNode | null): (number | null)[] {
 
     return result
 }
+
+/**
+ * Helper 3: Kiểm tra hai cây nhị phân có hoàn toàn giống nhau về cấu trúc và giá trị hay không.
+ *
+ * @param p Gốc cây thứ nhất
+ * @param q Gốc cây thứ hai
+ * @returns true nếu hai cây giống nhau tuyệt đối, ngược lại false
+ */
+export function isSameTree(p: TreeNode | null, q: TreeNode | null): boolean {
+    if (p === null && q === null) return true
+    if (p === null || q === null) return false
+    if (p.val !== q.val) return false
+
+    return isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
+}
+
+/**
+ * Helper 4: Duyệt cây theo Trung thứ tự (In-order: Trái -> Gốc -> Phải).
+ * Đối với Binary Search Tree (BST), In-order sẽ sinh ra dãy số tăng dần hoàn hảo.
+ *
+ * @param root Node gốc của cây
+ * @returns Mảng các giá trị theo thứ tự In-order
+ */
+export function inorderTraversal(root: TreeNode | null): number[] {
+    const result: number[] = []
+
+    function dfs(node: TreeNode | null): void {
+        if (node === null) return
+        dfs(node.left)
+        result.push(node.val)
+        dfs(node.right)
+    }
+
+    dfs(root)
+    return result
+}
+
+/**
+ * Helper 5: Duyệt cây theo Tiền thứ tự (Pre-order: Gốc -> Trái -> Phải).
+ * Thường dùng để nhân bản cây, serialize cấu trúc cây hoặc duyệt biểu thức prefix.
+ *
+ * @param root Node gốc của cây
+ * @returns Mảng các giá trị theo thứ tự Pre-order
+ */
+export function preorderTraversal(root: TreeNode | null): number[] {
+    const result: number[] = []
+
+    function dfs(node: TreeNode | null): void {
+        if (node === null) return
+        result.push(node.val)
+        dfs(node.left)
+        dfs(node.right)
+    }
+
+    dfs(root)
+    return result
+}
+
+/**
+ * Helper 6: Duyệt cây theo Hậu thứ tự (Post-order: Trái -> Phải -> Gốc).
+ * Thường dùng trong tính toán độ cao (LC104), dọn dẹp vùng nhớ hoặc duyệt biểu thức postfix.
+ *
+ * @param root Node gốc của cây
+ * @returns Mảng các giá trị theo thứ tự Post-order
+ */
+export function postorderTraversal(root: TreeNode | null): number[] {
+    const result: number[] = []
+
+    function dfs(node: TreeNode | null): void {
+        if (node === null) return
+        dfs(node.left)
+        dfs(node.right)
+        result.push(node.val)
+    }
+
+    dfs(root)
+    return result
+}
+
+/**
+ * Helper 7: Sao chép sâu (Deep Clone) một cây nhị phân sang vùng nhớ mới trên Heap.
+ *
+ * @param root Node gốc của cây cần sao chép
+ * @returns Con trỏ trỏ tới node gốc của cây mới độc lập
+ */
+export function cloneTree(root: TreeNode | null): TreeNode | null {
+    if (root === null) return null
+    return new TreeNode(root.val, cloneTree(root.left), cloneTree(root.right))
+}
+
