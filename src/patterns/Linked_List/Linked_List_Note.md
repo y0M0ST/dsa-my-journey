@@ -71,6 +71,12 @@ function solve(head: ListNode | null): ListNode | null {
 ```
 *   **Bài toán tiêu biểu:** LC 21 (Merge Two Sorted Lists), LC 19 (Remove Nth Node), LC 203 (Remove Elements), LC 83 (Remove Duplicates).
 
+*   **Phân tích thực chiến LC 21 (Merge Two Sorted Lists):**
+    - **Cạm bẫy nếu không có Dummy Node:** Ta phải viết code chọn riêng nút đầu tiên làm `head` (`if (list1.val <= list2.val) head = list1...`), làm phình to số dòng code và tăng nguy cơ sót lỗi con trỏ `null`.
+    - **Sức mạnh Dummy Node:** Tạo `const dummy = new ListNode(0); let current = dummy;`. Mỏ neo `dummy` cố định giúp vòng lặp nối trực tiếp node nhỏ hơn qua `current.next` mà không bao giờ sợ mất `head`.
+    - **Splicing đuôi danh sách trong $O(1)$:** Khi một trong hai danh sách đã cạn, chỉ cần một dòng `current.next = list1 ?? list2` để nối toàn bộ chuỗi còn lại mà không cần duyệt tiếp.
+    - **Độ phức tạp tối ưu:** Time $O(M + N)$, Space $O(1)$ in-place tuyệt đối.
+
 ---
 
 ### Vũ khí 2: Rùa và Thỏ (Floyd’s Cycle-Finding Algorithm & Fast/Slow Pointers)

@@ -32,4 +32,16 @@ describe('Pattern: Two_Pointers -> 15-three-sum', () => {
       expect(threeSum(input)).toEqual(expected);
     }
   );
-});
+
+  it('không làm thay đổi (mutate) mảng input ban đầu', () => {
+    const original = [-1, 0, 1, 2, -1, -4];
+    const copy = [...original];
+    threeSum(original);
+    expect(original).toEqual(copy);
+  });
+
+  it('early exit khi tất cả phần tử đều dương hoặc đều âm', () => {
+    expect(threeSum([1, 2, 3, 4])).toEqual([]);
+    expect(threeSum([-5, -4, -3, -2])).toEqual([]);
+  });
+});

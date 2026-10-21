@@ -9,6 +9,9 @@ describe('Pattern: Two_Pointers -> 11-container-with-most-water', () => {
     { height: [1000, 1, 1, 1, 1000], expected: 4000 },
     { height: [5, 4, 3, 2, 1], expected: 6 },
     { height: [2, 2, 2, 2, 2], expected: 8 },
+    { height: [1, 2, 1, 1, 1, 2, 1], expected: 8 },
+    { height: [], expected: 0 },
+    { height: [5], expected: 0 },
   ];
 
   it.each(testCases)(
@@ -17,4 +20,4 @@ describe('Pattern: Two_Pointers -> 11-container-with-most-water', () => {
       expect(maxArea(height)).toBe(expected);
     }
   );
-});
+});

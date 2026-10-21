@@ -157,7 +157,97 @@ export class SinglyLinkedList {
     return this.length === 0;
   }
 
-  // --- CÁC HÀM TIỆN ÍCH (UTILITIES) ---
+  contains(val: number): boolean {
+    return this.search(val) !== -1;
+  }
+
+  clear(): void {
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+  }
+
+  // Xóa node đầu tiên có giá trị val (LC203 pattern)
+  removeValue(val: number): boolean {
+    if (this.head === null) return false;
+
+    if (this.head.val === val) {
+      this.deleteHead();
+      return true;
+    }
+
+    let current = this.head;
+    while (current.next !== null && current.next.val !== val) {
+      current = current.next;
+    }
+
+    if (current.next !== null) {
+      if (current.next === this.tail) {
+        this.tail = current;
+      }
+      current.next = current.next.next;
+      this.length--;
+      return true;
+    }
+
+    return false;
+  }
+
+  // --- THUẬT TOÁN KINH ĐIỂN VỚI CON TRỎ (POINTER ALGORITHMS) ---
+
+  // Tuyệt kỹ Rùa & Thỏ (Tortoise & Hare / Slow & Fast Pointers - LC876)
+  // fast đi 2 bước, slow đi 1 bước -> khi fast chạm đích, slow nằm ở đúng giữa
+  findMiddle(): ListNode | null {
+    if (this.head === null) return null;
+    let slow: ListNode | null = this.head;
+    let fast: ListNode | null = this.head;
+
+    while (fast !== null && fast.next !== null) {
+      slow = slow!.next;
+      fast = fast.next.next;
+    }
+
+    return slow;
+  }
+
+  // Thuật toán tìm chu trình Floyd's Cycle-Finding (LC141)
+  hasCycle(): boolean {
+    if (this.head === null || this.head.next === null) return false;
+    let slow: ListNode | null = this.head;
+    let fast: ListNode | null = this.head;
+
+    while (fast !== null && fast.next !== null) {
+      slow = slow!.next;
+      fast = fast.next.next;
+
+      if (slow === fast) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // --- CÁC HÀM TIỆN ÍCH & ITERATOR PROTOCOL ---
+
+  // Factory tạo danh sách nhanh từ mảng
+  static fromArray(arr: number[]): SinglyLinkedList {
+    const list = new SinglyLinkedList();
+    for (const val of arr) {
+      list.insertAtTail(val);
+    }
+    return list;
+  }
+
+  // Cho phép duyệt list bằng for...of hoặc spread operator [...list]
+  *[Symbol.iterator](): Iterator<number> {
+    let current = this.head;
+    while (current !== null) {
+      yield current.val;
+      current = current.next;
+    }
+  }
+
   print(): void {
     let current = this.head;
     const result: number[] = [];
@@ -169,5 +259,3 @@ export class SinglyLinkedList {
     console.log(result.join(' -> ') + ' -> null');
   }
 }
-
-

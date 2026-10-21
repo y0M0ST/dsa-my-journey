@@ -10,7 +10,7 @@
  * - leftMax: Cot cao nhat tu trai qua; rightMax: Cot cao nhat tu phai qua.
  */
 export function trapRainWater(height: number[]): number {
-  if (!height || height.length === 0) {
+  if (!height || height.length < 3) {
     return 0;
   }
   let left = 0;
@@ -22,13 +22,22 @@ export function trapRainWater(height: number[]): number {
   while (left < right) {
     if (leftMax < rightMax) {
       left++;
-      leftMax = Math.max(leftMax, height[left]!);
-      totalWater += leftMax - height[left]!;
+      const current = height[left]!;
+      if (current >= leftMax) {
+        leftMax = current;
+      } else {
+        totalWater += leftMax - current;
+      }
     } else {
       right--;
-      rightMax = Math.max(rightMax, height[right]!);
-      totalWater += rightMax - height[right]!;
+      const current = height[right]!;
+      if (current >= rightMax) {
+        rightMax = current;
+      } else {
+        totalWater += rightMax - current;
+      }
     }
   }
   return totalWater;
 }
+
