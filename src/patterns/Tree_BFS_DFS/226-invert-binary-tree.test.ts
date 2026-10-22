@@ -8,6 +8,9 @@ import {
 import {
     arrayToTree,
     treeToArray,
+    TreeNode,
+    isSameTree,
+    cloneTree,
 } from '../../data_structures/tree/TreeNode.js'
 
 describe('Pattern: Tree_BFS_DFS -> 226-invert-binary-tree', () => {
@@ -74,6 +77,75 @@ describe('Pattern: Tree_BFS_DFS -> 226-invert-binary-tree', () => {
             const root = arrayToTree(input)
             const inverted = invertTreeIterativeDFS(root)
             expect(treeToArray(inverted)).toEqual(expected)
+        })
+    })
+
+    describe('Kiểm tra tính tương đương tuyệt đối: DFS === BFS === IterativeDFS', () => {
+        it.each(testCases)('3 phương pháp cho cùng kết quả trên $desc', ({ input }) => {
+            const root1 = arrayToTree(input)
+            const root2 = arrayToTree(input)
+            const root3 = arrayToTree(input)
+
+            const res1 = invertTreeDFS(root1)
+            const res2 = invertTreeBFS(root2)
+            const res3 = invertTreeIterativeDFS(root3)
+
+            expect(treeToArray(res1)).toEqual(treeToArray(res2))
+            expect(treeToArray(res2)).toEqual(treeToArray(res3))
+            expect(isSameTree(res1, res2)).toBe(true)
+            expect(isSameTree(res2, res3)).toBe(true)
+        })
+    })
+
+    describe('Tính chất tự nghịch đảo (Involution Invariant: f(f(T)) === T)', () => {
+        it.each(testCases)('Đảo ngược 2 lần phải khôi phục lại cấu trúc cây ban đầu ($desc)', ({ input }) => {
+            const original = arrayToTree(input)
+            const cloned = cloneTree(original)
+
+            // Đảo ngược lần 1 rồi đảo ngược lần 2
+            const invertedOnce = invertTreeDFS(cloned)
+            const invertedTwice = invertTreeDFS(invertedOnce)
+
+            expect(isSameTree(invertedTwice, original)).toBe(true)
+            expect(treeToArray(invertedTwice)).toEqual(input)
+        })
+    })
+
+    describe('Kiểm thử cây suy biến sâu (Deep Skewed Tree - 100 levels)', () => {
+        it('Đảo ngược mượt mà cây suy biến 100 nodes lệch trái thành lệch phải mà không lỗi', () => {
+            const depth = 100
+            const root = new TreeNode(1)
+            let curr = root
+            for (let i = 2; i <= depth; i++) {
+                curr.left = new TreeNode(i)
+                curr = curr.left
+            }
+
+            // Đảo ngược bằng DFS
+            const inverted = invertTreeDFS(root)
+            expect(inverted).not.toBeNull()
+            expect(inverted!.val).toBe(1)
+            expect(inverted!.left).toBeNull()
+            expect(inverted!.right).not.toBeNull()
+
+            // Kiểm tra toàn bộ chuỗi đã chuyển sang nhánh right
+            let checkCurr = inverted
+            for (let i = 2; i <= depth; i++) {
+                expect(checkCurr!.left).toBeNull()
+                expect(checkCurr!.right).not.toBeNull()
+                expect(checkCurr!.right!.val).toBe(i)
+                checkCurr = checkCurr!.right
+            }
+
+            // Đảo ngược lại bằng BFS để khôi phục lệch trái
+            const restored = invertTreeBFS(inverted)
+            let restoreCurr = restored
+            for (let i = 2; i <= depth; i++) {
+                expect(restoreCurr!.right).toBeNull()
+                expect(restoreCurr!.left).not.toBeNull()
+                expect(restoreCurr!.left!.val).toBe(i)
+                restoreCurr = restoreCurr!.left
+            }
         })
     })
 })
