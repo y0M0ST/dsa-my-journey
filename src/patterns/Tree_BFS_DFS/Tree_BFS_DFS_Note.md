@@ -227,6 +227,30 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
   1. **DFS Đệ quy Post-order:** Tinh gọn nhất ($1 + \max(left, right)$). Thêm Leaf Early Exit giảm tới 50% số frame gọi hàm đệ quy.
   2. **BFS Từng tầng:** Đếm số tầng duyệt được bằng Queue tối ưu con trỏ `head`. Cực kỳ tiết kiệm bộ nhớ trên cây lệch ($O(1)$ space).
   3. **DFS Khử đệ quy:** Dùng Explicit Stack trên Heap, miễn nhiễm với lỗi `Maximum call stack size exceeded`.
+### 6.3. LeetCode 226 - Invert Binary Tree (Easy)
+- **Giai thoại kinh điển:** Max Howell (tác giả Homebrew) từng tweet:
+  > *"Google: 90% of our engineers use the software you wrote (Homebrew), but you can't invert a binary tree on a whiteboard so fuck off."*
+  Đây trở thành giai thoại "meme" nổi tiếng nhất lịch sử phỏng vấn Big Tech!
+- **Đề bài:** Cho con trỏ `root` của cây nhị phân, đảo ngược cây (tạo ảnh phản chiếu gương mirror qua trục thẳng đứng) và trả về `root`.
+- **Ví dụ trực quan:**
+  ```
+        4                    4
+      /   \                /   \
+     2     7      ==>     7     2
+    / \   / \            / \   / \
+   1   3 6   9          9   6 3   1
+  ```
+- **Bản chất toán học & cấu trúc dữ liệu:**
+  - **Phép tự nghịch đảo (Involution):** $f(f(\text{Tree})) = \text{Tree}$. Đảo ngược 2 lần liên tiếp sẽ luôn đưa cây về trạng thái nguyên bản.
+  - **In-place Pointer Swapping:** Không cấp phát thêm node mới, chỉ tráo đổi con trỏ địa chỉ `node.left` và `node.right`.
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy (Post-order / Pre-order):** Hoán đổi con trỏ `left` và `right`, sau đó đệ quy xuống 2 nhánh con.
+     - *Tối ưu hóa Leaf Early Exit:* `if (root.left === null && root.right === null) return root;` giúp tiết kiệm ~50% số frame gọi hàm chạm đáy `null` trên cây nhị phân đầy đủ ($2 \times N/2 = N$ frames).
+     - Time: $O(N)$, Space: $O(H)$.
+  2. **BFS Quét từng tầng (Queue với Head Pointer):** Sử dụng hàng đợi FIFO và con trỏ `head` để triệt tiêu chi phí $O(N)$ của `shift()`.
+     - Time: $O(N)$, Space: $O(W)$ (với cây lệch thẳng hàng chỉ tốn $O(1)$).
+  3. **DFS Khử đệ quy (Explicit Stack):** Sử dụng Stack trên Heap, miễn nhiễm trước nguy cơ tràn Call Stack trong V8 Engine (`RangeError`).
+     - Time: $O(N)$, Space: $O(H)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
 ---
