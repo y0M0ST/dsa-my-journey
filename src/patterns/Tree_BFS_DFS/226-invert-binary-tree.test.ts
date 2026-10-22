@@ -3,6 +3,7 @@ import {
     invertTree,
     invertTreeDFS,
     invertTreeBFS,
+    invertTreeIterativeDFS,
 } from './226-invert-binary-tree.js'
 import {
     arrayToTree,
@@ -64,6 +65,14 @@ describe('Pattern: Tree_BFS_DFS -> 226-invert-binary-tree', () => {
         it.each(testCases)('$desc', ({ input, expected }) => {
             const root = arrayToTree(input)
             const inverted = invertTreeBFS(root)
+            expect(treeToArray(inverted)).toEqual(expected)
+        })
+    })
+
+    describe('Phương pháp 3: DFS Khử Đệ Quy bằng Explicit Stack', () => {
+        it.each(testCases)('$desc', ({ input, expected }) => {
+            const root = arrayToTree(input)
+            const inverted = invertTreeIterativeDFS(root)
             expect(treeToArray(inverted)).toEqual(expected)
         })
     })

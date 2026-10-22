@@ -53,6 +53,37 @@ export function invertTreeBFS(root: TreeNode | null): TreeNode | null {
 }
 
 /**
+ * Cách 3: DFS Khử Đệ Quy bằng Explicit Stack (LIFO Heap Stack).
+ * Đưa toàn bộ Call Stack từ Stack hệ thống sang Stack trên vùng nhớ Heap,
+ * miễn nhiễm hoàn toàn với lỗi `RangeError: Maximum call stack size exceeded` khi cây suy biến sâu (Skewed Tree).
+ *
+ * Time Complexity: O(N) - Thăm qua tất cả N nodes trong cây đúng 1 lần.
+ * Space Complexity: O(H) - Tốn bộ nhớ Heap cho mảng `stack` (O(log N) với cây cân bằng, O(N) với cây lệch).
+ *
+ * @param root Node gốc của cây nhị phân
+ * @returns Con trỏ trỏ tới node gốc của cây sau khi đảo ngược
+ */
+export function invertTreeIterativeDFS(root: TreeNode | null): TreeNode | null {
+    if (root === null) return null
+
+    const stack: TreeNode[] = [root]
+
+    while (stack.length > 0) {
+        const node = stack.pop()!
+
+        // Hoán đổi hai con trỏ left và right
+        const temp = node.left
+        node.left = node.right
+        node.right = temp
+
+        if (node.left !== null) stack.push(node.left)
+        if (node.right !== null) stack.push(node.right)
+    }
+
+    return root
+}
+
+/**
  * Hàm giải chính cho LeetCode 226 (Mặc định sử dụng DFS Đệ quy ngắn gọn, thanh lịch).
  */
 export const invertTree = invertTreeDFS
