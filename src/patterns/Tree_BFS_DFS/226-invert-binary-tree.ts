@@ -21,6 +21,38 @@ export function invertTreeDFS(root: TreeNode | null): TreeNode | null {
 }
 
 /**
+ * Cách 2: BFS Quét Từng Tầng (Level-by-Level with Head Pointer).
+ * Sử dụng Hàng đợi (Queue) kết hợp con trỏ chỉ số `head` để đạt O(1) dequeue,
+ * triệt tiêu hoàn toàn chi phí dịch chuyển bộ nhớ O(K) của `Array.prototype.shift()`.
+ *
+ * Time Complexity: O(N) - Thăm qua tất cả N nodes trong cây đúng 1 lần.
+ * Space Complexity: O(W) - Với W là bề rộng lớn nhất của cây (tối đa N/2 nodes ở tầng đáy -> O(N)).
+ *
+ * @param root Node gốc của cây nhị phân
+ * @returns Con trỏ trỏ tới node gốc của cây sau khi đảo ngược
+ */
+export function invertTreeBFS(root: TreeNode | null): TreeNode | null {
+    if (root === null) return null
+
+    const queue: TreeNode[] = [root]
+    let head = 0
+
+    while (head < queue.length) {
+        const node = queue[head++]!
+
+        // Hoán đổi hai con trỏ left và right
+        const temp = node.left
+        node.left = node.right
+        node.right = temp
+
+        if (node.left !== null) queue.push(node.left)
+        if (node.right !== null) queue.push(node.right)
+    }
+
+    return root
+}
+
+/**
  * Hàm giải chính cho LeetCode 226 (Mặc định sử dụng DFS Đệ quy ngắn gọn, thanh lịch).
  */
 export const invertTree = invertTreeDFS

@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { invertTree, invertTreeDFS } from './226-invert-binary-tree.js'
+import {
+    invertTree,
+    invertTreeDFS,
+    invertTreeBFS,
+} from './226-invert-binary-tree.js'
 import {
     arrayToTree,
     treeToArray,
@@ -53,6 +57,14 @@ describe('Pattern: Tree_BFS_DFS -> 226-invert-binary-tree', () => {
             const root2 = arrayToTree(input)
             const inverted2 = invertTreeDFS(root2)
             expect(treeToArray(inverted2)).toEqual(expected)
+        })
+    })
+
+    describe('Phương pháp 2: BFS Quét Từng Tầng (Optimized Queue with Head Pointer)', () => {
+        it.each(testCases)('$desc', ({ input, expected }) => {
+            const root = arrayToTree(input)
+            const inverted = invertTreeBFS(root)
+            expect(treeToArray(inverted)).toEqual(expected)
         })
     })
 })
