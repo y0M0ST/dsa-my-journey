@@ -253,7 +253,40 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(N)$, Space: $O(H)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.4. LeetCode 199 - Binary Tree Right Side View (Medium - Meta Favorite Topic)
+- **Đề bài:** Cho `root` của cây nhị phân, tưởng tượng bạn đứng ở mép bên phải nhìn vào cây. Hãy trả về danh sách giá trị các node nhìn thấy được theo thứ tự từ trên xuống dưới.
+- **Ví dụ trực quan:**
+  ```
+        1            <--- 1
+      /   \
+     2     3         <--- 3
+      \     \
+       5     4       <--- 4
+  Output: [1, 3, 4]
+  ```
+- **Bẫy nhận thức phổ biến ("Right Child Shadow Trap"):**
+  - **Sai lầm sơ đẳng:** Chỉ lần theo con trỏ `root = root.right`.
+  - **Thực tế:** Nhánh trái có thể sâu hơn nhánh phải (vd: cây `[1, 2, 3, 4, null, null, null, 5]`). Khi nhánh phải cụt, các tầng sâu hơn của nhánh trái sẽ lộ ra trước tầm mắt!
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **BFS Quét từng tầng (Queue với Head Pointer - Khuyên dùng trong phỏng vấn):**
+     - Duyệt từng tầng theo chiều ngang. Với mỗi tầng có kích thước `levelSize`, node cuối cùng trong tầng chính là node nằm ở rìa ngoài cùng bên phải.
+     - Dùng con trỏ `head` triệt tiêu chi phí $O(N)$ dời mảng của `shift()`.
+     - Time: $O(N)$, Space: $O(W) \le O(N/2)$.
+  2. **DFS Đệ quy đảo ngược (Reversed Pre-order Traversal: Root -> Right -> Left):**
+     - Luôn thăm nhánh phải trước nhánh trái!
+     - Duy trì biến `depth` (độ sâu hiện tại, bắt đầu từ 0).
+     - Điều kiện bắt trúng node ngoài cùng: `if (depth === result.length) result.push(node.val);`.
+     - Vì nhánh phải luôn được thăm trước, node đầu tiên chạm tới ở mỗi độ sâu `depth` chắc chắn là node ngoài cùng bên phải! Các node cùng tầng sau đó sẽ thấy `depth < result.length` nên bị bỏ qua.
+     - Time: $O(N)$, Space: $O(H)$.
+  3. **DFS Khử đệ quy bằng Explicit Stack (LIFO Heap Stack):**
+     - Push `{ node, depth }` vào Stack trên Heap.
+     - Để nhánh phải được pop ra xử lý trước, ta push nhánh trái trước rồi push nhánh phải sau.
+     - Miễn nhiễm hoàn toàn với nguy cơ `RangeError: Maximum call stack size exceeded` trên V8 Engine.
+     - Time: $O(N)$, Space: $O(H)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
+
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
 
