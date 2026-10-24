@@ -285,6 +285,41 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(N)$, Space: $O(H)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.5. LeetCode 100 - Same Tree (Easy - Tính Đồng Nhất Cấu Trúc & Duyệt Song Song)
+- **Đề bài:** Cho con trỏ `p` và `q` của hai cây nhị phân, kiểm tra xem hai cây này có hoàn toàn giống nhau hay không. Hai cây được coi là giống nhau khi chúng đồng nhất về cấu trúc hình học và tất cả các node tương ứng có cùng giá trị.
+- **Ví dụ trực quan:**
+  ```
+       1         1
+      / \       / \
+     2   3     2   3
+    [Tree p]  [Tree q]  ===> Output: true
+
+       1         1
+      /           \
+     2             2
+    [Tree p]  [Tree q]  ===> Output: false (Cấu trúc lệch nhau)
+  ```
+- **Bản chất toán học & Tính chất quan hệ tương đương:**
+  - **Đồng nhất phản xạ (Reflexivity):** Một cây luôn bằng chính nó ($T \cong T$).
+  - **Tối ưu hóa con trỏ cùng địa chỉ nhớ (Same Memory Reference Check):**
+    ```typescript
+    if (p === q) return true;
+    ```
+    Đây là một "micro-optimization" cực kỳ tinh tế: Nếu cả hai con trỏ trỏ tới cùng một địa chỉ trong vùng nhớ Heap (hoặc cả hai cùng là `null`), ta kết luận ngay `true` mà không cần duyệt thêm bất kỳ node con nào!
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy (Pre-order Traversal / Divide & Conquer):**
+     - Kiểm tra node hiện tại trước: nếu cả hai cùng null -> `true`; nếu chỉ một bên null hoặc giá trị khác nhau -> `false`.
+     - Tận dụng cơ chế Short-circuit Evaluation của toán tử `&&`: nếu nhánh trái khác nhau, nhánh phải sẽ không bao giờ bị duyệt!
+     - Time: $O(\min(N, M))$, Space: $O(\min(H_p, H_q))$.
+  2. **BFS Quét Tầng Đồng Bộ (Synchronous Level-Order with Head Pointer):**
+     - Đưa từng cặp `[nodeP, nodeQ]` vào hàng đợi FIFO.
+     - Sử dụng con trỏ `head` để đạt $O(1)$ dequeue, miễn nhiễm với chi phí $O(K)$ của `Array.prototype.shift()`.
+     - Time: $O(\min(N, M))$, Space: $O(\min(W_p, W_q))$.
+  3. **DFS Khử Đệ Quy (Explicit Heap Stack):**
+     - Đưa việc duyệt cặp node sang LIFO Stack trên Heap, miễn nhiễm nguy cơ tràn Call Stack của V8 khi gặp cây suy biến lệch quá sâu.
+     - Time: $O(\min(N, M))$, Space: $O(\min(H_p, H_q))$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 
