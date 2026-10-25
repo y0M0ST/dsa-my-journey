@@ -6,7 +6,10 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "gen": "node src/scripts/generate-template.js"
+    "gen": "node src/scripts/generate-template.js",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "y0M0ST",
