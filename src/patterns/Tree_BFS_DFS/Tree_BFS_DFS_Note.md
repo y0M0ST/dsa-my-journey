@@ -227,9 +227,101 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
   1. **DFS Đệ quy Post-order:** Tinh gọn nhất ($1 + \max(left, right)$). Thêm Leaf Early Exit giảm tới 50% số frame gọi hàm đệ quy.
   2. **BFS Từng tầng:** Đếm số tầng duyệt được bằng Queue tối ưu con trỏ `head`. Cực kỳ tiết kiệm bộ nhớ trên cây lệch ($O(1)$ space).
   3. **DFS Khử đệ quy:** Dùng Explicit Stack trên Heap, miễn nhiễm với lỗi `Maximum call stack size exceeded`.
+### 6.3. LeetCode 226 - Invert Binary Tree (Easy)
+- **Giai thoại kinh điển:** Max Howell (tác giả Homebrew) từng tweet:
+  > *"Google: 90% of our engineers use the software you wrote (Homebrew), but you can't invert a binary tree on a whiteboard so fuck off."*
+  Đây trở thành giai thoại "meme" nổi tiếng nhất lịch sử phỏng vấn Big Tech!
+- **Đề bài:** Cho con trỏ `root` của cây nhị phân, đảo ngược cây (tạo ảnh phản chiếu gương mirror qua trục thẳng đứng) và trả về `root`.
+- **Ví dụ trực quan:**
+  ```
+        4                    4
+      /   \                /   \
+     2     7      ==>     7     2
+    / \   / \            / \   / \
+   1   3 6   9          9   6 3   1
+  ```
+- **Bản chất toán học & cấu trúc dữ liệu:**
+  - **Phép tự nghịch đảo (Involution):** $f(f(\text{Tree})) = \text{Tree}$. Đảo ngược 2 lần liên tiếp sẽ luôn đưa cây về trạng thái nguyên bản.
+  - **In-place Pointer Swapping:** Không cấp phát thêm node mới, chỉ tráo đổi con trỏ địa chỉ `node.left` và `node.right`.
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy (Post-order / Pre-order):** Hoán đổi con trỏ `left` và `right`, sau đó đệ quy xuống 2 nhánh con.
+     - *Tối ưu hóa Leaf Early Exit:* `if (root.left === null && root.right === null) return root;` giúp tiết kiệm ~50% số frame gọi hàm chạm đáy `null` trên cây nhị phân đầy đủ ($2 \times N/2 = N$ frames).
+     - Time: $O(N)$, Space: $O(H)$.
+  2. **BFS Quét từng tầng (Queue với Head Pointer):** Sử dụng hàng đợi FIFO và con trỏ `head` để triệt tiêu chi phí $O(N)$ của `shift()`.
+     - Time: $O(N)$, Space: $O(W)$ (với cây lệch thẳng hàng chỉ tốn $O(1)$).
+  3. **DFS Khử đệ quy (Explicit Stack):** Sử dụng Stack trên Heap, miễn nhiễm trước nguy cơ tràn Call Stack trong V8 Engine (`RangeError`).
+     - Time: $O(N)$, Space: $O(H)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### 6.4. LeetCode 199 - Binary Tree Right Side View (Medium - Meta Favorite Topic)
+- **Đề bài:** Cho `root` của cây nhị phân, tưởng tượng bạn đứng ở mép bên phải nhìn vào cây. Hãy trả về danh sách giá trị các node nhìn thấy được theo thứ tự từ trên xuống dưới.
+- **Ví dụ trực quan:**
+  ```
+        1            <--- 1
+      /   \
+     2     3         <--- 3
+      \     \
+       5     4       <--- 4
+  Output: [1, 3, 4]
+  ```
+- **Bẫy nhận thức phổ biến ("Right Child Shadow Trap"):**
+  - **Sai lầm sơ đẳng:** Chỉ lần theo con trỏ `root = root.right`.
+  - **Thực tế:** Nhánh trái có thể sâu hơn nhánh phải (vd: cây `[1, 2, 3, 4, null, null, null, 5]`). Khi nhánh phải cụt, các tầng sâu hơn của nhánh trái sẽ lộ ra trước tầm mắt!
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **BFS Quét từng tầng (Queue với Head Pointer - Khuyên dùng trong phỏng vấn):**
+     - Duyệt từng tầng theo chiều ngang. Với mỗi tầng có kích thước `levelSize`, node cuối cùng trong tầng chính là node nằm ở rìa ngoài cùng bên phải.
+     - Dùng con trỏ `head` triệt tiêu chi phí $O(N)$ dời mảng của `shift()`.
+     - Time: $O(N)$, Space: $O(W) \le O(N/2)$.
+  2. **DFS Đệ quy đảo ngược (Reversed Pre-order Traversal: Root -> Right -> Left):**
+     - Luôn thăm nhánh phải trước nhánh trái!
+     - Duy trì biến `depth` (độ sâu hiện tại, bắt đầu từ 0).
+     - Điều kiện bắt trúng node ngoài cùng: `if (depth === result.length) result.push(node.val);`.
+     - Vì nhánh phải luôn được thăm trước, node đầu tiên chạm tới ở mỗi độ sâu `depth` chắc chắn là node ngoài cùng bên phải! Các node cùng tầng sau đó sẽ thấy `depth < result.length` nên bị bỏ qua.
+     - Time: $O(N)$, Space: $O(H)$.
+  3. **DFS Khử đệ quy bằng Explicit Stack (LIFO Heap Stack):**
+     - Push `{ node, depth }` vào Stack trên Heap.
+     - Để nhánh phải được pop ra xử lý trước, ta push nhánh trái trước rồi push nhánh phải sau.
+     - Miễn nhiễm hoàn toàn với nguy cơ `RangeError: Maximum call stack size exceeded` trên V8 Engine.
+     - Time: $O(N)$, Space: $O(H)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### 6.5. LeetCode 100 - Same Tree (Easy - Tính Đồng Nhất Cấu Trúc & Duyệt Song Song)
+- **Đề bài:** Cho con trỏ `p` và `q` của hai cây nhị phân, kiểm tra xem hai cây này có hoàn toàn giống nhau hay không. Hai cây được coi là giống nhau khi chúng đồng nhất về cấu trúc hình học và tất cả các node tương ứng có cùng giá trị.
+- **Ví dụ trực quan:**
+  ```
+       1         1
+      / \       / \
+     2   3     2   3
+    [Tree p]  [Tree q]  ===> Output: true
+
+       1         1
+      /           \
+     2             2
+    [Tree p]  [Tree q]  ===> Output: false (Cấu trúc lệch nhau)
+  ```
+- **Bản chất toán học & Tính chất quan hệ tương đương:**
+  - **Đồng nhất phản xạ (Reflexivity):** Một cây luôn bằng chính nó ($T \cong T$).
+  - **Tối ưu hóa con trỏ cùng địa chỉ nhớ (Same Memory Reference Check):**
+    ```typescript
+    if (p === q) return true;
+    ```
+    Đây là một "micro-optimization" cực kỳ tinh tế: Nếu cả hai con trỏ trỏ tới cùng một địa chỉ trong vùng nhớ Heap (hoặc cả hai cùng là `null`), ta kết luận ngay `true` mà không cần duyệt thêm bất kỳ node con nào!
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy (Pre-order Traversal / Divide & Conquer):**
+     - Kiểm tra node hiện tại trước: nếu cả hai cùng null -> `true`; nếu chỉ một bên null hoặc giá trị khác nhau -> `false`.
+     - Tận dụng cơ chế Short-circuit Evaluation của toán tử `&&`: nếu nhánh trái khác nhau, nhánh phải sẽ không bao giờ bị duyệt!
+     - Time: $O(\min(N, M))$, Space: $O(\min(H_p, H_q))$.
+  2. **BFS Quét Tầng Đồng Bộ (Synchronous Level-Order with Head Pointer):**
+     - Đưa từng cặp `[nodeP, nodeQ]` vào hàng đợi FIFO.
+     - Sử dụng con trỏ `head` để đạt $O(1)$ dequeue, miễn nhiễm với chi phí $O(K)$ của `Array.prototype.shift()`.
+     - Time: $O(\min(N, M))$, Space: $O(\min(W_p, W_q))$.
+  3. **DFS Khử Đệ Quy (Explicit Heap Stack):**
+     - Đưa việc duyệt cặp node sang LIFO Stack trên Heap, miễn nhiễm nguy cơ tràn Call Stack của V8 khi gặp cây suy biến lệch quá sâu.
+     - Time: $O(\min(N, M))$, Space: $O(\min(H_p, H_q))$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
 ---
+
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
 
