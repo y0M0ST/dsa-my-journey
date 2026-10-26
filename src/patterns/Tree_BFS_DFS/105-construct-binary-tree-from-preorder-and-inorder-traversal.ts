@@ -151,8 +151,66 @@ export function buildTreeSentinelDFS(preorder: number[], inorder: number[]): Tre
 }
 
 /**
+ * Cách 3: Phương pháp Khử Đệ Quy bằng Explicit Stack (LIFO Heap Stack Simulation).
+ *
+ * Ý tưởng đột phá:
+ * - Thay vì dùng Call Stack của hệ thống (dễ bị RangeError khi cây suy biến có độ sâu 10,000+ nodes),
+ *   ta tự quản lý một ngăn xếp (Stack) lưu các TreeNode đang trên đường đi (path).
+ * - Cơ chế hoạt động:
+ *   1. Khởi tạo `root` từ `preorder[0]`, đưa `root` vào stack.
+ *   2. Duyệt qua từng phần tử `val` từ `i = 1` của `preorder`:
+ *      - Lấy `node` ở đỉnh stack (stack[top]).
+ *      - Nếu `node.val !== inorder[inIdx]`: Nghĩa là ta vẫn đang đi xuống sâu bên nhánh trái,
+ *        do đó `val` chính là con trái của `node` (`node.left = new TreeNode(val)`). Ta push `node.left` vào stack.
+ *      - Nếu `node.val === inorder[inIdx]`: Ta đã chạm tới node tận cùng bên trái của một nhánh con!
+ *        Lúc này, ta pop liên tục các node trong stack có giá trị bằng `inorder[inIdx]` (đồng thời tăng `inIdx++`).
+ *        Node cuối cùng bị pop ra chính là node cha trực tiếp mà `val` sẽ là con phải của nó!
+ *        Ta gán `node.right = new TreeNode(val)` và push `node.right` vào stack để tiếp tục tiến trình.
+ *
+ * Độ phức tạp:
+ * - Time Complexity: O(N) - Mỗi node được push vào stack đúng 1 lần và pop khỏi stack đúng 1 lần. Vòng while của inIdx chạy tối đa N lần.
+ * - Space Complexity: O(H) - Kích thước stack bị chặn bởi chiều cao lớn nhất của cây (O(log N) cho cây cân bằng, O(N) cho cây lệch).
+ *   Không phụ thuộc vào giới hạn Call Stack của V8 Engine!
+ *
+ * @param preorder Mảng duyệt theo thứ tự Pre-order
+ * @param inorder Mảng duyệt theo thứ tự In-order
+ * @returns Node gốc của cây nhị phân đã được tái dựng
+ */
+export function buildTreeIterative(preorder: number[], inorder: number[]): TreeNode | null {
+    if (preorder.length === 0 || inorder.length === 0 || preorder.length !== inorder.length) {
+        return null
+    }
+
+    const root = new TreeNode(preorder[0]!)
+    const stack: TreeNode[] = [root]
+    let inIdx = 0
+
+    for (let i = 1; i < preorder.length; i++) {
+        const val = preorder[i]!
+        let node = stack[stack.length - 1]!
+
+        if (node.val !== inorder[inIdx]) {
+            // Còn đang đi sâu xuống nhánh con trái
+            node.left = new TreeNode(val)
+            stack.push(node.left)
+        } else {
+            // Đã chạm đáy một nhánh, pop ngược lên tìm node cha phù hợp để gắn nhánh phải
+            while (stack.length > 0 && stack[stack.length - 1]!.val === inorder[inIdx]) {
+                node = stack.pop()!
+                inIdx++
+            }
+            node.right = new TreeNode(val)
+            stack.push(node.right)
+        }
+    }
+
+    return root
+}
+
+/**
  * Hàm giải chính thức chuẩn LeetCode cho LC 105.
  * Mặc định sử dụng Divide & Conquer với Hash Map (dễ bảo trì, trực quan và đạt hiệu năng tối ưu O(N)).
  */
 export const buildTree = buildTreeHashMapDFS
+
 
