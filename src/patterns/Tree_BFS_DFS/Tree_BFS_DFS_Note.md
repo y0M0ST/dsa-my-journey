@@ -320,8 +320,52 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(\min(N, M))$, Space: $O(\min(H_p, H_q))$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
----
+### 6.6. LeetCode 105 - Construct Binary Tree from Preorder and Inorder Traversal (Medium - Tái Dựng Cây Nhị Phân)
+- **Đề bài:** Cho 2 mảng số nguyên `preorder` và `inorder` lần lượt là thứ tự duyệt Pre-order (Gốc -> Trái -> Phải) và In-order (Trái -> Gốc -> Phải) của cùng một cây nhị phân (các giá trị đều độc nhất). Hãy tái dựng và trả về node gốc của cây nhị phân đó.
+- **Bản chất toán học & Cấu trúc ranh giới mảng:**
+  ```
+  Preorder: [ Root | <---- Nhánh Trái ----> | <---- Nhánh Phải ----> ]
+  Inorder:  [ <---- Nhánh Trái ----> | Root | <---- Nhánh Phải ----> ]
+                                       ▲
+                                   inRootIdx
+  ```
+  - **Node gốc (Root):** Luôn luôn là phần tử đầu tiên của khoảng `preorder` con (`preorder[preStart]`).
+  - **Ranh giới phân tách (Partition Barrier):** Tìm vị trí của `root.val` trong `inorder` tại chỉ số `inRootIdx`.
+  - **Bất biến kích thước nhánh (Subtree Size Invariant):**
+    - Số node nhánh con trái: $\text{leftSize} = \text{inRootIdx} - \text{inStart}$.
+    - Nhánh trái:
+      - Preorder: `[preStart + 1, preStart + leftSize]`
+      - Inorder: `[inStart, inRootIdx - 1]`
+    - Nhánh phải:
+      - Preorder: `[preStart + leftSize + 1, preEnd]`
+      - Inorder: `[inRootIdx + 1, inEnd]`
+- **Cạm bẫy chí mạng trong phỏng vấn:**
+  - ❌ **Cắt mảng bằng `slice()` hoặc tìm bằng `indexOf()`:**
+    - Mỗi tầng đệ quy gọi `slice()` và `indexOf()` tốn $O(N)$.
+    - Khi cây suy biến lệch một phía (Skewed Tree chiều cao $N$), độ phức tạp thời gian bị đội lên $O(N^2)$ và không gian bộ nhớ tốn thêm $O(N^2)$!
+  - ✅ **Giải pháp tối ưu chuẩn Big Tech:**
+    - Tiền xử lý tạo Hash Map `inorderMap` lưu `{ value => index }` trong $O(N)$.
+    - Truyền 4 con trỏ chỉ số `(preStart, preEnd, inStart, inEnd)` giúp mỗi bước phân rã đạt $O(1)$.
+- **Chiến lược tối ưu 4 trường phái:**
+  1. **Chia để trị (Divide & Conquer) kết hợp Hash Map Index Lookup:**
+     - Xây dựng cây từ trên xuống (Top-down Pre-order): Tạo node gốc trước rồi đệ quy dựng con trái và con phải.
+     - Time: $O(N)$, Space: $O(N)$ (Hash Map + Call Stack $O(H)$).
+  2. **DFS Tối Ưu Với Điểm Dừng Ranh Giới (Sentinel / Stop-Value DFS):**
+     - Tận dụng quy luật duyệt: Nhánh trái của node $X$ sẽ kết thúc ngay khi Inorder gặp giá trị $X.\text{val}$.
+     - Dùng giá trị cha làm "Sentinel Stop Value" để ngắt đệ quy mà không cần tra cứu Hash Map hay tính toán chỉ số!
+     - Time: $O(N)$, Space: $O(H)$ (Zero Hash Map allocation).
+  3. **Khử đệ quy bằng Explicit Stack (LIFO Heap Stack Simulation):**
+     - Đưa toàn bộ đường đi cây vào Stack trên Heap.
+     - Khi đỉnh stack chưa khớp `inorder[inIdx]`, tiếp tục gắn nhánh con trái. Khi đỉnh stack khớp `inorder[inIdx]`, pop liên tục để tìm node cha gắn nhánh con phải.
+     - Miễn nhiễm hoàn toàn trước nguy cơ tràn Call Stack của V8 khi gặp cây lệch sâu hàng chục nghìn nodes.
+     - Time: $O(N)$, Space: $O(H)$.
+  4. **TypedArray Direct Offset Indexing (Kỹ thuật Competitive Programming):**
+     - Với ràng buộc giá trị $[-3000, 3000]$, sử dụng `Int16Array(6001)` với độ dời `OFFSET = 3000`.
+     - Thay thế cơ chế băm của Map bằng truy cập bộ nhớ trực tiếp trong TypedArray buffer C++, tối đa hóa L1/L2 CPU Cache.
+     - Time: $O(N)$ (tốc độ cực đại trong V8), Space: $12\text{KB}$ cố định.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
 
@@ -335,5 +379,11 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
    - DFS Iterative Stack: Muốn duyệt nhánh trái trước thì phải push `node.right` trước rồi mới push `node.left` vào Stack LIFO!
 4. **Kỹ thuật Early Exit trên Leaf Node:**
    - Trong cây nhị phân đầy đủ, xấp xỉ một nửa số node là node lá ($N/2$). Việc check `if (node.left === null && node.right === null) return 1;` giúp bớt $2 \times (N/2) = N$ lượt gọi đệ quy chạm tới `null`!
+5. **Điều kiện cần để tái dựng cây duy nhất (Unique Reconstruction Rule):**
+   - Cần ít nhất một phép duyệt In-order để phân định ranh giới giữa nhánh con trái và nhánh con phải.
+   - **Pre-order + In-order**: Tái dựng duy nhất cây nhị phân bất kỳ (LC 105).
+   - **Post-order + In-order**: Tái dựng duy nhất cây nhị phân bất kỳ (LC 106).
+   - **Pre-order + Post-order**: CHỈ tái dựng được nếu cây là Full Binary Tree (mọi node nội bộ đều có đủ 2 con, LC 889).
+
 
 
