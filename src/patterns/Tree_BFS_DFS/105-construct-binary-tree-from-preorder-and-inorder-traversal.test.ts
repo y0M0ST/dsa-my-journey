@@ -126,7 +126,10 @@ describe('Pattern: Tree_BFS_DFS -> 105-construct-binary-tree-from-preorder-and-i
 
     describe('Kiểm định bất biến toán học duyệt cây (Traversal Roundtrip Invariant)', () => {
         testCases
-            .filter(({ preorder }) => preorder.length > 0 && preorder.length === testCases[0]?.preorder.length)
+            .filter(
+                ({ preorder }) =>
+                    preorder.length > 0 && preorder.length === testCases[0]?.preorder.length
+            )
             .forEach(({ desc, preorder, inorder }) => {
                 it(`Roundtrip: Preorder & Inorder sau khi tái dựng phải bảo toàn nguyên vẹn (${desc})`, () => {
                     const reconstructed = buildTree(preorder, inorder)

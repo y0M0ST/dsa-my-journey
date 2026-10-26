@@ -78,19 +78,9 @@ export function buildTreeHashMapDFS(preorder: number[], inorder: number[]): Tree
         const leftSubtreeSize = inRootIdx - inStart
 
         // 4. Đệ quy xây dựng nhánh con trái và nhánh con phải
-        root.left = buildSubtree(
-            preStart + 1,
-            preStart + leftSubtreeSize,
-            inStart,
-            inRootIdx - 1
-        )
+        root.left = buildSubtree(preStart + 1, preStart + leftSubtreeSize, inStart, inRootIdx - 1)
 
-        root.right = buildSubtree(
-            preStart + leftSubtreeSize + 1,
-            preEnd,
-            inRootIdx + 1,
-            inEnd
-        )
+        root.right = buildSubtree(preStart + leftSubtreeSize + 1, preEnd, inRootIdx + 1, inEnd)
 
         return root
     }
@@ -251,18 +241,8 @@ export function buildTreeTypedArrayDFS(preorder: number[], inorder: number[]): T
         const inRootIdx = inorderIndex[rootVal + OFFSET]!
         const leftSubtreeSize = inRootIdx - inStart
 
-        root.left = buildSubtree(
-            preStart + 1,
-            preStart + leftSubtreeSize,
-            inStart,
-            inRootIdx - 1
-        )
-        root.right = buildSubtree(
-            preStart + leftSubtreeSize + 1,
-            preEnd,
-            inRootIdx + 1,
-            inEnd
-        )
+        root.left = buildSubtree(preStart + 1, preStart + leftSubtreeSize, inStart, inRootIdx - 1)
+        root.right = buildSubtree(preStart + leftSubtreeSize + 1, preEnd, inRootIdx + 1, inEnd)
 
         return root
     }
@@ -288,6 +268,3 @@ export function buildTreeTypedArrayDFS(preorder: number[], inorder: number[]): T
  * Mặc định sử dụng Divide & Conquer với Hash Map (dễ bảo trì, trực quan và đạt hiệu năng tối ưu O(N)).
  */
 export const buildTree = buildTreeHashMapDFS
-
-
-
