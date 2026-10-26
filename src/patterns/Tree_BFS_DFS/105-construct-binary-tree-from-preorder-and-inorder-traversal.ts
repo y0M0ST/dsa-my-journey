@@ -208,9 +208,86 @@ export function buildTreeIterative(preorder: number[], inorder: number[]): TreeN
 }
 
 /**
+ * Cách 4: Tối Ưu Hóa Cache Bằng Mảng Định Kiểu (TypedArray Direct Offset Indexing).
+ *
+ * Tối ưu hóa đặc thù cho JavaScript V8 Engine & Competitive Programming:
+ * - Theo ràng buộc đề bài LeetCode 105: -3000 <= preorder[i], inorder[i] <= 3000.
+ * - Ta sử dụng mảng định kiểu `Int16Array` với kích thước 6001 và dịch chuyển (OFFSET = 3000).
+ * - Thay vì gọi `inorderMap.get(val)` tốn chi phí hash function lookup và heap allocation,
+ *   ta truy cập trực tiếp `inorderIndex[val + OFFSET]` trong contiguous buffer bộ nhớ C++.
+ * - Giảm tải áp lực lên Garbage Collector (GC) của V8 về mức 0 byte cấp phát động cho map.
+ *
+ * Độ phức tạp:
+ * - Time Complexity: O(N) - Tốc độ truy cập mảng nguyên bản (raw memory access), nhanh hơn Map trong V8.
+ * - Space Complexity: O(1) phụ thuộc giá trị hằng số (bộ đệm 12KB) + O(H) Call Stack.
+ *
+ * @param preorder Mảng duyệt theo thứ tự Pre-order
+ * @param inorder Mảng duyệt theo thứ tự In-order
+ * @returns Node gốc của cây nhị phân đã được tái dựng
+ */
+export function buildTreeTypedArrayDFS(preorder: number[], inorder: number[]): TreeNode | null {
+    if (preorder.length === 0 || inorder.length === 0 || preorder.length !== inorder.length) {
+        return null
+    }
+
+    const OFFSET = 3000
+    const inorderIndex = new Int16Array(6001)
+    for (let i = 0; i < inorder.length; i++) {
+        inorderIndex[inorder[i]! + OFFSET] = i
+    }
+
+    function buildSubtree(
+        preStart: number,
+        preEnd: number,
+        inStart: number,
+        inEnd: number
+    ): TreeNode | null {
+        if (preStart > preEnd || inStart > inEnd) {
+            return null
+        }
+
+        const rootVal = preorder[preStart]!
+        const root = new TreeNode(rootVal)
+        const inRootIdx = inorderIndex[rootVal + OFFSET]!
+        const leftSubtreeSize = inRootIdx - inStart
+
+        root.left = buildSubtree(
+            preStart + 1,
+            preStart + leftSubtreeSize,
+            inStart,
+            inRootIdx - 1
+        )
+        root.right = buildSubtree(
+            preStart + leftSubtreeSize + 1,
+            preEnd,
+            inRootIdx + 1,
+            inEnd
+        )
+
+        return root
+    }
+
+    return buildSubtree(0, preorder.length - 1, 0, inorder.length - 1)
+}
+
+/**
+ * BẢNG SO SÁNH TOÀN DIỆN CÁC PHƯƠNG PHÁP (COMPREHENSIVE PARADIGM COMPARISON):
+ *
+ * | Tiêu chí | 1. D&C Hash Map | 2. Sentinel Stop-Value DFS | 3. Explicit Stack | 4. TypedArray Indexing |
+ * |---|---|---|---|---|
+ * | **Time Complexity** | O(N) | O(N) | O(N) | O(N) (Cực nhanh) |
+ * | **Auxiliary Space** | O(N) (Map) | O(1) (Zero map alloc) | O(H) (Heap Stack) | O(K) (12KB Buffer) |
+ * | **Call Stack Depth** | O(H) | O(H) | O(1) (Không dùng recursion) | O(H) |
+ * | **Nguy cơ Stack Overflow** | Có (khi H > 10^4) | Có (khi H > 10^4) | KHÔNG (Miễn nhiễm) | Có (khi H > 10^4) |
+ * | **Độ phức tạp code** | Đơn giản, dễ giải thích | Tinh tế, cần nắm chắc traversal | Dễ nhầm lẫn điều kiện pop | Đòi hỏi biên độ giá trị |
+ * | **Khuyên dùng khi** | Phỏng vấn trực tiếp | Muốn tối ưu memory footprint | Môi trường Production cây sâu | Thi đấu Competitive Programming |
+ */
+
+/**
  * Hàm giải chính thức chuẩn LeetCode cho LC 105.
  * Mặc định sử dụng Divide & Conquer với Hash Map (dễ bảo trì, trực quan và đạt hiệu năng tối ưu O(N)).
  */
 export const buildTree = buildTreeHashMapDFS
+
 
 

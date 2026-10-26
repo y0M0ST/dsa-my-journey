@@ -4,6 +4,7 @@ import {
     buildTreeHashMapDFS,
     buildTreeSentinelDFS,
     buildTreeIterative,
+    buildTreeTypedArrayDFS,
 } from './105-construct-binary-tree-from-preorder-and-inorder-traversal.js'
 import {
     treeToArray,
@@ -97,16 +98,28 @@ describe('Pattern: Tree_BFS_DFS -> 105-construct-binary-tree-from-preorder-and-i
         })
     })
 
-    describe('Kiểm định tính đồng nhất đa trường phái (Multi-way Structural Equivalence)', () => {
+    describe('Kiểm thử giải pháp Tối ưu Cache TypedArray (buildTreeTypedArrayDFS)', () => {
+        testCases.forEach(({ desc, preorder, inorder, expectedArray }) => {
+            it(desc, () => {
+                const root = buildTreeTypedArrayDFS(preorder, inorder)
+                expect(treeToArray(root)).toEqual(expectedArray)
+            })
+        })
+    })
+
+    describe('Kiểm định tính đồng nhất đa trường phái (4-way Structural Equivalence)', () => {
         testCases.forEach(({ desc, preorder, inorder }) => {
-            it(`Đồng nhất cấu trúc tuyệt đối giữa 3 cách: ${desc}`, () => {
+            it(`Đồng nhất cấu trúc tuyệt đối giữa 4 cách: ${desc}`, () => {
                 const treeDFS = buildTreeHashMapDFS(preorder, inorder)
                 const treeSentinel = buildTreeSentinelDFS(preorder, inorder)
                 const treeIterative = buildTreeIterative(preorder, inorder)
+                const treeTypedArray = buildTreeTypedArrayDFS(preorder, inorder)
 
                 expect(isSameTree(treeDFS, treeSentinel)).toBe(true)
                 expect(isSameTree(treeDFS, treeIterative)).toBe(true)
+                expect(isSameTree(treeDFS, treeTypedArray)).toBe(true)
                 expect(isSameTree(treeSentinel, treeIterative)).toBe(true)
+                expect(isSameTree(treeSentinel, treeTypedArray)).toBe(true)
             })
         })
     })
