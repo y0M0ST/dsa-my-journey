@@ -99,7 +99,60 @@ export function buildTreeHashMapDFS(preorder: number[], inorder: number[]): Tree
 }
 
 /**
+ * Cách 2: DFS Tối Ưu Với Điểm Dừng Ranh Giới (Sentinel / Stop-Value DFS).
+ *
+ * Ý tưởng đột phá:
+ * - Thay vì dùng Hash Map và tính toán con trỏ phân đoạn mảng, ta tận dụng thứ tự tự nhiên của hai phép duyệt:
+ *   + Preorder duyệt: Root -> Trái -> Phải.
+ *   + Inorder duyệt: Trái -> Root -> Phải.
+ * - Nhận xét: Nhánh con trái của một node X kết thúc ngay khi thứ tự Inorder chạm đến giá trị của chính node X (`X.val`)!
+ *   Do đó, `X.val` đóng vai trò là "Điểm dừng" (Sentinel Stop Value) cho toàn bộ nhánh con trái của nó.
+ * - Sau khi nhánh trái hoàn tất, giá trị tiếp theo trong Inorder chính là Root X. Ta tiến con trỏ Inorder qua một vị trí.
+ * - Tiếp theo, nhánh con phải của node X sẽ dùng lại điểm dừng của node cha của X (giá trị `stop` được truyền xuống).
+ *
+ * Độ phức tạp:
+ * - Time Complexity: O(N) - Mỗi node trong preorder được tạo đúng 1 lần; con trỏ inorder dịch chuyển đúng N lần.
+ * - Space Complexity: O(H) - Hoàn toàn không tốn bộ nhớ cho Hash Map phụ (Zero Hash Map allocation)!
+ *   Chỉ tốn Call Stack O(H) (O(log N) cho cây cân bằng, O(N) cho cây lệch).
+ *
+ * @param preorder Mảng duyệt theo thứ tự Pre-order
+ * @param inorder Mảng duyệt theo thứ tự In-order
+ * @returns Node gốc của cây nhị phân đã được tái dựng
+ */
+export function buildTreeSentinelDFS(preorder: number[], inorder: number[]): TreeNode | null {
+    if (preorder.length === 0 || inorder.length === 0 || preorder.length !== inorder.length) {
+        return null
+    }
+
+    let pre = 0
+    let inIdx = 0
+
+    function build(stop: number | undefined): TreeNode | null {
+        if (pre >= preorder.length) {
+            return null
+        }
+        if (inIdx < inorder.length && inorder[inIdx] === stop) {
+            inIdx++
+            return null
+        }
+
+        const rootVal = preorder[pre++]!
+        const root = new TreeNode(rootVal)
+
+        // Nhánh trái dừng lại khi chạm tới chính rootVal trong inorder
+        root.left = build(rootVal)
+        // Nhánh phải dừng lại khi chạm tới điểm dừng của node cha
+        root.right = build(stop)
+
+        return root
+    }
+
+    return build(undefined)
+}
+
+/**
  * Hàm giải chính thức chuẩn LeetCode cho LC 105.
  * Mặc định sử dụng Divide & Conquer với Hash Map (dễ bảo trì, trực quan và đạt hiệu năng tối ưu O(N)).
  */
 export const buildTree = buildTreeHashMapDFS
+
