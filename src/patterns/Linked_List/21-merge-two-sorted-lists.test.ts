@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mergeTwoLists } from './21-merge-two-sorted-lists.js'
+import { mergeTwoLists, mergeTwoListsZeroAlloc } from './21-merge-two-sorted-lists.js'
 import { ListNode } from '../../data_structures/linked_list/ListNode.js'
 
 // Helper 1: Biến mảng [1, 2, 4] thành Linked List (1 -> 2 -> 4 -> null)
@@ -77,10 +77,40 @@ describe('Pattern: Linked_List -> 21-merge-two-sorted-lists', () => {
         },
     ]
 
-    it.each(testCases)('$desc ($list1 và $list2 -> $expected)', ({ list1, list2, expected }) => {
-        const l1 = arrayToList(list1)
-        const l2 = arrayToList(list2)
-        const merged = mergeTwoLists(l1, l2)
-        expect(listToArray(merged)).toEqual(expected)
+    describe('Cách 1: Dummy Head Node (mergeTwoLists)', () => {
+        it.each(testCases)(
+            '$desc ($list1 và $list2 -> $expected)',
+            ({ list1, list2, expected }) => {
+                const l1 = arrayToList(list1)
+                const l2 = arrayToList(list2)
+                const merged = mergeTwoLists(l1, l2)
+                expect(listToArray(merged)).toEqual(expected)
+            }
+        )
+    })
+
+    describe('Cách 2: Zero-Allocation (mergeTwoListsZeroAlloc)', () => {
+        it.each(testCases)(
+            '$desc ($list1 và $list2 -> $expected)',
+            ({ list1, list2, expected }) => {
+                const l1 = arrayToList(list1)
+                const l2 = arrayToList(list2)
+                const merged = mergeTwoListsZeroAlloc(l1, l2)
+                expect(listToArray(merged)).toEqual(expected)
+            }
+        )
+
+        it('Kiểm tra tính tương đương tuyệt đối giữa Dummy Head và Zero-Alloc', () => {
+            const arr1 = [1, 3, 5, 7, 9]
+            const arr2 = [2, 4, 6, 8, 10]
+
+            const resDummy = listToArray(mergeTwoLists(arrayToList(arr1), arrayToList(arr2)))
+            const resZeroAlloc = listToArray(
+                mergeTwoListsZeroAlloc(arrayToList(arr1), arrayToList(arr2))
+            )
+
+            expect(resZeroAlloc).toEqual(resDummy)
+            expect(resZeroAlloc).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        })
     })
 })
