@@ -365,6 +365,38 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(N)$ (tốc độ cực đại trong V8), Space: $12\text{KB}$ cố định.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.7. LeetCode 101 - Symmetric Tree (Easy - Đối Xứng Gương Qua Trục & Bất Biến Phản Chiếu)
+- **Đề bài:** Cho node gốc `root` của một cây nhị phân, kiểm tra xem cây có tự đối xứng gương qua trục dọc chính giữa hay không (Mirror of itself).
+- **Ví dụ trực quan:**
+  ```
+        1               1
+       / \             / \
+      2   2           2   2
+     / \ / \           \   \
+    3  4 4  3           3   3
+    [Đối xứng - true]   [Bất đối xứng - false]
+  ```
+- **Phân biệt then chốt giữa LC 100 (Same Tree) và LC 101 (Symmetric Tree):**
+  - **LC 100 (Đồng nhất cấu trúc):** So sánh cùng chiều ($t_1.\text{left} \leftrightarrow t_2.\text{left}$ và $t_1.\text{right} \leftrightarrow t_2.\text{right}$).
+  - **LC 101 (Đối xứng gương qua trục):** So sánh phản chiếu gương chéo nhau ($t_1.\text{left} \leftrightarrow t_2.\text{right}$ và $t_1.\text{right} \leftrightarrow t_2.\text{left}$).
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy (Mirror Reflection DFS):**
+     - Hàm bổ trợ `isMirror(t1, t2)`:
+       - Cùng trỏ `t1 === t2` $\rightarrow$ `true` (short-circuit O(1) con trỏ).
+       - Một bên null $\rightarrow$ `false`.
+       - $t_1.\text{val} \neq t_2.\text{val} \rightarrow$ `false`.
+       - Đệ quy kiểm tra đồng thời nhánh ngoài `(t1.left, t2.right)` và nhánh trong `(t1.right, t2.left)`.
+     - Time: $O(N)$, Space: $O(H)$.
+  2. **BFS Quét Tầng Cặp Đôi (Paired Level-Order Queue with Head Pointer):**
+     - Đưa từng cặp phản chiếu `[t1, t2]` vào Queue.
+     - Sử dụng con trỏ `head` loại bỏ $O(N)$ overhead của `shift()`.
+     - Đẩy nhánh ngoài `(t1.left, t2.right)` và nhánh trong `(t1.right, t2.left)` vào Queue.
+     - Time: $O(N)$, Space: $O(W)$.
+  3. **DFS Khử Đệ Quy (Explicit Heap Stack):**
+     - Lưu trữ các cặp node trên LIFO Stack cấp phát ở Heap RAM, an toàn tuyệt đối trước Call Stack overflow.
+     - Time: $O(N)$, Space: $O(H)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
