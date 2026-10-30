@@ -397,6 +397,27 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(N)$, Space: $O(H)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.8. LeetCode 543 - Diameter of Binary Tree (Easy - Duyệt Hậu Thứ Tự & Thu Thập Chiều Cao Dưới Lên)
+- **Đề bài:** Cho node gốc `root` của cây nhị phân, hãy tính độ dài đường kính lớn nhất của cây. Đường kính được định nghĩa là số cạnh (edges) trên đường đi dài nhất nối giữa hai node bất kỳ trong cây. Đường đi này có thể có hoặc không đi qua node gốc (Root).
+- **Cạm bẫy tư duy kinh điển trong phỏng vấn:**
+  - ❌ **Sai lầm:** Mặc định đường kính dài nhất luôn đi qua node gốc $\rightarrow$ tính `maxDepth(root.left) + maxDepth(root.right)`.
+  - ✅ **Thực tế:** Cây con bên trái (hoặc phải) có thể rất sâu và phân nhánh rộng, tạo ra đường kính kỷ lục nằm trọn vẹn bên trong nhánh con mà hoàn toàn không chạm tới node gốc!
+- **Bản chất toán học (Bottom-up Aggregation Invariant):**
+  - Tại mỗi node $X$:
+    - Gọi $H_{\text{left}}$ và $H_{\text{right}}$ lần lượt là chiều cao (số cạnh từ con xuống lá sâu nhất) của 2 nhánh con.
+    - Đường kính cực đại đi qua đỉnh $X$: $D_X = H_{\text{left}} + H_{\text{right}}$.
+    - Cập nhật đường kính toàn cục: $\text{maxDiameter} = \max(\text{maxDiameter}, D_X)$.
+    - Chiều cao gửi lên cho node cha: $H_X = 1 + \max(H_{\text{left}}, H_{\text{right}})$.
+- **Chiến lược tối ưu 2 trường phái:**
+  1. **DFS Đệ quy Hậu Thứ Tự (Bottom-up Post-order DFS):**
+     - Vừa tính toán chiều cao nhánh con vừa cập nhật đường kính toàn cục trong một lượt duyệt duy nhất $O(N)$.
+     - Time: $O(N)$, Space: $O(H)$ (Call Stack).
+  2. **DFS Khử Đệ Quy Hậu Thứ Tự (Iterative Post-order with Explicit Stack & Height Map):**
+     - Sử dụng biến cờ `visited` trên Stack để mô phỏng chính xác hành vi trả về của đệ quy hậu thứ tự.
+     - Lưu chiều cao của từng node con vào Map, triệt tiêu hoàn toàn rủi ro tràn Call Stack trên V8 Engine khi gặp cây suy biến hàng chục nghìn node.
+     - Time: $O(N)$, Space: $O(N)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
