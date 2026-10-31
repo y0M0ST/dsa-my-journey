@@ -418,6 +418,30 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(N)$, Space: $O(N)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.9. LeetCode 110 - Balanced Binary Tree (Easy - Duyệt Hậu Thứ Tự & Tối Ưu Tỉa Nhánh Early Exit -1)
+- **Đề bài:** Cho node gốc `root` của cây nhị phân, hãy xác định xem cây đó có cân bằng chiều cao (Height-Balanced) hay không. Cây cân bằng chiều cao là cây mà độ chênh lệch chiều cao giữa hai cây con của mọi node không bao giờ vượt quá 1 ($|H_{\text{left}} - H_{\text{right}}| \le 1$).
+- **Cạm bẫy tư duy Naive $O(N^2)$ (Top-Down):**
+  - Tính `maxDepth(root.left)` và `maxDepth(root.right)` rồi đệ quy xuống con.
+  - Hậu quả: Các node ở tầng sâu bị tính lặp lại nhiều lần. Trong trường hợp cây suy biến lệch một bên, độ phức tạp phình to thành $O(N^2)$!
+- **Bản chất toán học & Kỹ thuật Lính Canh `-1` (Bottom-up Pruning Invariant):**
+  - Chuyển hướng tư duy sang **Duyệt Hậu Thứ Tự (Post-Order)**: Thu thập thông tin từ lá ngược lên gốc.
+  - Tại mỗi node $X$:
+    - Nếu cây con trái không cân bằng (trả về `-1`) $\rightarrow$ lập tức trả về `-1` (ngắt sớm, không cần duyệt nhánh phải!).
+    - Nếu cây con phải không cân bằng (trả về `-1`) $\rightarrow$ lập tức trả về `-1`.
+    - Nếu $|H_{\text{left}} - H_{\text{right}}| > 1 \rightarrow$ trả về `-1`.
+    - Ngược lại $\rightarrow$ trả về chiều cao thực tế: $H_X = 1 + \max(H_{\text{left}}, H_{\text{right}})$.
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy Hậu Thứ Tự với Lính Canh `-1` (Bottom-up Pruning):**
+     - Đạt độ phức tạp tuyến tính tối ưu tuyệt đối: Mỗi node chỉ được chạm đúng 1 lần.
+     - Time: $O(N)$, Space: $O(H)$ (Call Stack).
+  2. **DFS Khử Đệ Quy Hậu Thứ Tự (Iterative Post-order with Explicit Stack & Height Map):**
+     - Quản lý stack trên Heap RAM, theo dõi `visited` flag và tra cứu chiều cao qua Map.
+     - Ngắt sớm ngay khi gặp node vi phạm $|H_{\text{left}} - H_{\text{right}}| > 1$.
+     - Time: $O(N)$, Space: $O(N)$.
+  3. **Top-Down Naive DFS:**
+     - Mô hình đối chiếu học thuật, làm nổi bật lợi thế vượt trội của phương pháp Bottom-up.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
