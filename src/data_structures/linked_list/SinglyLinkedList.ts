@@ -1,261 +1,272 @@
-import { ListNode } from './ListNode.js';
+import { ListNode } from './ListNode.js'
 
 export class SinglyLinkedList {
-  public head: ListNode | null;
-  public tail: ListNode | null; // Cực kỳ quan trọng để insertAtTail tốn O(1)
-  public length: number;        // Tracking chiều dài để hàm get(index) dễ thở hơn
+    public head: ListNode | null
+    public tail: ListNode | null // Cực kỳ quan trọng để insertAtTail tốn O(1)
+    public length: number // Tracking chiều dài để hàm get(index) dễ thở hơn
 
-  constructor() {
-    this.head = null;
-    this.tail = null;
-    this.length = 0;
-  }
-
-  // --- CÁC HÀM THÊM (INSERT) ---
-  insertAtHead(val: number): void {
-    const newNode = new ListNode(val);
-    if (this.head === null) {
-      this.head = newNode;
-      this.tail = newNode;
-    } else {
-      newNode.next = this.head;
-      this.head = newNode;
-    }
-    this.length++;
-  }
-
-  insertAtTail(val: number): void {
-    const newNode = new ListNode(val);
-    if (this.head === null) {
-      this.head = newNode;
-      this.tail = newNode;
-    } else {
-      this.tail!.next = newNode;
-      this.tail = newNode;
-    }
-    this.length++;
-  }
-
-  insertAt(index: number, val: number): void {
-    if (index < 0 || index > this.length) return;
-    if (index === 0) {
-      this.insertAtHead(val);
-      return;
-    }
-    if (index === this.length) {
-      this.insertAtTail(val);
-      return;
+    constructor() {
+        this.head = null
+        this.tail = null
+        this.length = 0
     }
 
-    const newNode = new ListNode(val);
-    let current = this.head;
-    for (let i = 0; i < index - 1; i++) {
-      current = current!.next;
+    // --- CÁC HÀM THÊM (INSERT) ---
+    insertAtHead(val: number): void {
+        const newNode = new ListNode(val)
+        if (this.head === null) {
+            this.head = newNode
+            this.tail = newNode
+        } else {
+            newNode.next = this.head
+            this.head = newNode
+        }
+        this.length++
     }
 
-    // Chèn newNode vào giữa current (A) và current.next (B)
-    newNode.next = current!.next; // B1: Cánh tay của newNode với tới B
-    current!.next = newNode;      // B2: Cánh tay của A trỏ tới newNode
-    this.length++;
-  }
-
-  // --- CÁC HÀM XÓA (DELETE) ---
-  deleteHead(): void {
-    if (this.head === null) return;
-    this.head = this.head.next;
-    this.length--;
-    if (this.length === 0) {
-      this.tail = null;
-    }
-  }
-
-  deleteTail(): void {
-    if (this.length === 0) return;
-    if (this.length === 1) {
-      this.deleteHead();
-      return;
+    insertAtTail(val: number): void {
+        const newNode = new ListNode(val)
+        if (this.head === null) {
+            this.head = newNode
+            this.tail = newNode
+        } else {
+            this.tail!.next = newNode
+            this.tail = newNode
+        }
+        this.length++
     }
 
-    let current = this.head;
-    while (current!.next !== this.tail) {
-      current = current!.next;
-    }
-    current!.next = null;
-    this.tail = current;
-    this.length--;
-  }
+    insertAt(index: number, val: number): void {
+        if (index < 0 || index > this.length) return
+        if (index === 0) {
+            this.insertAtHead(val)
+            return
+        }
+        if (index === this.length) {
+            this.insertAtTail(val)
+            return
+        }
 
-  get(index: number): ListNode | null {
-    if (index < 0 || index >= this.length) return null;
-    let current = this.head;
-    for (let i = 0; i < index; i++) {
-      current = current!.next;
-    }
-    return current;
-  }
+        const newNode = new ListNode(val)
+        let current = this.head
+        for (let i = 0; i < index - 1; i++) {
+            current = current!.next
+        }
 
-  deleteAt(index: number): void {
-    if (index < 0 || index >= this.length) return;
-    if (index === 0) {
-      this.deleteHead();
-      return;
-    }
-    if (index === this.length - 1) {
-      this.deleteTail();
-      return;
+        // Chèn newNode vào giữa current (A) và current.next (B)
+        newNode.next = current!.next // B1: Cánh tay của newNode với tới B
+        current!.next = newNode // B2: Cánh tay của A trỏ tới newNode
+        this.length++
     }
 
-    const prev = this.get(index - 1);
-    if (prev && prev.next) {
-      const nodeToDelete = prev.next;
-      prev.next = nodeToDelete.next;
-      this.length--;
-    }
-  }
-
-  search(val: number): number {
-    let current = this.head;
-    let index = 0;
-    while (current !== null) {
-      if (current.val === val) return index;
-      current = current.next;
-      index++;
-    }
-    return -1;
-  }
-
-  // Tuyệt kĩ quay đầu xe (In-place reversal):
-  // Không tạo mảng mới, không tạo Node mới, chỉ dùng 3 con trỏ: prev, current, next
-  reverse(): void {
-    if (this.head === null || this.head === this.tail) return;
-    let prev: ListNode | null = null;
-    let current: ListNode | null = this.head;
-    let next: ListNode | null = null;
-    this.tail = this.head; // Đầu cũ bây giờ thành đuôi mới
-
-    while (current !== null) {
-      next = current.next; // Lưu lại node tiếp theo
-      current.next = prev; // Đảo ngược liên kết về node trước
-      prev = current;      // Trượt prev lên
-      current = next;      // Trượt current lên
+    // --- CÁC HÀM XÓA (DELETE) ---
+    deleteHead(): void {
+        if (this.head === null) return
+        this.head = this.head.next
+        this.length--
+        if (this.length === 0) {
+            this.tail = null
+        }
     }
 
-    this.head = prev; // Node cuối cùng ban đầu chính thức thành HEAD mới
-  }
+    deleteTail(): void {
+        if (this.length === 0) return
+        if (this.length === 1) {
+            this.deleteHead()
+            return
+        }
 
-  toArray(): number[] {
-    const result: number[] = [];
-    let current = this.head;
-    while (current !== null) {
-      result.push(current.val);
-      current = current.next;
-    }
-    return result;
-  }
-
-  isEmpty(): boolean {
-    return this.length === 0;
-  }
-
-  contains(val: number): boolean {
-    return this.search(val) !== -1;
-  }
-
-  clear(): void {
-    this.head = null;
-    this.tail = null;
-    this.length = 0;
-  }
-
-  // Xóa node đầu tiên có giá trị val (LC203 pattern)
-  removeValue(val: number): boolean {
-    if (this.head === null) return false;
-
-    if (this.head.val === val) {
-      this.deleteHead();
-      return true;
+        let current = this.head
+        while (current!.next !== this.tail) {
+            current = current!.next
+        }
+        current!.next = null
+        this.tail = current
+        this.length--
     }
 
-    let current = this.head;
-    while (current.next !== null && current.next.val !== val) {
-      current = current.next;
+    get(index: number): ListNode | null {
+        if (index < 0 || index >= this.length) return null
+        let current = this.head
+        for (let i = 0; i < index; i++) {
+            current = current!.next
+        }
+        return current
     }
 
-    if (current.next !== null) {
-      if (current.next === this.tail) {
-        this.tail = current;
-      }
-      current.next = current.next.next;
-      this.length--;
-      return true;
+    deleteAt(index: number): void {
+        if (index < 0 || index >= this.length) return
+        if (index === 0) {
+            this.deleteHead()
+            return
+        }
+        if (index === this.length - 1) {
+            this.deleteTail()
+            return
+        }
+
+        const prev = this.get(index - 1)
+        if (prev && prev.next) {
+            const nodeToDelete = prev.next
+            prev.next = nodeToDelete.next
+            this.length--
+        }
     }
 
-    return false;
-  }
-
-  // --- THUẬT TOÁN KINH ĐIỂN VỚI CON TRỎ (POINTER ALGORITHMS) ---
-
-  // Tuyệt kỹ Rùa & Thỏ (Tortoise & Hare / Slow & Fast Pointers - LC876)
-  // fast đi 2 bước, slow đi 1 bước -> khi fast chạm đích, slow nằm ở đúng giữa
-  findMiddle(): ListNode | null {
-    if (this.head === null) return null;
-    let slow: ListNode | null = this.head;
-    let fast: ListNode | null = this.head;
-
-    while (fast !== null && fast.next !== null) {
-      slow = slow!.next;
-      fast = fast.next.next;
+    search(val: number): number {
+        let current = this.head
+        let index = 0
+        while (current !== null) {
+            if (current.val === val) return index
+            current = current.next
+            index++
+        }
+        return -1
     }
 
-    return slow;
-  }
+    // Tuyệt kĩ quay đầu xe (In-place reversal):
+    // Không tạo mảng mới, không tạo Node mới, chỉ dùng 3 con trỏ: prev, current, next
+    reverse(): void {
+        if (this.head === null || this.head === this.tail) return
+        let prev: ListNode | null = null
+        let current: ListNode | null = this.head
+        let next: ListNode | null = null
+        this.tail = this.head // Đầu cũ bây giờ thành đuôi mới
 
-  // Thuật toán tìm chu trình Floyd's Cycle-Finding (LC141)
-  hasCycle(): boolean {
-    if (this.head === null || this.head.next === null) return false;
-    let slow: ListNode | null = this.head;
-    let fast: ListNode | null = this.head;
+        while (current !== null) {
+            next = current.next // Lưu lại node tiếp theo
+            current.next = prev // Đảo ngược liên kết về node trước
+            prev = current // Trượt prev lên
+            current = next // Trượt current lên
+        }
 
-    while (fast !== null && fast.next !== null) {
-      slow = slow!.next;
-      fast = fast.next.next;
-
-      if (slow === fast) {
-        return true;
-      }
+        this.head = prev // Node cuối cùng ban đầu chính thức thành HEAD mới
     }
 
-    return false;
-  }
-
-  // --- CÁC HÀM TIỆN ÍCH & ITERATOR PROTOCOL ---
-
-  // Factory tạo danh sách nhanh từ mảng
-  static fromArray(arr: number[]): SinglyLinkedList {
-    const list = new SinglyLinkedList();
-    for (const val of arr) {
-      list.insertAtTail(val);
+    toArray(): number[] {
+        const result: number[] = []
+        let current = this.head
+        while (current !== null) {
+            result.push(current.val)
+            current = current.next
+        }
+        return result
     }
-    return list;
-  }
 
-  // Cho phép duyệt list bằng for...of hoặc spread operator [...list]
-  *[Symbol.iterator](): Iterator<number> {
-    let current = this.head;
-    while (current !== null) {
-      yield current.val;
-      current = current.next;
+    isEmpty(): boolean {
+        return this.length === 0
     }
-  }
 
-  print(): void {
-    let current = this.head;
-    const result: number[] = [];
-
-    while (current !== null) {
-      result.push(current.val);
-      current = current.next;
+    contains(val: number): boolean {
+        return this.search(val) !== -1
     }
-    console.log(result.join(' -> ') + ' -> null');
-  }
+
+    clear(): void {
+        this.head = null
+        this.tail = null
+        this.length = 0
+    }
+
+    // Xóa node đầu tiên có giá trị val (LC203 pattern)
+    removeValue(val: number): boolean {
+        if (this.head === null) return false
+
+        if (this.head.val === val) {
+            this.deleteHead()
+            return true
+        }
+
+        let current = this.head
+        while (current.next !== null && current.next.val !== val) {
+            current = current.next
+        }
+
+        if (current.next !== null) {
+            if (current.next === this.tail) {
+                this.tail = current
+            }
+            current.next = current.next.next
+            this.length--
+            return true
+        }
+
+        return false
+    }
+
+    // --- THUẬT TOÁN KINH ĐIỂN VỚI CON TRỎ (POINTER ALGORITHMS) ---
+
+    // Tuyệt kỹ Rùa & Thỏ (Tortoise & Hare / Slow & Fast Pointers - LC876)
+    // fast đi 2 bước, slow đi 1 bước -> khi fast chạm đích, slow nằm ở đúng giữa
+    findMiddle(): ListNode | null {
+        if (this.head === null) return null
+        let slow: ListNode | null = this.head
+        let fast: ListNode | null = this.head
+
+        while (fast !== null && fast.next !== null) {
+            slow = slow!.next
+            fast = fast.next.next
+        }
+
+        return slow
+    }
+
+    // Thuật toán tìm chu trình Floyd's Cycle-Finding (LC141)
+    hasCycle(): boolean {
+        if (this.head === null || this.head.next === null) return false
+        let slow: ListNode | null = this.head
+        let fast: ListNode | null = this.head
+
+        while (fast !== null && fast.next !== null) {
+            slow = slow!.next
+            fast = fast.next.next
+
+            if (slow === fast) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    // --- CÁC HÀM TIỆN ÍCH & ITERATOR PROTOCOL ---
+
+    // Factory tạo danh sách nhanh từ mảng - Tối ưu tuyến tính O(N) không lặp branch check
+    static fromArray(arr: number[]): SinglyLinkedList {
+        const list = new SinglyLinkedList()
+        const len = arr.length
+        if (len === 0) return list
+
+        list.head = new ListNode(arr[0]!)
+        let current = list.head
+
+        for (let i = 1; i < len; i++) {
+            const nextNode = new ListNode(arr[i]!)
+            current.next = nextNode
+            current = nextNode
+        }
+
+        list.tail = current
+        list.length = len
+        return list
+    }
+
+    // Cho phép duyệt list bằng for...of hoặc spread operator [...list]
+    *[Symbol.iterator](): Iterator<number> {
+        let current = this.head
+        while (current !== null) {
+            yield current.val
+            current = current.next
+        }
+    }
+
+    print(): void {
+        let current = this.head
+        const result: number[] = []
+
+        while (current !== null) {
+            result.push(current.val)
+            current = current.next
+        }
+        console.log(result.join(' -> ') + ' -> null')
+    }
 }

@@ -1,6 +1,6 @@
 /**
  * Problem: 21-merge-two-sorted-lists (Merge Two Sorted Lists)
- * Pattern: Linked_List (Dummy Head Node / Two Pointers Merging)
+ * Pattern: Linked_List (Dummy Head Node / Two Pointers Merging & Zero-Allocation)
  *
  * Time Complexity:
  *   - Trường hợp tốt nhất (Best Case): O(1)
@@ -14,11 +14,15 @@
  *
  * Space Complexity: O(1)
  *   - Sử dụng kỹ thuật In-place Pointer Splicing (tái sử dụng trực tiếp các node đã có trong bộ nhớ).
- *   - Chỉ tạo duy nhất một Dummy Head Node đóng vai trò mỏ neo khởi đầu, không cấp phát thêm node mới.
- *   - Không phát sinh Garbage Collection (GC) thrashing.
+ *   - Cách 1 (Dummy Head): Chỉ tạo duy nhất một Dummy Head Node đóng vai trò mỏ neo khởi đầu.
+ *   - Cách 2 (Zero-Allocation): Khởi tạo trực tiếp head từ node nhỏ hơn, đạt 0 byte Heap allocation.
  */
 import { ListNode } from '../../data_structures/linked_list/ListNode.js'
 
+/**
+ * Cách 1: Sử dụng Dummy Head Node
+ * Ưu điểm: Code cực kỳ ngắn gọn, thanh thoát, loại bỏ hoàn toàn việc phải if-else để tìm node head.
+ */
 export function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {
     // Early Exit: Một trong hai danh sách rỗng -> trả về danh sách còn lại
     if (list1 === null) return list2
@@ -44,6 +48,43 @@ export function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): L
     current.next = list1 ?? list2
 
     return dummy.next
+}
+
+/**
+ * Cách 2: Tối ưu Zero-Allocation (Không cấp phát thêm bất kỳ Node nào trên Heap)
+ * Ưu điểm: Thích hợp cho hệ thống thời gian thực / low latency / embedded nơi Garbage Collection (GC) là mối lo ngại.
+ */
+export function mergeTwoListsZeroAlloc(
+    list1: ListNode | null,
+    list2: ListNode | null
+): ListNode | null {
+    if (list1 === null) return list2
+    if (list2 === null) return list1
+
+    // Chọn trực tiếp node nhỏ hơn làm Head thật sự
+    let head: ListNode
+    if (list1.val <= list2.val) {
+        head = list1
+        list1 = list1.next
+    } else {
+        head = list2
+        list2 = list2.next
+    }
+
+    let current = head
+    while (list1 !== null && list2 !== null) {
+        if (list1.val <= list2.val) {
+            current.next = list1
+            list1 = list1.next
+        } else {
+            current.next = list2
+            list2 = list2.next
+        }
+        current = current.next
+    }
+
+    current.next = list1 ?? list2
+    return head
 }
 
 // Export alias hỗ trợ các file test hoặc template generator

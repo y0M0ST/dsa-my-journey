@@ -320,8 +320,151 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(\min(N, M))$, Space: $O(\min(H_p, H_q))$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
----
+### 6.6. LeetCode 105 - Construct Binary Tree from Preorder and Inorder Traversal (Medium - Tái Dựng Cây Nhị Phân)
+- **Đề bài:** Cho 2 mảng số nguyên `preorder` và `inorder` lần lượt là thứ tự duyệt Pre-order (Gốc -> Trái -> Phải) và In-order (Trái -> Gốc -> Phải) của cùng một cây nhị phân (các giá trị đều độc nhất). Hãy tái dựng và trả về node gốc của cây nhị phân đó.
+- **Bản chất toán học & Cấu trúc ranh giới mảng:**
+  ```
+  Preorder: [ Root | <---- Nhánh Trái ----> | <---- Nhánh Phải ----> ]
+  Inorder:  [ <---- Nhánh Trái ----> | Root | <---- Nhánh Phải ----> ]
+                                       ▲
+                                   inRootIdx
+  ```
+  - **Node gốc (Root):** Luôn luôn là phần tử đầu tiên của khoảng `preorder` con (`preorder[preStart]`).
+  - **Ranh giới phân tách (Partition Barrier):** Tìm vị trí của `root.val` trong `inorder` tại chỉ số `inRootIdx`.
+  - **Bất biến kích thước nhánh (Subtree Size Invariant):**
+    - Số node nhánh con trái: $\text{leftSize} = \text{inRootIdx} - \text{inStart}$.
+    - Nhánh trái:
+      - Preorder: `[preStart + 1, preStart + leftSize]`
+      - Inorder: `[inStart, inRootIdx - 1]`
+    - Nhánh phải:
+      - Preorder: `[preStart + leftSize + 1, preEnd]`
+      - Inorder: `[inRootIdx + 1, inEnd]`
+- **Cạm bẫy chí mạng trong phỏng vấn:**
+  - ❌ **Cắt mảng bằng `slice()` hoặc tìm bằng `indexOf()`:**
+    - Mỗi tầng đệ quy gọi `slice()` và `indexOf()` tốn $O(N)$.
+    - Khi cây suy biến lệch một phía (Skewed Tree chiều cao $N$), độ phức tạp thời gian bị đội lên $O(N^2)$ và không gian bộ nhớ tốn thêm $O(N^2)$!
+  - ✅ **Giải pháp tối ưu chuẩn Big Tech:**
+    - Tiền xử lý tạo Hash Map `inorderMap` lưu `{ value => index }` trong $O(N)$.
+    - Truyền 4 con trỏ chỉ số `(preStart, preEnd, inStart, inEnd)` giúp mỗi bước phân rã đạt $O(1)$.
+- **Chiến lược tối ưu 4 trường phái:**
+  1. **Chia để trị (Divide & Conquer) kết hợp Hash Map Index Lookup:**
+     - Xây dựng cây từ trên xuống (Top-down Pre-order): Tạo node gốc trước rồi đệ quy dựng con trái và con phải.
+     - Time: $O(N)$, Space: $O(N)$ (Hash Map + Call Stack $O(H)$).
+  2. **DFS Tối Ưu Với Điểm Dừng Ranh Giới (Sentinel / Stop-Value DFS):**
+     - Tận dụng quy luật duyệt: Nhánh trái của node $X$ sẽ kết thúc ngay khi Inorder gặp giá trị $X.\text{val}$.
+     - Dùng giá trị cha làm "Sentinel Stop Value" để ngắt đệ quy mà không cần tra cứu Hash Map hay tính toán chỉ số!
+     - Time: $O(N)$, Space: $O(H)$ (Zero Hash Map allocation).
+  3. **Khử đệ quy bằng Explicit Stack (LIFO Heap Stack Simulation):**
+     - Đưa toàn bộ đường đi cây vào Stack trên Heap.
+     - Khi đỉnh stack chưa khớp `inorder[inIdx]`, tiếp tục gắn nhánh con trái. Khi đỉnh stack khớp `inorder[inIdx]`, pop liên tục để tìm node cha gắn nhánh con phải.
+     - Miễn nhiễm hoàn toàn trước nguy cơ tràn Call Stack của V8 khi gặp cây lệch sâu hàng chục nghìn nodes.
+     - Time: $O(N)$, Space: $O(H)$.
+  4. **TypedArray Direct Offset Indexing (Kỹ thuật Competitive Programming):**
+     - Với ràng buộc giá trị $[-3000, 3000]$, sử dụng `Int16Array(6001)` với độ dời `OFFSET = 3000`.
+     - Thay thế cơ chế băm của Map bằng truy cập bộ nhớ trực tiếp trong TypedArray buffer C++, tối đa hóa L1/L2 CPU Cache.
+     - Time: $O(N)$ (tốc độ cực đại trong V8), Space: $12\text{KB}$ cố định.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.7. LeetCode 101 - Symmetric Tree (Easy - Đối Xứng Gương Qua Trục & Bất Biến Phản Chiếu)
+- **Đề bài:** Cho node gốc `root` của một cây nhị phân, kiểm tra xem cây có tự đối xứng gương qua trục dọc chính giữa hay không (Mirror of itself).
+- **Ví dụ trực quan:**
+  ```
+        1               1
+       / \             / \
+      2   2           2   2
+     / \ / \           \   \
+    3  4 4  3           3   3
+    [Đối xứng - true]   [Bất đối xứng - false]
+  ```
+- **Phân biệt then chốt giữa LC 100 (Same Tree) và LC 101 (Symmetric Tree):**
+  - **LC 100 (Đồng nhất cấu trúc):** So sánh cùng chiều ($t_1.\text{left} \leftrightarrow t_2.\text{left}$ và $t_1.\text{right} \leftrightarrow t_2.\text{right}$).
+  - **LC 101 (Đối xứng gương qua trục):** So sánh phản chiếu gương chéo nhau ($t_1.\text{left} \leftrightarrow t_2.\text{right}$ và $t_1.\text{right} \leftrightarrow t_2.\text{left}$).
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy (Mirror Reflection DFS):**
+     - Hàm bổ trợ `isMirror(t1, t2)`:
+       - Cùng trỏ `t1 === t2` $\rightarrow$ `true` (short-circuit O(1) con trỏ).
+       - Một bên null $\rightarrow$ `false`.
+       - $t_1.\text{val} \neq t_2.\text{val} \rightarrow$ `false`.
+       - Đệ quy kiểm tra đồng thời nhánh ngoài `(t1.left, t2.right)` và nhánh trong `(t1.right, t2.left)`.
+     - Time: $O(N)$, Space: $O(H)$.
+  2. **BFS Quét Tầng Cặp Đôi (Paired Level-Order Queue with Head Pointer):**
+     - Đưa từng cặp phản chiếu `[t1, t2]` vào Queue.
+     - Sử dụng con trỏ `head` loại bỏ $O(N)$ overhead của `shift()`.
+     - Đẩy nhánh ngoài `(t1.left, t2.right)` và nhánh trong `(t1.right, t2.left)` vào Queue.
+     - Time: $O(N)$, Space: $O(W)$.
+  3. **DFS Khử Đệ Quy (Explicit Heap Stack):**
+     - Lưu trữ các cặp node trên LIFO Stack cấp phát ở Heap RAM, an toàn tuyệt đối trước Call Stack overflow.
+     - Time: $O(N)$, Space: $O(H)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### 6.8. LeetCode 543 - Diameter of Binary Tree (Easy - Duyệt Hậu Thứ Tự & Thu Thập Chiều Cao Dưới Lên)
+- **Đề bài:** Cho node gốc `root` của cây nhị phân, hãy tính độ dài đường kính lớn nhất của cây. Đường kính được định nghĩa là số cạnh (edges) trên đường đi dài nhất nối giữa hai node bất kỳ trong cây. Đường đi này có thể có hoặc không đi qua node gốc (Root).
+- **Cạm bẫy tư duy kinh điển trong phỏng vấn:**
+  - ❌ **Sai lầm:** Mặc định đường kính dài nhất luôn đi qua node gốc $\rightarrow$ tính `maxDepth(root.left) + maxDepth(root.right)`.
+  - ✅ **Thực tế:** Cây con bên trái (hoặc phải) có thể rất sâu và phân nhánh rộng, tạo ra đường kính kỷ lục nằm trọn vẹn bên trong nhánh con mà hoàn toàn không chạm tới node gốc!
+- **Bản chất toán học (Bottom-up Aggregation Invariant):**
+  - Tại mỗi node $X$:
+    - Gọi $H_{\text{left}}$ và $H_{\text{right}}$ lần lượt là chiều cao (số cạnh từ con xuống lá sâu nhất) của 2 nhánh con.
+    - Đường kính cực đại đi qua đỉnh $X$: $D_X = H_{\text{left}} + H_{\text{right}}$.
+    - Cập nhật đường kính toàn cục: $\text{maxDiameter} = \max(\text{maxDiameter}, D_X)$.
+    - Chiều cao gửi lên cho node cha: $H_X = 1 + \max(H_{\text{left}}, H_{\text{right}})$.
+- **Chiến lược tối ưu 2 trường phái:**
+  1. **DFS Đệ quy Hậu Thứ Tự (Bottom-up Post-order DFS):**
+     - Vừa tính toán chiều cao nhánh con vừa cập nhật đường kính toàn cục trong một lượt duyệt duy nhất $O(N)$.
+     - Time: $O(N)$, Space: $O(H)$ (Call Stack).
+  2. **DFS Khử Đệ Quy Hậu Thứ Tự (Iterative Post-order with Explicit Stack & Height Map):**
+     - Sử dụng biến cờ `visited` trên Stack để mô phỏng chính xác hành vi trả về của đệ quy hậu thứ tự.
+     - Lưu chiều cao của từng node con vào Map, triệt tiêu hoàn toàn rủi ro tràn Call Stack trên V8 Engine khi gặp cây suy biến hàng chục nghìn node.
+     - Time: $O(N)$, Space: $O(N)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### 6.9. LeetCode 110 - Balanced Binary Tree (Easy - Duyệt Hậu Thứ Tự & Tối Ưu Tỉa Nhánh Early Exit -1)
+- **Đề bài:** Cho node gốc `root` của cây nhị phân, hãy xác định xem cây đó có cân bằng chiều cao (Height-Balanced) hay không. Cây cân bằng chiều cao là cây mà độ chênh lệch chiều cao giữa hai cây con của mọi node không bao giờ vượt quá 1 ($|H_{\text{left}} - H_{\text{right}}| \le 1$).
+- **Cạm bẫy tư duy Naive $O(N^2)$ (Top-Down):**
+  - Tính `maxDepth(root.left)` và `maxDepth(root.right)` rồi đệ quy xuống con.
+  - Hậu quả: Các node ở tầng sâu bị tính lặp lại nhiều lần. Trong trường hợp cây suy biến lệch một bên, độ phức tạp phình to thành $O(N^2)$!
+- **Bản chất toán học & Kỹ thuật Lính Canh `-1` (Bottom-up Pruning Invariant):**
+  - Chuyển hướng tư duy sang **Duyệt Hậu Thứ Tự (Post-Order)**: Thu thập thông tin từ lá ngược lên gốc.
+  - Tại mỗi node $X$:
+    - Nếu cây con trái không cân bằng (trả về `-1`) $\rightarrow$ lập tức trả về `-1` (ngắt sớm, không cần duyệt nhánh phải!).
+    - Nếu cây con phải không cân bằng (trả về `-1`) $\rightarrow$ lập tức trả về `-1`.
+    - Nếu $|H_{\text{left}} - H_{\text{right}}| > 1 \rightarrow$ trả về `-1`.
+    - Ngược lại $\rightarrow$ trả về chiều cao thực tế: $H_X = 1 + \max(H_{\text{left}}, H_{\text{right}})$.
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Đệ quy Hậu Thứ Tự với Lính Canh `-1` (Bottom-up Pruning):**
+     - Đạt độ phức tạp tuyến tính tối ưu tuyệt đối: Mỗi node chỉ được chạm đúng 1 lần.
+     - Time: $O(N)$, Space: $O(H)$ (Call Stack).
+  2. **DFS Khử Đệ Quy Hậu Thứ Tự (Iterative Post-order with Explicit Stack & Height Map):**
+     - Quản lý stack trên Heap RAM, theo dõi `visited` flag và tra cứu chiều cao qua Map.
+     - Ngắt sớm ngay khi gặp node vi phạm $|H_{\text{left}} - H_{\text{right}}| > 1$.
+     - Time: $O(N)$, Space: $O(N)$.
+  3. **Top-Down Naive DFS:**
+     - Mô hình đối chiếu học thuật, làm nổi bật lợi thế vượt trội của phương pháp Bottom-up.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### 6.10. LeetCode 572 - Subtree of Another Tree (Easy - Nhận Diện Cây Con & Bất Biến Đồng Nhất Cấu Trúc)
+- **Đề bài:** Cho node gốc của hai cây nhị phân `root` và `subRoot`. Hãy kiểm tra xem `subRoot` có phải là một cây con (subtree) của `root` hay không. Một cây con của cây $T$ bao gồm một node $X \in T$ và **toàn bộ các hậu duệ** của node $X$ đó.
+- **Cạm bẫy tư duy kinh điển trong phỏng vấn (The Partial Match Trap):**
+  - ❌ **Sai lầm:** Dừng kiểm tra khi các node của `subRoot` khớp với một phần nhánh của `root` mà bỏ qua việc nhánh đó có thể còn các node con sâu hơn (ví dụ: `root` tại nhánh đó có thêm con `0`, trong khi `subRoot` đã kết thúc là `null`).
+  - ✅ **Thực tế:** Cây con phải đồng nhất tuyệt đối về cấu trúc biên giới: `node === null && subNode === null` tại mọi nút lá.
+- **Bản chất toán học & Bất biến cây con (Subtree Isomorphism):**
+  - $S$ là subtree của $T \iff \exists X \in T: \text{Tree}(X) \cong S$.
+  - Mọi cây đều là cây con của chính nó: $\text{isSubtree}(T, T) = \text{true}$.
+  - Cây rỗng $\emptyset$ là cây con của mọi cây: $\text{isSubtree}(T, \emptyset) = \text{true}$.
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Duyệt Cây Kết Hợp Đồng Dạng Cấu Trúc (DFS Traversal + isSameTree):**
+     - Tại mỗi node của `root`, kiểm tra `isSameTree(root, subRoot)`. Nếu không khớp, đệ quy tìm kiếm tiếp ở nhánh trái hoặc phải.
+     - Time: $O(N \times M)$ worst-case, Space: $O(\max(H_{\text{root}}, H_{\text{subRoot}}))$.
+  2. **BFS Hàng Đợi Tìm Node Ứng Viên với Con Trỏ Head (BFS Candidate Queue):**
+     - Dùng Queue với con trỏ `head` quét theo tầng, chỉ gọi `isSameTree` khi giá trị node hiện tại bằng `subRoot.val`.
+     - Time: $O(N \times M)$, Space: $O(W)$.
+  3. **Tuần Tự Hóa Chuỗi Tiền Thứ Tự (Pre-order Tree Serialization with Sentinels):**
+     - Mã hóa cả 2 cây thành chuỗi với dấu phân cách `,val,` và `,#` cho null.
+     - Biến đổi bài toán cây thành bài toán so sánh chuỗi con `rootStr.includes(subRootStr)`.
+     - Time: $O(N + M)$, Space: $O(N + M)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
 
@@ -335,5 +478,11 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
    - DFS Iterative Stack: Muốn duyệt nhánh trái trước thì phải push `node.right` trước rồi mới push `node.left` vào Stack LIFO!
 4. **Kỹ thuật Early Exit trên Leaf Node:**
    - Trong cây nhị phân đầy đủ, xấp xỉ một nửa số node là node lá ($N/2$). Việc check `if (node.left === null && node.right === null) return 1;` giúp bớt $2 \times (N/2) = N$ lượt gọi đệ quy chạm tới `null`!
+5. **Điều kiện cần để tái dựng cây duy nhất (Unique Reconstruction Rule):**
+   - Cần ít nhất một phép duyệt In-order để phân định ranh giới giữa nhánh con trái và nhánh con phải.
+   - **Pre-order + In-order**: Tái dựng duy nhất cây nhị phân bất kỳ (LC 105).
+   - **Post-order + In-order**: Tái dựng duy nhất cây nhị phân bất kỳ (LC 106).
+   - **Pre-order + Post-order**: CHỈ tái dựng được nếu cây là Full Binary Tree (mọi node nội bộ đều có đủ 2 con, LC 889).
+
 
 
