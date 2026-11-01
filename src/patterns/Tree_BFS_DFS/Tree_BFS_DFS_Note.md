@@ -442,6 +442,28 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Mô hình đối chiếu học thuật, làm nổi bật lợi thế vượt trội của phương pháp Bottom-up.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.10. LeetCode 572 - Subtree of Another Tree (Easy - Nhận Diện Cây Con & Bất Biến Đồng Nhất Cấu Trúc)
+- **Đề bài:** Cho node gốc của hai cây nhị phân `root` và `subRoot`. Hãy kiểm tra xem `subRoot` có phải là một cây con (subtree) của `root` hay không. Một cây con của cây $T$ bao gồm một node $X \in T$ và **toàn bộ các hậu duệ** của node $X$ đó.
+- **Cạm bẫy tư duy kinh điển trong phỏng vấn (The Partial Match Trap):**
+  - ❌ **Sai lầm:** Dừng kiểm tra khi các node của `subRoot` khớp với một phần nhánh của `root` mà bỏ qua việc nhánh đó có thể còn các node con sâu hơn (ví dụ: `root` tại nhánh đó có thêm con `0`, trong khi `subRoot` đã kết thúc là `null`).
+  - ✅ **Thực tế:** Cây con phải đồng nhất tuyệt đối về cấu trúc biên giới: `node === null && subNode === null` tại mọi nút lá.
+- **Bản chất toán học & Bất biến cây con (Subtree Isomorphism):**
+  - $S$ là subtree của $T \iff \exists X \in T: \text{Tree}(X) \cong S$.
+  - Mọi cây đều là cây con của chính nó: $\text{isSubtree}(T, T) = \text{true}$.
+  - Cây rỗng $\emptyset$ là cây con của mọi cây: $\text{isSubtree}(T, \emptyset) = \text{true}$.
+- **Chiến lược tối ưu 3 trường phái:**
+  1. **DFS Duyệt Cây Kết Hợp Đồng Dạng Cấu Trúc (DFS Traversal + isSameTree):**
+     - Tại mỗi node của `root`, kiểm tra `isSameTree(root, subRoot)`. Nếu không khớp, đệ quy tìm kiếm tiếp ở nhánh trái hoặc phải.
+     - Time: $O(N \times M)$ worst-case, Space: $O(\max(H_{\text{root}}, H_{\text{subRoot}}))$.
+  2. **BFS Hàng Đợi Tìm Node Ứng Viên với Con Trỏ Head (BFS Candidate Queue):**
+     - Dùng Queue với con trỏ `head` quét theo tầng, chỉ gọi `isSameTree` khi giá trị node hiện tại bằng `subRoot.val`.
+     - Time: $O(N \times M)$, Space: $O(W)$.
+  3. **Tuần Tự Hóa Chuỗi Tiền Thứ Tự (Pre-order Tree Serialization with Sentinels):**
+     - Mã hóa cả 2 cây thành chuỗi với dấu phân cách `,val,` và `,#` cho null.
+     - Biến đổi bài toán cây thành bài toán so sánh chuỗi con `rootStr.includes(subRootStr)`.
+     - Time: $O(N + M)$, Space: $O(N + M)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
