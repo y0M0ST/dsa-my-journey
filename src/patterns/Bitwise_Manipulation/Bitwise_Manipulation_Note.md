@@ -117,3 +117,15 @@ Xóa bit 1 cuối cùng  Trích xuất bit 1     Kiểm tra số lẻ
 | **LC 191: Number of 1 Bits** | Brian Kernighan `n &= (n - 1)` | $O(\text{set bits}) \le 32$ | $O(1)$ |
 | **LC 231: Power of Two** | Feasibility check `n > 0 && (n & (n - 1)) === 0` | $O(1)$ | $O(1)$ |
 | **LC 268: Missing Number** | XOR toàn bộ index và giá trị | $O(N)$ | $O(1)$ |
+
+---
+
+## 7. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 191 - Number of 1 Bits (Easy - Hamming Weight)
+- **Đề bài:** Đếm số lượng bit 1 (set bits) trong biểu diễn nhị phân của số nguyên dương 32-bit.
+- **Bản chất toán học & Cơ chế CPU:**
+  1. **Brian Kernighan's Algorithm (`n &= (n - 1)`):** Mỗi bước triệt tiêu chính xác 1 bit `1` thấp nhất. Chạy đúng $K$ bước ($K \le 32$).
+  2. **Unsigned Right Shift (`n >>> 1`):** Bắt buộc dùng `>>>` trong JS/TS để tránh nhân bản bit dấu khi gặp số âm hoặc số lớn $\ge 2^{31}$.
+  3. **SWAR (SIMD Within A Register) Parallel Popcount:** Chia để trị trên bit, gộp bit 1 theo cặp 2-bit, 4-bit, 8-bit, 16-bit và 32-bit trong $O(1)$ phép tính.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
