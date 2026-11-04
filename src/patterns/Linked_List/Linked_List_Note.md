@@ -162,3 +162,15 @@ Sau bước 1:  null ◄── [1]       [2] ──► [3] ──► null
 | **LC 21: Merge Two Sorted Lists** | Dummy Node + Two Pointers | $O(M + N)$ | $O(1)$ |
 | **LC 19: Remove Nth Node From End** | Dummy Node + Fast Lead N Steps | $O(N)$ | $O(1)$ |
 | **LC 234: Palindrome Linked List** | Find Mid + Reverse Half + Compare | $O(N)$ | $O(1)$ |
+
+---
+
+## 5. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 141 - Linked List Cycle (Easy - Nhận Diện Chu Trình Danh Sách Liên Kết)
+- **Đề bài:** Cho `head` của một danh sách liên kết, xác định xem danh sách có chứa chu trình hay không.
+- **Bản chất toán học:** Thuật toán Floyd's Cycle-Finding (Tortoise and Hare). Vận tốc tương đối $v_{\text{rel}} = 2 - 1 = 1$. Khoảng cách giữa 2 con trỏ trong chu trình giảm đúng 1 đơn vị sau mỗi bước, bảo đảm hội tụ tại điểm gặp nhau sau tối đa $O(N)$ bước.
+- **So sánh 2 trường phái:**
+  1. **Floyd's Fast & Slow Pointers:** $O(N)$ Time, **$O(1)$ Space** (không cấp phát bộ nhớ phụ).
+  2. **Hash Set Memory Tracking:** $O(N)$ Time, $O(N)$ Space (lưu từng node vào Set).
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
