@@ -177,3 +177,16 @@ Nếu đề bài có 3 yếu tố sau, 99% là đất diễn của Sliding Windo
 | **Bộ nhớ phụ** | $O(1)$ với `Int32Array(26)` | $O(1)$ với biến con trỏ / `Int32Array` | $O(1)$ với `Int32Array(26)` | $O(K)$ với `Int32Array` Deque |
 | **Bài tiêu biểu** | LC 438, LC 567 | LC 3, LC 209, LC 76 | LC 424 | LC 239 |
 
+---
+
+## 6. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 567 - Permutation in String (Medium - Hoán Vị Trong Chuỗi)
+- **Đề bài:** Cho hai chuỗi `s1` và `s2`, viết hàm trả về `true` nếu `s2` chứa một hoán vị của `s1`, ngược lại trả về `false`.
+- **Bản chất toán học:** Tìm kiếm một cửa sổ con liên tiếp trong `s2` có độ dài đúng bằng $|s1|$ và có cùng đa tập (multiset) ký tự với `s1`.
+- **Kỹ thuật tối ưu:**
+  1. **Fixed Size Window ($K = |s1|$):** Loại bỏ hoàn toàn overhead biến thiên kích thước.
+  2. **Biến đếm `matches` $O(1)$ per step:** Khởi tạo số lượng ký tự có tần suất trùng khớp (tối đa 26). Mỗi lần dịch chuyển cửa sổ, chỉ cập nhật 2 vị trí ký tự đi vào và đi ra. Không cần so sánh 26 phần tử ở mỗi bước.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+
