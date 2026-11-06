@@ -105,6 +105,7 @@ Opposite-Direction Same-Direction Bounding Wall
 | **LC 15: 3Sum** | Sort + Convergent | $O(N^2)$ | $O(1)$ | Cố định `i`, Two Sum II phần còn lại, triệt tiêu trùng lặp |
 | **LC 11: Container With Most Water** | Greedy Convergent | $O(N)$ | $O(1)$ | Luôn dịch con trỏ ở bờ tường thấp hơn |
 | **LC 42: Trapping Rain Water** | Bounding Invariant | $O(N)$ | $O(1)$ | Nước bị chặn bởi $\min(leftMax, rightMax)$, giải bài toán từ phía thấp hơn |
+| **LC 125: Valid Palindrome** | Opposite-Direction Squeeze | $O(N)$ | $O(1)$ | Hai con trỏ ép biên tại chỗ, dùng mã ASCII loại bỏ regex overhead |
 
 ---
 
@@ -116,3 +117,14 @@ Opposite-Direction Same-Direction Bounding Wall
 | **Hướng di chuyển** | Đi ngược chiều vào tâm | Cùng tiến về phía trước | Đi ngược chiều theo mức min tường |
 | **Điều kiện tiên quyết** | Mảng đã sort hoặc bài toán đối xứng | Xử lý mảng in-place / chu kỳ | Bảo toàn giá trị max hai phía |
 | **Mục tiêu chính** | Tìm cặp nghiệm, tối đa diện tích | Lọc rác, dồn mảng, tìm chu kỳ | Đong nước từng cột độc lập |
+
+---
+
+## 6. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 125 - Valid Palindrome (Easy - Kiểm Tra Chuỗi Đối Xứng)
+- **Đề bài:** Cho một chuỗi `s`, sau khi chuyển toàn bộ chữ hoa thành chữ thường và loại bỏ tất cả các ký tự không phải chữ/số, kiểm tra xem nó có đọc xuôi và ngược giống nhau hay không.
+- **Kỹ thuật tối ưu:**
+  1. **Two Pointers tại chỗ (Zero Memory Allocation):** Duyệt `left` từ $0$ và `right` từ $n - 1$, nhảy qua ký tự đặc biệt bằng kiểm tra mã ASCII trực tiếp.
+  2. **Tránh bẫy Regex Heap Allocation:** Không gọi `replace(/[^a-z0-9]/g, '')` hay `split('').reverse().join('')` giúp tiết kiệm $O(N)$ bộ nhớ Heap trên V8 Engine.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
