@@ -42,7 +42,8 @@ export function productExceptSelfOptimal(nums: number[]): number[] {
     // Nhân dồn hậu tố vào giá trị tiền tố đã có sẵn trong result[i]
     let suffix = 1
     for (let i = n - 1; i >= 0; i--) {
-        result[i] = result[i]! * suffix
+        const prod = result[i]! * suffix
+        result[i] = prod === 0 ? 0 : prod
         suffix *= nums[i]!
     }
 
@@ -72,7 +73,8 @@ export function productExceptSelfPrefixSuffix(nums: number[]): number[] {
     }
 
     for (let i = 0; i < n; i++) {
-        result[i] = prefix[i]! * suffix[i]!
+        const prod = prefix[i]! * suffix[i]!
+        result[i] = prod === 0 ? 0 : prod
     }
 
     return result
