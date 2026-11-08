@@ -77,4 +77,19 @@ Nếu search space có tính đơn điệu và có thể loại bỏ một phầ
 | **Không gian tìm kiếm** | Mảng đã sort `[0, n - 1]` | Mảng đã sort `[0, n - 1]` | Miền giá trị `[minVal, maxVal]` |
 | **Cập nhật biên** | `left = mid + 1` / `right = mid - 1` | `left = mid + 1` / `right = mid` | `low = mid + 1` / `high = mid - 1` (kèm `result`) |
 | **Kết thúc** | `return mid` hoặc `return -1` | `return nums[left]` | `return result` hoặc `return low` |
-| **Bài tiêu biểu** | LC 704, LC 35 | LC 153, LC 34 | LC 875, LC 1011, LC 410 |
+| **Bài tiêu biểu** | LC 704, LC 35, LC 74 | LC 153, LC 34 | LC 875, LC 1011, LC 410 |
+
+---
+
+## 6. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 74 - Search a 2D Matrix (Medium - Tìm Kiếm Ma Trận 2D)
+- **Đề bài:** Cho ma trận số nguyên $M \times N$ đã sắp xếp tăng dần từ trái sang phải và hàng sau lớn hơn hàng trước. Kiểm tra xem `target` có tồn tại hay không.
+- **Bản chất toán học:** Ma trận $M \times N$ đẳng cấu với mảng 1 chiều kích thước $M \times N$.
+  Công thức ánh xạ tọa độ:
+  $$\text{row} = \lfloor mid / N \rfloor, \quad \text{col} = mid \pmod N$$
+- **Chiến lược tối ưu:**
+  1. *Virtual 1D Binary Search:* $O(\log(M \times N))$ thời gian, $O(1)$ không gian bộ nhớ.
+  2. *Two-pass Binary Search:* Tìm hàng trước, tìm cột sau.
+  3. *Staircase Search:* Bậc thang từ góc trên-phải $O(M + N)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
