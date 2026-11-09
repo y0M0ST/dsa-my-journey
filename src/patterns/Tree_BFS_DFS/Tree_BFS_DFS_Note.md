@@ -464,6 +464,20 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(N + M)$, Space: $O(N + M)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.11. LeetCode 98 - Validate Binary Search Tree (Medium - Kiểm Tra Cây Tìm Kiếm Nhị Phân)
+- **Đề bài:** Cho gốc của một cây nhị phân, kiểm tra xem nó có phải là một Binary Search Tree (BST) hợp lệ hay không.
+- **Cạm bẫy tử thần trong phỏng vấn (The Local Property Trap):**
+  - ❌ **Sai lầm:** Chỉ kiểm tra điều kiện cục bộ giữa cha và con trực tiếp `node.left.val < node.val < node.right.val`.
+  - ✅ **Thực tế:** Toàn bộ nhánh con bên trái phải nhỏ hơn tổ tiên, toàn bộ nhánh con bên phải phải lớn hơn tổ tiên. Bắt buộc truyền khoảng chặn `(min, max)` kế thừa xuống dưới.
+- **Bản chất toán học & Bất biến BST:**
+  - Khoảng giá trị hợp lệ: $min < node.val < max$.
+  - Tính đơn điệu In-order: Duyệt Trung thứ tự (Left -> Root -> Right) của BST luôn tạo thành một dãy số tăng ngặt ($prev < current$).
+- **Chiến lược tối ưu 3 trường phái:**
+  1. *Recursive Range DFS:* Đệ quy thu hẹp khoảng chặn $(min, max)$, dùng null/sentinel để xử lý 32-bit INT_MIN/INT_MAX. Time: $O(N)$, Space: $O(H)$.
+  2. *Iterative In-order Stack:* Dùng Stack LIFO mô phỏng duyệt trung thứ tự, kiểm tra $current.val \le prevVal$. Time: $O(N)$, Space: $O(H)$.
+  3. *BFS Queue Range Validation:* Hàng đợi theo tầng kết hợp con trỏ head để đạt $O(1)$ dequeue. Time: $O(N)$, Space: $O(W)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
