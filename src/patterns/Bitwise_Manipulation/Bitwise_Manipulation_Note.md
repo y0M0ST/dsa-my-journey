@@ -115,6 +115,7 @@ Xóa bit 1 cuối cùng  Trích xuất bit 1     Kiểm tra số lẻ
 |---|---|---|---|
 | **LC 136: Single Number** | XOR tích lũy `result ^= num` | $O(N)$ | $O(1)$ |
 | **LC 191: Number of 1 Bits** | Brian Kernighan `n &= (n - 1)` | $O(\text{set bits}) \le 32$ | $O(1)$ |
+| **LC 338: Counting Bits** | Dynamic Programming on Bits | $O(N)$ | $O(1)$ aux |
 | **LC 231: Power of Two** | Feasibility check `n > 0 && (n & (n - 1)) === 0` | $O(1)$ | $O(1)$ |
 | **LC 268: Missing Number** | XOR toàn bộ index và giá trị | $O(N)$ | $O(1)$ |
 
@@ -129,3 +130,11 @@ Xóa bit 1 cuối cùng  Trích xuất bit 1     Kiểm tra số lẻ
   2. **Unsigned Right Shift (`n >>> 1`):** Bắt buộc dùng `>>>` trong JS/TS để tránh nhân bản bit dấu khi gặp số âm hoặc số lớn $\ge 2^{31}$.
   3. **SWAR (SIMD Within A Register) Parallel Popcount:** Chia để trị trên bit, gộp bit 1 theo cặp 2-bit, 4-bit, 8-bit, 16-bit và 32-bit trong $O(1)$ phép tính.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### LeetCode 338 - Counting Bits (Easy - Đếm Bit Bằng Quy Hoạch Động)
+- **Đề bài:** Cho số nguyên `n`, trả về mảng độ dài `n + 1` trong đó phần tử thứ `i` là số lượng bit 1 của `i`.
+- **Hệ thức truy hồi DP trên Bit:**
+  1. **Least Significant Bit (LSB):** $\text{dp}[i] = \text{dp}[i \gg 1] + (i \ \& \ 1)$. Phép toán $i \gg 1$ bỏ bit cuối cùng.
+  2. **Brian Kernighan State Transition:** $\text{dp}[i] = \text{dp}[i \ \& \ (i - 1)] + 1$. Phép xóa bit 1 thấp nhất đưa về trạng thái đã giải xong nhỏ hơn $i$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
