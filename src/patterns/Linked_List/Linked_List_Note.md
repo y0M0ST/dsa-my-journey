@@ -174,3 +174,10 @@ Sau bước 1:  null ◄── [1]       [2] ──► [3] ──► null
   1. **Floyd's Fast & Slow Pointers:** $O(N)$ Time, **$O(1)$ Space** (không cấp phát bộ nhớ phụ).
   2. **Hash Set Memory Tracking:** $O(N)$ Time, $O(N)$ Space (lưu từng node vào Set).
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### LeetCode 19 - Remove Nth Node From End of List (Medium - Xóa Node Thứ N Từ Đuôi)
+- **Đề bài:** Cho `head` của danh sách liên kết, xóa node thứ `n` tính từ đuôi danh sách và trả về node đầu.
+- **Kỹ thuật tối ưu:**
+  1. **Dummy Head Sentinel:** Khử triệt để edge case xóa node `head` đầu tiên mà không cần `if/else`.
+  2. **Two Pointers Runner Gap ($n + 1$ steps):** Cho `fast` đi trước $n + 1$ bước, khi `fast` chạm `null`, `slow` đứng ngay trước node cần xóa. Duyệt đúng 1 lượt $O(L)$ thời gian, $O(1)$ bộ nhớ.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
