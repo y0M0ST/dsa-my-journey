@@ -122,3 +122,15 @@ Complement Lookup  Frequency Counter  Anagram Grouping   Prefix Sum + Map
 | **LC 242: Valid Anagram** | Frequency Array `Int32Array(26)` | $O(N)$ | $O(1)$ | Đếm ký tự cộng dồn rồi trừ đi |
 | **LC 49: Group Anagrams** | Canonical Sort Key + Map | $O(N \cdot K \log K)$ | $O(N \cdot K)$ | Sort từng từ làm Key gom nhóm |
 | **LC 560: Subarray Sum = K** | Prefix Sum + Frequency Map | $O(N)$ | $O(N)$ | Khởi tạo `map.set(0, 1)` cho trường hợp bắt đầu từ index 0 |
+
+---
+
+## 6. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 242 - Valid Anagram (Easy - Kiểm Tra Từ Đảo Chữ)
+- **Đề bài:** Cho hai chuỗi `s` và `t`, kiểm tra xem `t` có phải là một anagram của `s` hay không.
+- **Kỹ thuật tối ưu:**
+  1. **Int32Array(26) Frequency Buffer:** Thay thế Map bằng TypedArray tĩnh, giảm thiểu chi phí GC và tận dụng CPU Cache.
+  2. **Single-pass Cancellation:** Cộng dồn tần suất với `s`, trừ dần với `t`. Ngắt sớm ngay khi tần suất ký tự bị âm (< 0).
+  3. **Hỗ trợ Unicode:** Sử dụng `Map<string, number>` khi đề bài mở rộng cho mọi ký tự Unicode toàn cầu.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
