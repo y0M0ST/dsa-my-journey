@@ -478,6 +478,17 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
   3. *BFS Queue Range Validation:* Hàng đợi theo tầng kết hợp con trỏ head để đạt $O(1)$ dequeue. Time: $O(N)$, Space: $O(W)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.12. LeetCode 236 - Lowest Common Ancestor of a Binary Tree (Medium - Tổ Tiên Chung Thấp Nhất)
+- **Đề bài:** Cho cây nhị phân và 2 node `p` và `q`. Tìm node tổ tiên chung thấp nhất (LCA) của `p` và `q`.
+- **Bản chất toán học & Điểm phân nhánh (Split-Point Invariant):**
+  - Node $L$ là LCA khi và chỉ khi:
+    1. Một node nằm ở cây con trái của $L$, node kia nằm ở cây con phải của $L$.
+    2. Hoặc chính $L$ là một trong 2 node ($L = p$ hoặc $L = q$), và node còn lại nằm ở cây con bên dưới của $L$.
+- **Chiến lược tối ưu 2 trường phái:**
+  1. *Bottom-up Post-order DFS:* Gom thông tin từ dưới lên. Nếu cả `left` và `right` đều khác `null` $\implies$ `root` là điểm rẽ đôi LCA. Time: $O(N)$, Space: $O(H)$.
+  2. *Parent Pointer Map + Ancestor Set:* Dùng Map lưu con trỏ cha bằng BFS, sau đó lần ngược từ $q$ lên tìm giao điểm với tập tổ tiên của $p$. Time: $O(N)$, Space: $O(N)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)
