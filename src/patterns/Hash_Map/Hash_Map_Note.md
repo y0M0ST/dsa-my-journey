@@ -121,6 +121,7 @@ Complement Lookup  Frequency Counter  Anagram Grouping   Prefix Sum + Map
 | **LC 1: Two Sum** | Complement Lookup | $O(N)$ | $O(N)$ | Một vòng lặp, vừa tra vừa ghi |
 | **LC 242: Valid Anagram** | Frequency Array `Int32Array(26)` | $O(N)$ | $O(1)$ | Đếm ký tự cộng dồn rồi trừ đi |
 | **LC 49: Group Anagrams** | Canonical Sort Key + Map | $O(N \cdot K \log K)$ | $O(N \cdot K)$ | Sort từng từ làm Key gom nhóm |
+| **LC 128: Longest Consecutive Sequence** | Set Sequence-Start Lookup | $O(N)$ | $O(N)$ | Chỉ duyệt khi `num - 1` không tồn tại trong Set |
 | **LC 560: Subarray Sum = K** | Prefix Sum + Frequency Map | $O(N)$ | $O(N)$ | Khởi tạo `map.set(0, 1)` cho trường hợp bắt đầu từ index 0 |
 
 ---
@@ -134,3 +135,13 @@ Complement Lookup  Frequency Counter  Anagram Grouping   Prefix Sum + Map
   2. **Single-pass Cancellation:** Cộng dồn tần suất với `s`, trừ dần với `t`. Ngắt sớm ngay khi tần suất ký tự bị âm (< 0).
   3. **Hỗ trợ Unicode:** Sử dụng `Map<string, number>` khi đề bài mở rộng cho mọi ký tự Unicode toàn cầu.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### LeetCode 128 - Longest Consecutive Sequence (Medium - Chuỗi Số Liên Tiếp Dài Nhất)
+- **Đề bài:** Cho mảng các số nguyên chưa sắp xếp `nums`, tìm độ dài của chuỗi các phần tử liên tiếp dài nhất. Yêu cầu thời gian $O(N)$.
+- **Bất biến điểm đầu chuỗi (Sequence-Start Invariant):**
+  - Đưa tất cả phần tử vào `Set<number>`.
+  - Một số `x` là điểm khởi đầu $\iff (x - 1) \notin \text{Set}$.
+  - Nếu $(x - 1) \in \text{Set} \implies$ Bỏ qua vì $x$ đã thuộc về một chuỗi dài hơn xuất phát từ trước.
+  - Mỗi phần tử chỉ được duyệt qua tối đa 2 lần. Tổng độ phức tạp là $O(N)$ tuyến tính thuần túy.
+- **Kết quả:** Đạt $12\text{ms}$ (Beats 98.60%) trên LeetCode!
+
