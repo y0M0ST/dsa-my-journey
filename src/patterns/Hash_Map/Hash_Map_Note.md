@@ -63,6 +63,26 @@ Complement Lookup  Frequency Counter  Anagram Grouping   Prefix Sum + Map
 *   Biến đổi từ đó thành một chuỗi đại diện duy nhất (Canonical Key), ví dụ: `key = word.split('').sort().join('')` hoặc đếm chuỗi tần suất `"1#0#0#...#1"`.
 *   Lưu vào `Map<string, string[]>` với `key` làm nhóm cha.
 
+---
+
+### 5. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+#### LeetCode 49 - Group Anagrams (Medium - Gom Nhóm Các Từ Đảo Ngữ)
+- **Đề bài:** Cho một mảng các chuỗi `strs`, hãy gom các chuỗi là anagram của nhau lại thành từng nhóm.
+- **Bản chất toán học:** Quan hệ tương đương (Equivalence Relation) phân hoạch tập $N$ chuỗi thành các lớp tương đương rời nhau.
+- **So sánh 3 trường phái sinh Canonical Key:**
+  1. **Canonical Sort Key (`word.split('').sort().join('')`):**
+     - Đơn giản, trực quan.
+     - Time: $O(N \cdot K \log K)$, Space: $O(N \cdot K)$.
+  2. **Frequency Count Key with Delimiters (`Int32Array(26)` + `#c0#c1...`):**
+     - Đạt độ phức tạp tuyến tính lý thuyết $O(N \cdot K)$.
+     - Tránh bẫy Delimiter Trap: Phải dùng `#` phân tách số đếm.
+  3. **Prime Factorization BigInt Hashing (Gödel Numbering):**
+     - Gán 26 chữ cái với 26 số nguyên tố đầu tiên $[2, 3, 5, ..., 101]$.
+     - Tích các số nguyên tố là duy nhất (Định lý cơ bản của số học).
+     - Không cấp phát chuỗi (Zero string allocation), tra cứu qua `Map<bigint, string[]>`.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ### Pattern 4: Prefix Sum + Hash Map (LC 560 - Subarray Sum Equals K)
 *   **Khẩu quyết:** Tổng đoạn con từ `i` đến `j` bằng $\text{PrefixSum}[j] - \text{PrefixSum}[i - 1]$.
 *   Để đoạn con có tổng bằng $K$, ta cần: $\text{PrefixSum}[j] - \text{PrefixSum}[i - 1] = K \Leftrightarrow \text{PrefixSum}[i - 1] = \text{PrefixSum}[j] - K$.
@@ -101,4 +121,27 @@ Complement Lookup  Frequency Counter  Anagram Grouping   Prefix Sum + Map
 | **LC 1: Two Sum** | Complement Lookup | $O(N)$ | $O(N)$ | Một vòng lặp, vừa tra vừa ghi |
 | **LC 242: Valid Anagram** | Frequency Array `Int32Array(26)` | $O(N)$ | $O(1)$ | Đếm ký tự cộng dồn rồi trừ đi |
 | **LC 49: Group Anagrams** | Canonical Sort Key + Map | $O(N \cdot K \log K)$ | $O(N \cdot K)$ | Sort từng từ làm Key gom nhóm |
+| **LC 128: Longest Consecutive Sequence** | Set Sequence-Start Lookup | $O(N)$ | $O(N)$ | Chỉ duyệt khi `num - 1` không tồn tại trong Set |
 | **LC 560: Subarray Sum = K** | Prefix Sum + Frequency Map | $O(N)$ | $O(N)$ | Khởi tạo `map.set(0, 1)` cho trường hợp bắt đầu từ index 0 |
+
+---
+
+## 6. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 242 - Valid Anagram (Easy - Kiểm Tra Từ Đảo Chữ)
+- **Đề bài:** Cho hai chuỗi `s` và `t`, kiểm tra xem `t` có phải là một anagram của `s` hay không.
+- **Kỹ thuật tối ưu:**
+  1. **Int32Array(26) Frequency Buffer:** Thay thế Map bằng TypedArray tĩnh, giảm thiểu chi phí GC và tận dụng CPU Cache.
+  2. **Single-pass Cancellation:** Cộng dồn tần suất với `s`, trừ dần với `t`. Ngắt sớm ngay khi tần suất ký tự bị âm (< 0).
+  3. **Hỗ trợ Unicode:** Sử dụng `Map<string, number>` khi đề bài mở rộng cho mọi ký tự Unicode toàn cầu.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### LeetCode 128 - Longest Consecutive Sequence (Medium - Chuỗi Số Liên Tiếp Dài Nhất)
+- **Đề bài:** Cho mảng các số nguyên chưa sắp xếp `nums`, tìm độ dài của chuỗi các phần tử liên tiếp dài nhất. Yêu cầu thời gian $O(N)$.
+- **Bất biến điểm đầu chuỗi (Sequence-Start Invariant):**
+  - Đưa tất cả phần tử vào `Set<number>`.
+  - Một số `x` là điểm khởi đầu $\iff (x - 1) \notin \text{Set}$.
+  - Nếu $(x - 1) \in \text{Set} \implies$ Bỏ qua vì $x$ đã thuộc về một chuỗi dài hơn xuất phát từ trước.
+  - Mỗi phần tử chỉ được duyệt qua tối đa 2 lần. Tổng độ phức tạp là $O(N)$ tuyến tính thuần túy.
+- **Kết quả:** Đạt $12\text{ms}$ (Beats 98.60%) trên LeetCode!
+

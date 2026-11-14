@@ -464,6 +464,31 @@ function maxDepthIterativeDFS(root: TreeNode | null): number {
      - Time: $O(N + M)$, Space: $O(N + M)$.
 - **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
 
+### 6.11. LeetCode 98 - Validate Binary Search Tree (Medium - Kiểm Tra Cây Tìm Kiếm Nhị Phân)
+- **Đề bài:** Cho gốc của một cây nhị phân, kiểm tra xem nó có phải là một Binary Search Tree (BST) hợp lệ hay không.
+- **Cạm bẫy tử thần trong phỏng vấn (The Local Property Trap):**
+  - ❌ **Sai lầm:** Chỉ kiểm tra điều kiện cục bộ giữa cha và con trực tiếp `node.left.val < node.val < node.right.val`.
+  - ✅ **Thực tế:** Toàn bộ nhánh con bên trái phải nhỏ hơn tổ tiên, toàn bộ nhánh con bên phải phải lớn hơn tổ tiên. Bắt buộc truyền khoảng chặn `(min, max)` kế thừa xuống dưới.
+- **Bản chất toán học & Bất biến BST:**
+  - Khoảng giá trị hợp lệ: $min < node.val < max$.
+  - Tính đơn điệu In-order: Duyệt Trung thứ tự (Left -> Root -> Right) của BST luôn tạo thành một dãy số tăng ngặt ($prev < current$).
+- **Chiến lược tối ưu 3 trường phái:**
+  1. *Recursive Range DFS:* Đệ quy thu hẹp khoảng chặn $(min, max)$, dùng null/sentinel để xử lý 32-bit INT_MIN/INT_MAX. Time: $O(N)$, Space: $O(H)$.
+  2. *Iterative In-order Stack:* Dùng Stack LIFO mô phỏng duyệt trung thứ tự, kiểm tra $current.val \le prevVal$. Time: $O(N)$, Space: $O(H)$.
+  3. *BFS Queue Range Validation:* Hàng đợi theo tầng kết hợp con trỏ head để đạt $O(1)$ dequeue. Time: $O(N)$, Space: $O(W)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### 6.12. LeetCode 236 - Lowest Common Ancestor of a Binary Tree (Medium - Tổ Tiên Chung Thấp Nhất)
+- **Đề bài:** Cho cây nhị phân và 2 node `p` và `q`. Tìm node tổ tiên chung thấp nhất (LCA) của `p` và `q`.
+- **Bản chất toán học & Điểm phân nhánh (Split-Point Invariant):**
+  - Node $L$ là LCA khi và chỉ khi:
+    1. Một node nằm ở cây con trái của $L$, node kia nằm ở cây con phải của $L$.
+    2. Hoặc chính $L$ là một trong 2 node ($L = p$ hoặc $L = q$), và node còn lại nằm ở cây con bên dưới của $L$.
+- **Chiến lược tối ưu 2 trường phái:**
+  1. *Bottom-up Post-order DFS:* Gom thông tin từ dưới lên. Nếu cả `left` và `right` đều khác `null` $\implies$ `root` là điểm rẽ đôi LCA. Time: $O(N)$, Space: $O(H)$.
+  2. *Parent Pointer Map + Ancestor Set:* Dùng Map lưu con trỏ cha bằng BFS, sau đó lần ngược từ $q$ lên tìm giao điểm với tập tổ tiên của $p$. Time: $O(N)$, Space: $O(N)$.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
 ---
 
 ## 7. KHẮC CỐT GHI TÂM KHI PHỎNG VẤN (INTERVIEW TAKEAWAYS)

@@ -162,3 +162,22 @@ Sau bước 1:  null ◄── [1]       [2] ──► [3] ──► null
 | **LC 21: Merge Two Sorted Lists** | Dummy Node + Two Pointers | $O(M + N)$ | $O(1)$ |
 | **LC 19: Remove Nth Node From End** | Dummy Node + Fast Lead N Steps | $O(N)$ | $O(1)$ |
 | **LC 234: Palindrome Linked List** | Find Mid + Reverse Half + Compare | $O(N)$ | $O(1)$ |
+
+---
+
+## 5. CHI TIẾT BÀI TOÁN THỰC CHIẾN
+
+### LeetCode 141 - Linked List Cycle (Easy - Nhận Diện Chu Trình Danh Sách Liên Kết)
+- **Đề bài:** Cho `head` của một danh sách liên kết, xác định xem danh sách có chứa chu trình hay không.
+- **Bản chất toán học:** Thuật toán Floyd's Cycle-Finding (Tortoise and Hare). Vận tốc tương đối $v_{\text{rel}} = 2 - 1 = 1$. Khoảng cách giữa 2 con trỏ trong chu trình giảm đúng 1 đơn vị sau mỗi bước, bảo đảm hội tụ tại điểm gặp nhau sau tối đa $O(N)$ bước.
+- **So sánh 2 trường phái:**
+  1. **Floyd's Fast & Slow Pointers:** $O(N)$ Time, **$O(1)$ Space** (không cấp phát bộ nhớ phụ).
+  2. **Hash Set Memory Tracking:** $O(N)$ Time, $O(N)$ Space (lưu từng node vào Set).
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
+
+### LeetCode 19 - Remove Nth Node From End of List (Medium - Xóa Node Thứ N Từ Đuôi)
+- **Đề bài:** Cho `head` của danh sách liên kết, xóa node thứ `n` tính từ đuôi danh sách và trả về node đầu.
+- **Kỹ thuật tối ưu:**
+  1. **Dummy Head Sentinel:** Khử triệt để edge case xóa node `head` đầu tiên mà không cần `if/else`.
+  2. **Two Pointers Runner Gap ($n + 1$ steps):** Cho `fast` đi trước $n + 1$ bước, khi `fast` chạm `null`, `slow` đứng ngay trước node cần xóa. Duyệt đúng 1 lượt $O(L)$ thời gian, $O(1)$ bộ nhớ.
+- **Kết quả:** Đạt $0\text{ms}$ (Beats 100.00%) trên LeetCode!
